@@ -13,6 +13,11 @@
       url = "git+ssh://git@github.com/HexoKnight/dotfiles";
       flake = false;
     };
+
+    nixos-wsl {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
@@ -30,10 +35,21 @@
             inherit inputs unstable-overlay;
             config_name = "default";
           };
-          modules = [ 
+          modules = [
             { nixpkgs.overlays = [ unstable-overlay ]; }
+            ./modules/internationalisation.nix
             ./hosts/default/configuration.nix
-            inputs.home-manager.nixosModules.home-manager
+          ];
+        };
+        wsl = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs unstable-overlay;
+            config_name = "wsl";
+          };
+          modules = [
+            { nixpkgs.overlays = [ unstable-overlay ]; }
+            ./modules/internationalisation.nix
+            ./hosts/default/configuration.nix
           ];
         };
       };

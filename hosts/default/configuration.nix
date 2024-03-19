@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, inputs, unstable-overlay, config_name, ... }:
 
 {
@@ -24,7 +20,7 @@
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
   services.envfs.enable = true;
 
-  networking.hostName = "HARVEY-nixos"; # Define your hostname.
+  networking.hostName = "HARVEY-nixos";
   networking.interfaces.eno1.wakeOnLan = {
     enable = false;
     policy = [ "magic" ];
@@ -45,49 +41,12 @@
     };
   };
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  # networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "Europe/London";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_GB.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_GB.UTF-8";
-    LC_IDENTIFICATION = "en_GB.UTF-8";
-    LC_MEASUREMENT = "en_GB.UTF-8";
-    LC_MONETARY = "en_GB.UTF-8";
-    LC_NAME = "en_GB.UTF-8";
-    LC_NUMERIC = "en_GB.UTF-8";
-    LC_PAPER = "en_GB.UTF-8";
-    LC_TELEPHONE = "en_GB.UTF-8";
-    LC_TIME = "en_GB.UTF-8";
-  };
-
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    layout = "gb";
-    xkbVariant = "";
-  };
-
-  # Configure console keymap
-  console.keyMap = "uk";
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -106,16 +65,12 @@
     #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
   users.mutableUsers = false;
   users.groups = {
     wheel = {};
     users = {};
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.harvey = {
     isNormalUser = true;
     description = "Harvey Gream";
@@ -123,12 +78,10 @@
     hashedPasswordFile = "${inputs.self}/secrets/hashed_password";
 
     packages = with pkgs; [
-      (writeShellScriptBin "rebuild" (builtins.readFile ../../rebuild.sh)
-        #./rebuild.sh
-      )
+      (writeShellScriptBin "rebuild" (builtins.readFile ../../rebuild.sh))
+
       # required for the rebuild command
       (writeShellScriptBin "evalvar" (builtins.readFile ../../evalvar.sh))
-      # for 
       unstable.nixVersions.nix_2_19
     ];
   };
@@ -147,9 +100,7 @@
 
   home-manager = {
     extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users = {
-      "harvey" = import ./home.nix;
-    };
+    users.harvey = import ${inputs.self}/modules/home.nix;
   };
 
   fonts.fontconfig = {
@@ -165,14 +116,7 @@
     (nerdfonts.override { fonts = [ "RobotoMono" ]; })
   ];
 
-  # Allow unfree packages
-  #nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
   ];
 
   environment.etc."dual-function-keys.yaml".text = ''
@@ -194,24 +138,7 @@
     '';
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -220,5 +147,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
-
 }
