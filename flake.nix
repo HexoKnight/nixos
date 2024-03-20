@@ -49,7 +49,7 @@
           modules = [
             { nixpkgs.overlays = [ unstable-overlay ]; }
             ./modules/internationalisation.nix
-            ./hosts/default/configuration.nix
+            ./hosts/wsl/configuration.nix
           ];
         };
       };

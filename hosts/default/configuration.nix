@@ -78,10 +78,10 @@
     hashedPasswordFile = "${inputs.self}/secrets/hashed_password";
 
     packages = with pkgs; [
-      (writeShellScriptBin "rebuild" (builtins.readFile ../../rebuild.sh))
+      (writeShellScriptBin "rebuild" (builtins.readFile /.${inputs.self}/rebuild.sh))
 
       # required for the rebuild command
-      (writeShellScriptBin "evalvar" (builtins.readFile ../../evalvar.sh))
+      (writeShellScriptBin "evalvar" (builtins.readFile /.${inputs.self}/evalvar.sh))
       unstable.nixVersions.nix_2_19
     ];
   };
@@ -100,7 +100,7 @@
 
   home-manager = {
     extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users.harvey = import ${inputs.self}/modules/home.nix;
+    users.harvey = import /.${inputs.self}/modules/home.nix;
   };
 
   fonts.fontconfig = {
