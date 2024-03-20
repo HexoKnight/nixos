@@ -1,9 +1,16 @@
+{ username }:
+
 { config, pkgs, inputs, unstable-overlay, ... }:
 
 let
-  username = "harvey";
   homeDirectory = "/home/" + username;
 in {
+  
+  options = {
+    
+  };
+  
+  
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = { inherit username homeDirectory; };

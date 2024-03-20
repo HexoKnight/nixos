@@ -38,6 +38,7 @@
           modules = [
             { nixpkgs.overlays = [ unstable-overlay ]; }
             ./modules/internationalisation.nix
+            ./modules/user-config.nix
             ./hosts/default/configuration.nix
           ];
         };
@@ -49,6 +50,7 @@
           modules = [
             { nixpkgs.overlays = [ unstable-overlay ]; }
             ./modules/internationalisation.nix
+            ./modules/user-config.nix
             ./hosts/wsl/configuration.nix
           ];
         };

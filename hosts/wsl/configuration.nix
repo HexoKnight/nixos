@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.home-manager
+    inputs.nixos-wsl.nixosModules.wsl
   ];
   nixpkgs.overlays = [ unstable-overlay ];
 
@@ -17,23 +17,6 @@
 
   networking.hostName = "nixos";
 
-#   # Enable sound with pipewire.
-#   sound.enable = true;
-#   hardware.pulseaudio.enable = false;
-#   security.rtkit.enable = true;
-#   services.pipewire = {
-#     enable = true;
-#     alsa.enable = true;
-#     alsa.support32Bit = true;
-#     pulse.enable = true;
-#     # If you want to use JACK applications, uncomment this
-#     #jack.enable = true;
-
-#     # use the example session manager (no others are packaged yet so this is enabled by default,
-#     # no need to redefine it in your config for now)
-#     #media-session.enable = true;
-#   };
-
   users.mutableUsers = false;
   users.groups = {
     wheel = {};
@@ -45,10 +28,10 @@
     extraGroups = [ "wheel" ];
 
     packages = with pkgs; [
-      (writeShellScriptBin "rebuild" (builtins.readFile /.${inputs.self}/rebuild.sh))
+      (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
 
       # required for the rebuild command
-      (writeShellScriptBin "evalvar" (builtins.readFile /.${inputs.self}/evalvar.sh))
+      (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
       unstable.nixVersions.nix_2_19
     ];
   };
@@ -67,7 +50,7 @@
 
   home-manager = {
     extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users.nixos = import /.${inputs.self}/modules/home.nix;
+    users.nixos = import "${inputs.self}/modules/home.nix";
   };
 
   environment.systemPackages = with pkgs; [
