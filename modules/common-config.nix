@@ -14,15 +14,12 @@ in {
             description = "literally just users.mutableUsers";
             type = types.bool;
         };
-        host = mkOption {
-            description = "host information";
-            type = types.attrsOf (types.submodule {
-                desktop = mkOption {
-                    default = false;
-                    description = "whether the host has a desktop";
-                    type = types.bool;
-                };
-            });
+        host = {
+            desktop = mkOption {
+                default = false;
+                description = "whether the host has a desktop";
+                type = types.bool;
+            };
         };
         users = mkOption {
             description = "users";

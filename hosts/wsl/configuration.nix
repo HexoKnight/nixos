@@ -17,11 +17,12 @@
 
   networking.hostName = "nixos";
 
-  users.mutableUsers = false;
-  users.groups = {
-    wheel = {};
-    users = {};
+  common-config = {
+    host = {};
+    users.nixos = {};
   };
+
+  # users.mutableUsers = false;
 
   wsl.defaultUser = "nixos";
   users.users.nixos = {
@@ -49,8 +50,8 @@
   };
 
   home-manager = {
-    extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users.nixos = import "${inputs.self}/modules/home.nix";
+    # extraSpecialArgs = {inherit inputs unstable-overlay;};
+    # users.nixos = import "${inputs.self}/modules/home.nix";
   };
 
   environment.systemPackages = with pkgs; [
