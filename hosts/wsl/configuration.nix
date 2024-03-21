@@ -34,11 +34,6 @@ in {
     extraGroups = [ "wheel" ];
 
     packages = with pkgs; [
-      (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
-
-      # required for the rebuild command
-      (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
-      unstable.nixVersions.nix_2_19
     ];
   };
 

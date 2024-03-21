@@ -56,12 +56,12 @@ in {
         users.mutableUsers = cfg.mutableUsers;
         users.users = attrsets.mapAttrs (name: value: {
             extraGroups = value.extraGroups // (lists.optional value.cansudo "wheel");
-            packages = with pkgs; [
-            (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
+            packages = with pkgs; lists.optionals value.hasRebuildCommand [
+                (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
 
-            # required for the rebuild command
-            (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
-            unstable.nixVersions.nix_2_19
+                # required for the rebuild command
+                (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
+                unstable.nixVersions.nix_2_19
             ];
         }) cfg.users;
 
