@@ -1,4 +1,4 @@
-{ username, desktop }:
+{ username, desktop, ... }:
 
 { config, lib, pkgs, inputs, unstable-overlay, ... }:
 
