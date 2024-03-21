@@ -31,12 +31,6 @@ in {
   # users.mutableUsers = false;
 
   wsl.defaultUser = username;
-  users.users.${username} = {
-    extraGroups = [ "wheel" ];
-
-    packages = with pkgs; [
-    ];
-  };
 
   environment.variables = {
     # This is not very pure but only nixos-rebuild scripts depend on it
