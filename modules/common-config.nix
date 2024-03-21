@@ -9,6 +9,7 @@ in {
     ];
 
     options.common-config = {
+        enable = mkEnableOption "common configuration";
         mutableUsers = mkOption {
             default = true;
             description = "literally just users.mutableUsers";
@@ -25,6 +26,21 @@ in {
             description = "users";
             type = types.attrsOf (types.submodule {
                 options = {
+                    cansudo = mkOption {
+                        default = false;
+                        type = types.bool;
+                        description = "whether the user can use sudo";
+                    };
+                    hasRebuildCommand = mkOption {
+                        default = true;
+                        type = types.bool;
+                        description = "whether the user gets a nice rebuild command";
+                    };
+                    extraGroups = mkOption {
+                        type = types.listOf types.str;
+                        default = [];
+                        description = "the user's auxiliary groups";
+                    };
                     # home-module = mkOption {
                     #     default = import "${inputs.self}/modules/home.nix" { username = "nixos"; };
                     #     type = (import "${inputs.home-manager}/nixos/common.nix" { inherit config lib pkgs; }).options.home-manager.users.type.nestedTypes.elemType;
@@ -34,8 +50,21 @@ in {
         };
     };
 
-    config = {
+    config = mkIf (cfg.enable) {
+        nixpkgs.overlays = [ unstable-overlay ];
+
         users.mutableUsers = cfg.mutableUsers;
+        users.users = attrsets.mapAttrs (name: value: {
+            extraGroups = value.extraGroups // (lists.optional value.cansudo "wheel");
+            packages = with pkgs; [
+            (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
+
+            # required for the rebuild command
+            (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
+            unstable.nixVersions.nix_2_19
+            ];
+        }) cfg.users;
+
         home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
         # home-manager.users = mkAliasAndWrapDefinitions (attrsets.mapAttrs (name: value: value.home-module)) (options.common-config.users);
         home-manager.users = attrsets.mapAttrs (name: value: import ./home.nix ({ username = name; } // cfg.host // value)) cfg.users;

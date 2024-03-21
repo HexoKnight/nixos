@@ -1,6 +1,8 @@
 { config, pkgs, inputs, unstable-overlay, config_name, ... }:
 
-{
+let
+  username = "nixos";
+in {
   imports = [
     ./hardware-configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
@@ -13,19 +15,22 @@
   nix.channel.enable = false; # only flakes :)
 
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
-  services.envfs.enable = true;
+  # seems to fail on wsl (it uses a wierd file system or smthn)
+  # services.envfs.enable = true;
 
   networking.hostName = "nixos";
 
   common-config = {
     host = {};
-    users.nixos = {};
+    users.${username} = {
+      cansudo = true;
+    };
   };
 
   # users.mutableUsers = false;
 
-  wsl.defaultUser = "nixos";
-  users.users.nixos = {
+  wsl.defaultUser = username;
+  users.users.${username} = {
     extraGroups = [ "wheel" ];
 
     packages = with pkgs; [

@@ -9,8 +9,7 @@ in {
   options = {
   };
 
-  config = mkMerge [
-    {
+  config = {
       # Home Manager needs a bit of information about you and the paths it should
       # manage.
       home = { inherit username homeDirectory; };
@@ -89,17 +88,16 @@ in {
       };
 
       home.sessionVariables = {
-        # EDITOR = "emacs";
+        EDITOR = "vim";
       };
 
       # Let Home Manager install and manage itself.
       programs.home-manager.enable = true;
     }
-    (mkIf (desktop) {
+    // (attrsets.optionalAttrs (desktop) {
       home.packages = with pkgs; [
         google-chrome
         github-desktop
       ];
-    })
-  ];
+    });
 }

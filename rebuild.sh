@@ -36,7 +36,7 @@ while true; do
     ;;
   esac
 done
-#extra_args="$*"
+extra_args="$*"
 
 rebuild_type="${rebuild_type-switch}"
 build_dir="${build_dir-"$NIXOS_BUILD_DIR"}"
@@ -93,6 +93,9 @@ if [ -v update_flakes ]; then
     sudo $sudoarg SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update $update_flakes -I "ssh-auth-sock=$SSH_AUTH_SOCK" -I "ssh-config-file=$HOME/.ssh/config"
   fi
 fi
+
+# track all non-ignored files to ensure new files are picked up by nixos-rebuild
+git add .
 
 echo "NixOS Rebuilding..."
 

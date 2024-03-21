@@ -1,6 +1,8 @@
 { config, pkgs, inputs, unstable-overlay, config_name, ... }:
 
-{
+let
+  username = "harvey";
+in {
   disabledModules = [ "services/networking/xrdp.nix" ];
   imports = [
     ./hardware-configuration.nix
@@ -71,7 +73,7 @@
     users = {};
   };
 
-  users.users.harvey = {
+  users.users.${username} = {
     isNormalUser = true;
     description = "Harvey Gream";
     extraGroups = [ "wheel" ];
@@ -90,7 +92,7 @@
     # This is not very pure but only nixos-rebuild scripts depend on it
     # so they'll just fail harmlessly when run if there's nothing there.
     # To be entirely honest I'd rather this just be impure but oh well...
-    NIXOS_BUILD_DIR = "/home/harvey/.nixos";
+    NIXOS_BUILD_DIR = "/home/${username}/.nixos";
     NIXOS_BUILD_CONFIGURATION = config_name;
   };
 
@@ -100,7 +102,7 @@
 
   home-manager = {
     extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users.harvey = import "${inputs.self}/modules/home.nix";
+    users.${username} = import "${inputs.self}/modules/home.nix";
   };
 
   fonts.fontconfig = {
