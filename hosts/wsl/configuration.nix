@@ -21,6 +21,7 @@ in {
   networking.hostName = "nixos";
 
   common-config = {
+    enable = true;
     host = {};
     users.${username} = {
       cansudo = true;

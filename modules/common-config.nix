@@ -55,7 +55,7 @@ in {
 
         users.mutableUsers = cfg.mutableUsers;
         users.users = attrsets.mapAttrs (name: value: {
-            extraGroups = value.extraGroups // (lists.optional value.cansudo "wheel");
+            extraGroups = value.extraGroups ++ (lists.optional value.cansudo "wheel");
             packages = with pkgs; lists.optionals value.hasRebuildCommand [
                 (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
 
