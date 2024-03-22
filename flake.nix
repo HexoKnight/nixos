@@ -22,38 +22,12 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
     let
-      system = "x86_64-linux";
-      #pkgs = nixpkgs.legacyPackages.${system};
-      unstable-overlay = final: prev: {
-        unstable = nixpkgs-unstable.legacyPackages.${system};
-      };
+      mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix inputs;
     in
     {
-      nixosConfigurations = {
-        default = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs unstable-overlay;
-            config_name = "default";
-          };
-          modules = [
-            { nixpkgs.overlays = [ unstable-overlay ]; }
-            ./modules/internationalisation.nix
-            ./modules/common-config.nix
-            ./configurations/default/configuration.nix
-          ];
-        };
-        wsl = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs unstable-overlay;
-            config_name = "wsl";
-          };
-          modules = [
-            { nixpkgs.overlays = [ unstable-overlay ]; }
-            ./modules/internationalisation.nix
-            ./modules/common-config.nix
-            ./configurations/wsl/configuration.nix
-          ];
-        };
+      nixosConfigurations = mkNixosConfigurations {
+        default = {};
+        wsl = {};
       };
     };
 }
