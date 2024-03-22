@@ -39,7 +39,7 @@ done
 extra_args="$*"
 
 rebuild_type="${rebuild_type-switch}"
-build_dir="${build_dir-"$NIXOS_BUILD_DIR"}"
+build_dir="${build_dir-"${NIXOS_BUILD_DIR-'/etc/nixos'}"}"
 configuration="${configuration-"$NIXOS_BUILD_CONFIGURATION"}"
 
 # cd into directory
