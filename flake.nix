@@ -39,7 +39,7 @@
             { nixpkgs.overlays = [ unstable-overlay ]; }
             ./modules/internationalisation.nix
             ./modules/common-config.nix
-            ./hosts/default/configuration.nix
+            ./configurations/default/configuration.nix
           ];
         };
         wsl = nixpkgs.lib.nixosSystem {
@@ -51,7 +51,7 @@
             { nixpkgs.overlays = [ unstable-overlay ]; }
             ./modules/internationalisation.nix
             ./modules/common-config.nix
-            ./hosts/wsl/configuration.nix
+            ./configurations/wsl/configuration.nix
           ];
         };
       };
