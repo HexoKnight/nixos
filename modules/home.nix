@@ -64,6 +64,7 @@ in {
         userEmail = "harvey.gream@gmail.com";
         includes = pkgs.lib.lists.singleton {
           contents = {
+            core.autocrlf = false;
             init.defaultbranch = "main";
             # for github desktop
             filter.lfs.required = "true";
