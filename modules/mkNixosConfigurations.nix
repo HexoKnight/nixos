@@ -17,7 +17,7 @@ nixpkgs.lib.attrsets.mapAttrs (config_name: extraOptions: nixpkgs.lib.nixosSyste
       { nixpkgs.overlays = [ unstable-overlay ]; }
       ../configurations/${config_name}/configuration.nix
       ./internationalisation.nix
-      ./common-config.nix
+      ./userhome-config.nix
     ];
   }
   // extraOptions

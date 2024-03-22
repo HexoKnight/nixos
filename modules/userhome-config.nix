@@ -2,13 +2,13 @@
 
 with lib;
 let
-    cfg = config.common-config;
+    cfg = config.userhome-config;
 in {
     imports = [
         inputs.home-manager.nixosModules.home-manager
     ];
 
-    options.common-config = {
+    options.userhome-config = {
         enable = mkEnableOption "common configuration";
         mutableUsers = mkOption {
             default = true;
@@ -66,7 +66,7 @@ in {
         }) cfg.users;
 
         home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
-        # home-manager.users = mkAliasAndWrapDefinitions (attrsets.mapAttrs (name: value: value.home-module)) (options.common-config.users);
+        # home-manager.users = mkAliasAndWrapDefinitions (attrsets.mapAttrs (name: value: value.home-module)) (options.userhome-config.users);
         home-manager.users = attrsets.mapAttrs (name: value: import ./home.nix ({ username = name; } // cfg.host // value)) cfg.users;
     };
 }

@@ -19,7 +19,7 @@ in {
 
   networking.hostName = "nixos";
 
-  common-config = {
+  userhome-config = {
     enable = true;
     host = {};
     users.${username} = {
