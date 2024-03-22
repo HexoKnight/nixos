@@ -7,7 +7,6 @@ in {
     ./hardware-configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
   ];
-  nixpkgs.overlays = [ unstable-overlay ];
 
   wsl.enable = true;
 

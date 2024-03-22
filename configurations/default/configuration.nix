@@ -9,7 +9,6 @@ in {
     inputs.home-manager.nixosModules.home-manager
     "${inputs.nixpkgs-unstable}/nixos/modules/services/networking/xrdp.nix"
   ];
-  nixpkgs.overlays = [ unstable-overlay ];
 
   # Bootloader.
   boot.loader.grub.enable = true;
