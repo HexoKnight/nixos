@@ -24,8 +24,12 @@ in {
         };
         users = mkOption {
             description = "users";
-            type = types.attrsOf (types.submodule {
+            type = types.attrsOf (types.submodule ({name, config, ...}: {
                 options = {
+                    username = mkOption {
+                        type = types.str;
+                        description = "the user's username (defaults to the attrset name)";
+                    };
                     cansudo = mkOption {
                         default = false;
                         type = types.bool;
@@ -46,7 +50,10 @@ in {
                     #     type = (import "${inputs.home-manager}/nixos/common.nix" { inherit config lib pkgs; }).options.home-manager.users.type.nestedTypes.elemType;
                     # };
                 };
-            });
+                config = {
+                    username = mkDefault name;
+                };
+            }));
         };
     };
 
@@ -54,7 +61,7 @@ in {
         nixpkgs.overlays = [ unstable-overlay ];
 
         users.mutableUsers = cfg.mutableUsers;
-        users.users = attrsets.mapAttrs (name: value: {
+        users.users = attrsets.mapAttrs (_: value: {
             extraGroups = value.extraGroups ++ (lists.optional value.cansudo "wheel");
             packages = with pkgs; lists.optionals value.hasRebuildCommand [
                 (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
@@ -67,6 +74,9 @@ in {
 
         home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
         # home-manager.users = mkAliasAndWrapDefinitions (attrsets.mapAttrs (name: value: value.home-module)) (options.userhome-config.users);
-        home-manager.users = attrsets.mapAttrs (name: value: import ./home.nix ({ username = name; } // cfg.host // value)) cfg.users;
+        home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
+            name = username;
+            value = import ./home.nix ({ inherit username; } // cfg.host // value);
+        }) cfg.users;
     };
 }
