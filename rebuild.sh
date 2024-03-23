@@ -127,7 +127,7 @@ if [ "$rebuild_type" != "test" ] && \
 
   # Commit all changes with the generation metadata
   echo "$current"
-  git commit -am "$current"
+  # git commit -am "$current"
 fi
 
 # Back to prev dir
