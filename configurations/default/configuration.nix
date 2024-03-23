@@ -3,11 +3,9 @@
 let
   username = "harvey";
 in {
-  disabledModules = [ "services/networking/xrdp.nix" ];
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
-    "${inputs.nixpkgs-unstable}/nixos/modules/services/networking/xrdp.nix"
   ];
 
   # Bootloader.
@@ -28,9 +26,6 @@ in {
   };
   services.xrdp = {
     enable = true;
-    package = pkgs.unstable.xrdp;
-    audio.enable = true;
-    audio.package = pkgs.unstable.pulseaudio-module-xrdp;
     defaultWindowManager = "startplasma-x11";
     openFirewall = true;
   };
