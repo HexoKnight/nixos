@@ -35,12 +35,8 @@ in {
     openFirewall = true;
   };
 
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.wireless.networks = {
-    TP-Link_7830 = {
-      psk = "ba9519617802dc29032dbd5ead2c05114ecf1d745364106f740d0e97d3aacca5";
-    };
-  };
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking.wireless.networks = {};
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
