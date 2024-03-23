@@ -29,6 +29,7 @@ in {
         "google-chrome"
       ];
       home.packages = with pkgs; [
+        # tools
         lshw
         usbutils
         pciutils
