@@ -5,7 +5,6 @@ let
 in {
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.home-manager
   ];
 
   # Bootloader.
@@ -57,25 +56,20 @@ in {
     #media-session.enable = true;
   };
 
-  users.mutableUsers = false;
-  users.groups = {
-    wheel = {};
-    users = {};
-  };
-
-  users.users.${username} = {
-    isNormalUser = true;
-    description = "Harvey Gream";
-    extraGroups = [ "wheel" ];
-    hashedPasswordFile = "${inputs.self}/secrets/hashed_password";
-
-    packages = with pkgs; [
-      (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
-
-      # required for the rebuild command
-      (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
-      unstable.nixVersions.nix_2_19
-    ];
+  userhome-config = {
+    enable = true;
+    mutableUsers = true;
+    host = {
+      desktop = true;
+    };
+    users.${username} = {
+      cansudo = true;
+      extraOptions = {
+        isNormalUser = true;
+        description = "Harvey Gream";
+        hashedPasswordFile = "${inputs.self}/secrets/hashed_password";
+      };
+    };
   };
 
   environment.variables = {
@@ -88,11 +82,6 @@ in {
 
   programs.ssh = {
     startAgent = true;
-  };
-
-  home-manager = {
-    extraSpecialArgs = {inherit inputs unstable-overlay;};
-    users.${username} = import "${inputs.self}/modules/home.nix";
   };
 
   fonts.fontconfig = {
