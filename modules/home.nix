@@ -9,7 +9,7 @@ in {
   options = {
   };
 
-  config = {
+  config = mkMerge [{
       # Home Manager needs a bit of information about you and the paths it should
       # manage.
       home = { inherit username homeDirectory; };
@@ -96,10 +96,10 @@ in {
       # Let Home Manager install and manage itself.
       programs.home-manager.enable = true;
     }
-    // (attrsets.optionalAttrs (desktop) {
+    (attrsets.optionalAttrs (desktop) {
       home.packages = with pkgs; [
         google-chrome
         github-desktop
       ];
-    });
+    })];
 }
