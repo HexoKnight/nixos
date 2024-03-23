@@ -45,10 +45,6 @@ in {
             default = [];
             description = "the user's auxiliary groups";
           };
-          # home-module = mkOption {
-          #     default = import "${inputs.self}/modules/home.nix" { username = "nixos"; };
-          #     type = (import "${inputs.home-manager}/nixos/common.nix" { inherit config lib pkgs; }).options.home-manager.users.type.nestedTypes.elemType;
-          # };
         };
         config = {
           username = mkDefault name;
@@ -73,7 +69,6 @@ in {
     }) cfg.users;
 
     home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
-    # home-manager.users = mkAliasAndWrapDefinitions (attrsets.mapAttrs (name: value: value.home-module)) (options.userhome-config.users);
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
       value = import ./home.nix ({ inherit username; } // cfg.host // value);
