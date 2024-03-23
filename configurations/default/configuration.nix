@@ -5,7 +5,17 @@ let
 in {
   imports = [
     ./hardware-configuration.nix
+    inputs.sops-nix.nixosModules.sops
   ];
+
+  sops.defaultSopsFile = "${inputs.self}/secrets.json";
+  sops.defaultSopsFormat = "json";
+
+  sops.age.keyFile = "${inputs.self}/agekey";
+
+  sops.secrets.hashedPassword = {
+    neededForUsers = true;
+  };
 
   # Bootloader.
   boot.loader.grub.enable = true;
@@ -58,7 +68,7 @@ in {
 
   userhome-config = {
     enable = true;
-    mutableUsers = true;
+    mutableUsers = false;
     host = {
       desktop = true;
     };
@@ -67,7 +77,7 @@ in {
       extraOptions = {
         isNormalUser = true;
         description = "Harvey Gream";
-        hashedPasswordFile = "${inputs.self}/secrets/hashed_password";
+        hashedPasswordFile = config.sops.secrets.hashedPassword.path;
       };
     };
   };

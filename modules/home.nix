@@ -36,6 +36,8 @@ in {
         psmisc
         ethtool
 
+        ssh-to-age
+
         (vim-full.customize {
           name = "vim";
           # vimrcFile = inputs.dotfiles + "/vimrc";

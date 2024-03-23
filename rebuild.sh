@@ -66,6 +66,12 @@ read_password () {
   fi
 }
 
+if [ ! -f agekey ]; then
+  echo 'age key not found, generating from ssh...'
+  read_password
+  SSH_TO_AGE_PASSPHRASE="$passkey" nix run nixpkgs#ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o agekey
+fi
+
 if ! ssh-add -L; then
   read_password
   EVALVAR=$(cat <<-EOF
