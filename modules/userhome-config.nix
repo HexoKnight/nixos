@@ -40,10 +40,10 @@ in {
             type = types.bool;
             description = "whether the user gets a nice rebuild command";
           };
-          extraGroups = mkOption {
-            type = types.listOf types.str;
-            default = [];
-            description = "the user's auxiliary groups";
+          extraOptions = mkOption {
+            type = types.attrs;
+            default = {};
+            description = "extra options passed to users.users.<name>";
           };
         };
         config = {
@@ -57,8 +57,9 @@ in {
     nixpkgs.overlays = [ unstable-overlay ];
 
     users.mutableUsers = cfg.mutableUsers;
-    users.users = attrsets.mapAttrs (_: value: {
-      extraGroups = value.extraGroups ++ (lists.optional value.cansudo "wheel");
+    users.users = attrsets.mapAttrs (_: value: mkMerge [{
+      name = value.username;
+      extraGroups = lists.optional value.cansudo "wheel";
       packages = with pkgs; lists.optionals value.hasRebuildCommand [
         (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
 
@@ -66,7 +67,7 @@ in {
         (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
         unstable.nixVersions.nix_2_19
       ];
-    }) cfg.users;
+    } value.extraOptions]) cfg.users;
 
     home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
