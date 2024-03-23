@@ -59,9 +59,15 @@ if [ ! -v SSH_AUTH_SOCK ]; then
   exit 1
 fi
 
+read_password () {
+  if [ ! -v passkey ]; then
+    read -s -p "Password: " passkey
+    echo
+  fi
+}
+
 if ! ssh-add -L; then
-  read -s -p "Password: " passkey
-  echo
+  read_password
   EVALVAR=$(cat <<-EOF
   case \$* in
     Bad*)
@@ -75,10 +81,7 @@ EOF
 fi
 
 if ! sudo -vn &>/dev/null; then
-  if [ ! -v passkey ]; then
-    read -s -p "Password: " passkey
-    echo
-  fi
+  read_password
   export EVALVAR="echo $passkey"
   export SUDO_ASKPASS="$(which evalvar)"
   sudoarg="-A SSH_AUTH_SOCK=\"$SSH_AUTH_SOCK\""
