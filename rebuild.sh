@@ -69,7 +69,7 @@ if [ ! -v show_diff ]; then
 fi
 if [ "$show_diff" == "true" ]; then
   set +e
-  diff -r "$NIXOS_CURRENT_SYSTEM_BUILD_DIR/" ./ --exclude=".git" --color
+  diff -r /etc/nixos-current-system-source ./ --exclude=".git" --color
   set -e
 fi
 

@@ -87,8 +87,10 @@ in {
     # so they'll just fail harmlessly when run if there's nothing there.
     # To be entirely honest I'd rather this just be impure but oh well...
     NIXOS_BUILD_DIR = "/home/${username}/.nixos";
-    NIXOS_CURRENT_SYSTEM_BUILD_DIR = inputs.self;
     NIXOS_BUILD_CONFIGURATION = config_name;
+  };
+  environment.etc = {
+    nixos-current-system-source.source = inputs.self;
   };
 
   programs.ssh = {
