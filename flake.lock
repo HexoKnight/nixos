@@ -3,11 +3,11 @@
     "dotfiles": {
       "flake": false,
       "locked": {
-        "lastModified": 1710456284,
-        "narHash": "sha256-Zq6+LtCJcu6zq4iYzRH6szzgd9i0dMPtm43iOYXZb/c=",
+        "lastModified": 1711293623,
+        "narHash": "sha256-6uRV+E8vpJYZAi2bRJK1MuJ9fAXg8yTMjuBBveGtWzw=",
         "ref": "refs/heads/main",
-        "rev": "fd4421f9ccbc868cae7e4313a89a944f4c32d63e",
-        "revCount": 5,
+        "rev": "cb09c32a461350355422e171b8be22e724b8def4",
+        "revCount": 10,
         "type": "git",
         "url": "ssh://git@github.com/HexoKnight/dotfiles"
       },
