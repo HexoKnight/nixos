@@ -59,18 +59,12 @@ pushd "$build_dir" >/dev/null
 # Autoformat nix files
 # alejandra . >/dev/null
 
-# show changes
 if [ ! -v show_diff ]; then
 	show_diff='false'
   if [ "$rebuild_type" != "dry-activate" ] && \
      [ "$rebuild_type" != "dry-build" ]; then
     show_diff='true'
   fi
-fi
-if [ "$show_diff" == "true" ]; then
-  set +e
-  diff -r /etc/nixos-current-system-source ./ --exclude=".git" --color
-  set -e
 fi
 
 if [ ! -v SSH_AUTH_SOCK ]; then
@@ -124,6 +118,12 @@ if [ -v update_flakes ]; then
 	update_flakes=""
   fi
   sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" nix flake update $update_flakes $nixoptions
+fi
+
+if [ "$show_diff" == "true" ]; then
+  set +e
+  diff -r /etc/nixos-current-system-source ./ --exclude=".git" --color
+  set -e
 fi
 
 # track all non-ignored files to ensure new files are picked up by nixos-rebuild
