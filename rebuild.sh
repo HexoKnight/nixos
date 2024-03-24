@@ -60,7 +60,7 @@ pushd "$build_dir" >/dev/null
 # alejandra . >/dev/null
 
 if [ ! -v show_diff ]; then
-	show_diff='false'
+  show_diff='false'
   if [ "$rebuild_type" != "dry-activate" ] && \
      [ "$rebuild_type" != "dry-build" ]; then
     show_diff='true'
@@ -112,7 +112,7 @@ fi
 if [ -v update_flakes ]; then
   echo "Updating Flakes..."
   if [ "$update_flakes" == " all" ]; then
-	update_flakes=""
+    update_flakes=""
   fi
   sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update $update_flakes
 fi
