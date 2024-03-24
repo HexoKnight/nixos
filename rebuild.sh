@@ -102,14 +102,11 @@ fi
 
 export NIX_CONFIG="$NIX_CONFIG"$'\n''warn-dirty = false'
 
-nixoptions=""
-
 if ! sudo -vn &>/dev/null; then
   read_password
   export EVALVAR="echo $passkey"
   export SUDO_ASKPASS="$(which evalvar)"
   sudoarg="-A"
-  nixoptions="$nixoptions -I \"ssh-auth-sock=$SSH_AUTH_SOCK\" -I \"ssh-config-file=$HOME/.ssh/config\""
 fi
 
 if [ -v update_flakes ]; then
@@ -117,7 +114,7 @@ if [ -v update_flakes ]; then
   if [ "$update_flakes" == " all" ]; then
 	update_flakes=""
   fi
-  sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" nix flake update $update_flakes $nixoptions
+  sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update $update_flakes
 fi
 
 if [ "$show_diff" == "true" ]; then
@@ -132,8 +129,7 @@ git add .
 echo "NixOS Rebuilding..."
 
 # Rebuild, output simplified errors, log tracebacks
-sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" nixos-rebuild $rebuild_type \
-  --flake ".#$configuration" $nixoptions
+sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK=\"$SSH_AUTH_SOCK\" nixos-rebuild $rebuild_type --flake ".#$configuration"
   #\
   #|& tee nixos-rebuild.log 2>/dev/null ||
   #(cat nixos-rebuild.log | grep -- color error && false)
