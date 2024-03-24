@@ -6,7 +6,7 @@
 # exit on any command returning a non-zero status
 set -e
 
-ARGS=$(getopt --options "t:d:c:u:" --longoptions "type:,directory:configuration:update:" -- "${@}") || exit
+ARGS=$(getopt --options "t:d:c:u:" --longoptions "type:,directory:,configuration:,update:,diff,no-diff" -- "${@}") || exit
 eval "set -- ${ARGS}"
 
 while true; do
@@ -26,6 +26,14 @@ while true; do
     (-u | --update)
       update_flakes+=" $2"
       shift 2
+    ;;
+    (--diff)
+      show_diff='true'
+      shift 1
+    ;;
+    (--no-diff)
+      show_diff='false'
+      shift 1
     ;;
     (--)
       shift
@@ -52,7 +60,18 @@ pushd "$build_dir" >/dev/null
 # alejandra . >/dev/null
 
 # show changes
-# git diff -U0 *.nix
+if [ ! -v show_diff ]; then
+	show_diff='false'
+  if [ "$rebuild_type" != "dry-activate" ] && \
+     [ "$rebuild_type" != "dry-build" ]; then
+    show_diff='true'
+  fi
+fi
+if [ "$show_diff" == "true" ]; then
+  set +e
+  diff -r "$NIXOS_CURRENT_SYSTEM_BUILD_DIR/" ./ --exclude=".git" --color
+  set -e
+fi
 
 if [ ! -v SSH_AUTH_SOCK ]; then
   echo ssh-agent not running cannot continue
