@@ -86,21 +86,24 @@ EOF
   ) SSH_ASKPASS_REQUIRE="force" SSH_ASKPASS="evalvar" ssh-add
 fi
 
+export NIX_CONFIG="$NIX_CONFIG"$'\n''warn-dirty = false'
+
+nixoptions=""
+
 if ! sudo -vn &>/dev/null; then
   read_password
   export EVALVAR="echo $passkey"
   export SUDO_ASKPASS="$(which evalvar)"
-  sudoarg="-A SSH_AUTH_SOCK=\"$SSH_AUTH_SOCK\""
-  sudosshoptions="-I \"ssh-auth-sock=$SSH_AUTH_SOCK\" -I \"ssh-config-file=$HOME/.ssh/config\""
+  sudoarg="-A"
+  nixoptions="$nixoptions -I \"ssh-auth-sock=$SSH_AUTH_SOCK\" -I \"ssh-config-file=$HOME/.ssh/config\""
 fi
 
 if [ -v update_flakes ]; then
   echo "Updating Flakes..."
   if [ "$update_flakes" == " all" ]; then
-    sudo $sudoarg SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update -I "ssh-auth-sock=$SSH_AUTH_SOCK" -I "ssh-config-file=$HOME/.ssh/config"
-  else
-    sudo $sudoarg SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update $update_flakes -I "ssh-auth-sock=$SSH_AUTH_SOCK" -I "ssh-config-file=$HOME/.ssh/config"
+	update_flakes=""
   fi
+  sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" nix flake update $update_flakes $nixoptions
 fi
 
 # track all non-ignored files to ensure new files are picked up by nixos-rebuild
@@ -109,10 +112,8 @@ git add .
 echo "NixOS Rebuilding..."
 
 # Rebuild, output simplified errors, log tracebacks
-sudo $sudoarg nixos-rebuild $rebuild_type \
-  --flake ".#$configuration" $sudosshoptions \
-  -I "ssh-auth-sock=$SSH_AUTH_SOCK" \
-  -I "ssh-config-file=$HOME/.ssh/config"
+sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" nixos-rebuild $rebuild_type \
+  --flake ".#$configuration" $nixoptions
   #\
   #|& tee nixos-rebuild.log 2>/dev/null ||
   #(cat nixos-rebuild.log | grep -- color error && false)
