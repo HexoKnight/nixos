@@ -85,10 +85,11 @@ read_password () {
   fi
 }
 
-if [ ! -f agekey ]; then
+if [ ! -f ~/.config/sops/agekey ]; then
   echo 'age key not found, generating from ssh...'
+  mkdir -p ~/.config/sops/
   read_password
-  SSH_TO_AGE_PASSPHRASE="$passkey" nix run nixpkgs#ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o agekey
+  SSH_TO_AGE_PASSPHRASE="$passkey" nix run nixpkgs#ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o ~/.config/sops/agekey
 fi
 
 if ! ssh-add -L; then

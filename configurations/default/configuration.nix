@@ -11,7 +11,7 @@ in {
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
   sops.defaultSopsFormat = "json";
 
-  sops.age.keyFile = "${inputs.self}/agekey";
+  sops.age.keyFile = "/home/${username}/.config/sops/agekey";
 
   sops.secrets.hashedPassword = {
     neededForUsers = true;
