@@ -1,4 +1,4 @@
-{ username, desktop, ... }:
+{ username, desktop, personal-gaming, ... }:
 
 { config, lib, pkgs, inputs, unstable-overlay, ... }:
 
@@ -15,6 +15,7 @@ in {
       nixpkgs.overlays = [ unstable-overlay ];
       nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
         "google-chrome"
+        "discord"
       ];
 
       # This value determines the Home Manager release that your configuration is
@@ -100,6 +101,14 @@ in {
       home.packages = with pkgs; [
         google-chrome
         github-desktop
+      ];
+    })
+    (attrsets.optionalAttrs (personal-gaming) {
+      home.packages = with pkgs; [
+        (discord.override {
+          withOpenASAR = true;
+          withVencord = true;
+        })
       ];
     })];
 }

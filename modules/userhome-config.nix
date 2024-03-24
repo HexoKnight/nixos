@@ -41,6 +41,12 @@ in {
             type = types.bool;
             description = "whether the user gets a nice rebuild command";
           };
+          personal-gaming = mkOption {
+            default = false;
+            description = "whether the user should have personal/gaming applications";
+            type = types.bool;
+            apply = val: assert (val -> cfg.host.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
+          };
           extraOptions = mkOption {
             type = types.attrs;
             default = {};

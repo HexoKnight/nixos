@@ -74,6 +74,7 @@ in {
     };
     users.${username} = {
       cansudo = true;
+      personal-gaming = true;
       extraOptions = {
         isNormalUser = true;
         description = "Harvey Gream";
