@@ -10,11 +10,12 @@ in {
   };
 
   config = mkMerge [{
-      # Home Manager needs a bit of information about you and the paths it should
-      # manage.
       home = { inherit username homeDirectory; };
 
       nixpkgs.overlays = [ unstable-overlay ];
+      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+        "google-chrome"
+      ];
 
       # This value determines the Home Manager release that your configuration is
       # compatible with. This helps avoid breakage when a new Home Manager release
@@ -25,9 +26,6 @@ in {
       # release notes.
       home.stateVersion = "23.11"; # Please read the comment before changing.
 
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
-        "google-chrome"
-      ];
       home.packages = with pkgs; [
         # tools
         lshw
