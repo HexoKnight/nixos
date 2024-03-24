@@ -28,6 +28,7 @@ in {
         options = {
           username = mkOption {
             type = types.str;
+            default = name;
             description = "the user's username (defaults to the attrset name)";
           };
           cansudo = mkOption {
@@ -47,7 +48,6 @@ in {
           };
         };
         config = {
-          username = mkDefault name;
         };
       }));
     };
