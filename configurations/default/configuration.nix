@@ -112,8 +112,17 @@ in {
     (nerdfonts.override { fonts = [ "RobotoMono" ]; })
   ];
 
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+      "steam" "steam-original" "steam-run"
+    ];
   environment.systemPackages = with pkgs; [
   ];
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
 
   environment.etc."dual-function-keys.yaml".text = ''
     MAPPINGS:
