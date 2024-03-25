@@ -6,6 +6,7 @@ in {
   imports = [
     ./hardware-configuration.nix
     inputs.sops-nix.nixosModules.sops
+    (import ./syncthing.nix { inherit username; })
   ];
 
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
