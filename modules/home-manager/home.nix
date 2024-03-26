@@ -1,4 +1,4 @@
-{ username, desktop, personal-gaming, ... }:
+{ username, persistence, desktop, personal-gaming, ... }:
 
 { config, lib, pkgs, inputs, unstable-overlay, ... }:
 
@@ -6,6 +6,10 @@ with lib;
 let
   homeDirectory = "/home/" + username;
 in {
+  imports = [
+    inputs.impermanence.nixosModules.home-manager.impermanence
+  ];
+
   options = {
   };
 
@@ -97,6 +101,17 @@ in {
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
   }
+  (attrsets.optionalAttrs (persistence) {
+    home.persistence."/persist/home/${username}" = {
+      allowOther = true;
+      directories = [
+        "Documents"
+        ".nixos"
+        ".config"
+        ".ssh"
+      ];
+    };
+  })
   (attrsets.optionalAttrs (desktop) {
     home.packages = with pkgs; [
       google-chrome

@@ -2,67 +2,55 @@
 
 with lib;
 let
-  cfg = config.userhome-config;
+  users = config.userhome-config;
 in {
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  options.userhome-config = {
-    enable = mkEnableOption "common configuration";
-    mutableUsers = mkOption {
-      default = true;
-      description = "literally just users.mutableUsers";
-      type = types.bool;
-    };
-    host = {
-      desktop = mkOption {
-        default = false;
-        description = "whether the host has a desktop";
-        type = types.bool;
+  options.userhome-config = mkOption {
+    default = {};
+    description = "users to configure";
+    type = let host-config = config.host-config; in types.attrsOf (types.submodule ({name, config, ...}: {
+      options = {
+        username = mkOption {
+          type = types.str;
+          default = name;
+          description = "the user's username (defaults to the attrset's name)";
+        };
+        cansudo = mkOption {
+          default = false;
+          type = types.bool;
+          description = "whether the user can use sudo";
+        };
+        persistence = mkEnableOption "whether to enable persistence";
+        hasRebuildCommand = mkOption {
+          default = true;
+          type = types.bool;
+          description = "whether the user gets a nice rebuild command";
+        };
+        personal-gaming = mkOption {
+          default = false;
+          description = "whether the user should have personal/gaming applications";
+          type = types.bool;
+          apply = val: assert (val -> host-config.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
+        };
+        extraOptions = mkOption {
+          type = types.attrs;
+          default = {};
+          description = "extra options passed to users.users.<name>";
+        };
       };
-    };
-    users = mkOption {
-      description = "users";
-      type = types.attrsOf (types.submodule ({name, config, ...}: {
-        options = {
-          username = mkOption {
-            type = types.str;
-            default = name;
-            description = "the user's username (defaults to the attrset name)";
-          };
-          cansudo = mkOption {
-            default = false;
-            type = types.bool;
-            description = "whether the user can use sudo";
-          };
-          hasRebuildCommand = mkOption {
-            default = true;
-            type = types.bool;
-            description = "whether the user gets a nice rebuild command";
-          };
-          personal-gaming = mkOption {
-            default = false;
-            description = "whether the user should have personal/gaming applications";
-            type = types.bool;
-            apply = val: assert (val -> cfg.host.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
-          };
-          extraOptions = mkOption {
-            type = types.attrs;
-            default = {};
-            description = "extra options passed to users.users.<name>";
-          };
-        };
-        config = {
-        };
-      }));
-    };
+      config = {
+      };
+    }));
   };
 
-  config = mkIf (cfg.enable) {
+  config = mkIf (users != {}) {
     nixpkgs.overlays = [ unstable-overlay ];
+    # required for persistence
+    programs.fuse.userAllowOther = true;
 
-    users.mutableUsers = cfg.mutableUsers;
     users.users = attrsets.mapAttrs (_: value: mkMerge [{
       name = value.username;
       extraGroups = lists.optional value.cansudo "wheel";
@@ -73,12 +61,12 @@ in {
         (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
         unstable.nixVersions.nix_2_19
       ];
-    } value.extraOptions]) cfg.users;
+    } value.extraOptions]) users;
 
     home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
-      value = import ./home.nix ({ inherit username; } // cfg.host // value);
-    }) cfg.users;
+      value = import ./home-manager/home.nix ({ inherit username; } // config.host-config // value);
+    }) users;
   };
 }

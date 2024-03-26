@@ -56,12 +56,6 @@ in {
     files = [
       "/etc/machine-id"
     ];
-    users.harvey = {
-      directories = [
-        ".ssh"
-        ".config"
-      ];
-    };
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -108,20 +102,18 @@ in {
     #media-session.enable = true;
   };
 
-  userhome-config = {
-    enable = true;
+  host-config = {
     mutableUsers = false;
-    host = {
-      desktop = true;
-    };
-    users.${username} = {
-      cansudo = true;
-      personal-gaming = true;
-      extraOptions = {
-        isNormalUser = true;
-        description = "Harvey Gream";
-        hashedPasswordFile = config.sops.secrets.hashedPassword.path;
-      };
+    desktop = true;
+  };
+  userhome-config.${username} = {
+    cansudo = true;
+    persistence = true;
+    personal-gaming = true;
+    extraOptions = {
+      isNormalUser = true;
+      description = "Harvey Gream";
+      hashedPasswordFile = config.sops.secrets.hashedPassword.path;
     };
   };
 
