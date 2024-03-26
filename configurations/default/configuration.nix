@@ -56,6 +56,16 @@ in {
     files = [
       "/etc/machine-id"
     ];
+    users.${username} = {
+      directories = [
+        "Documents"
+        ".nixos"
+        "dotfiles"
+        ".vim"
+        ".config"
+        ".ssh"
+      ];
+    };
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

@@ -104,19 +104,20 @@ in {
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
   }
-  (attrsets.optionalAttrs (persistence) {
-    home.persistence."/persist/home/${username}" = {
-      allowOther = true;
-      directories = [
-        "Documents"
-        ".nixos"
-        "dotfiles"
-        ".vim"
-        ".config"
-        ".ssh"
-      ];
-    };
-  })
+  # the mount services are built but just don't get added for some god-forsaken reason
+  # (attrsets.optionalAttrs (persistence) {
+  #   home.persistence."/persist/home/${username}" = {
+  #     allowOther = true;
+  #     directories = [
+  #       "Documents"
+  #       ".nixos"
+  #       "dotfiles"
+  #       ".vim"
+  #       ".config"
+  #       ".ssh"
+  #     ];
+  #   };
+  # })
   (attrsets.optionalAttrs (desktop) {
     home.packages = with pkgs; [
       google-chrome
