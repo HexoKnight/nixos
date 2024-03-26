@@ -38,8 +38,11 @@ in {
       pciutils
       psmisc
       ethtool
-
       ssh-to-age
+
+
+      # programs
+      lf
 
       (vim-full.customize {
         name = "vim";
@@ -107,6 +110,8 @@ in {
       directories = [
         "Documents"
         ".nixos"
+        "dotfiles"
+        ".vim"
         ".config"
         ".ssh"
       ];
