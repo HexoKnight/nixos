@@ -1,10 +1,13 @@
-{ config, pkgs, inputs, unstable-overlay, config_name, ... }:
+{ config, lib, pkgs, inputs, unstable-overlay, config_name, ... }:
 
 let
   username = "harvey";
 in {
   imports = [
     ./hardware-configuration.nix
+    inputs.disko.nixosModules.default
+    (import ./disko.nix { device = "/dev/sda"; })
+    inputs.impermanence.nixosModules.impermanence
     inputs.sops-nix.nixosModules.sops
     (import ./syncthing.nix { inherit username; })
   ];
@@ -12,7 +15,7 @@ in {
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
   sops.defaultSopsFormat = "json";
 
-  sops.age.keyFile = "/home/${username}/.config/sops/agekey";
+  sops.age.keyFile = "/persist/home/${username}/.config/sops/agekey";
 
   sops.secrets.hashedPassword = {
     neededForUsers = true;
@@ -20,8 +23,46 @@ in {
 
   # Bootloader.
   boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
+  # boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
+  boot.initrd.postDeviceCommands = lib.mkAfter ''
+    mkdir /btrfs_tmp
+    mount /dev/root_vg/root /btrfs_tmp
+    if [[ -e /btrfs_tmp/root ]]; then
+        mkdir -p /btrfs_tmp/old_roots
+        timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%-d_%H:%M:%S")
+        mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
+    fi
+
+    delete_subvolume_recursively() {
+        IFS=$'\n'
+        for i in $(btrfs subvolume list -o "$1" | cut -f 9- -d ' '); do
+            delete_subvolume_recursively "/btrfs_tmp/$i"
+        done
+        btrfs subvolume delete "$1"
+    }
+
+    for i in $(find /btrfs_tmp/old_roots/ -maxdepth 1 -mtime +30); do
+        delete_subvolume_recursively "$i"
+    done
+
+    btrfs subvolume create /btrfs_tmp/root
+    umount /btrfs_tmp
+  '';
+
+  fileSystems."/persist".neededForBoot = true;
+  environment.persistence."/persist/system" = {
+    hideMounts = true;
+    files = [
+      "/etc/machine-id"
+    ];
+    users.harvey = {
+      directories = [
+        ".ssh"
+        ".config"
+      ];
+    };
+  };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.channel.enable = false; # only flakes :)
