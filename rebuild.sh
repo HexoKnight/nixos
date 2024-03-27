@@ -137,14 +137,9 @@ sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK=\"$SSH_AUTH_SOCK\" nixos-re
 if [ "$rebuild_type" != "test" ] && \
    [ "$rebuild_type" != "dry-activate" ] && \
    [ "$rebuild_type" != "dry-build" ]; then
-  echo "Committing to git..."
-
   # Get current generation metadata
   current=$(nixos-rebuild list-generations --flake . | grep current)
-
-  # Commit all changes with the generation metadata
   echo "$current"
-  # git commit -am "$current"
 fi
 
 # Back to prev dir
