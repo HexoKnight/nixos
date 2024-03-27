@@ -25,6 +25,7 @@ in {
   boot.loader.grub.enable = true;
   # boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
+  # straight from impermanence repo: https://github.com/nix-community/impermanence#btrfs-subvolumes
   boot.initrd.postDeviceCommands = lib.mkAfter ''
     mkdir /btrfs_tmp
     mount /dev/root_vg/root /btrfs_tmp
