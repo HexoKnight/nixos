@@ -3,9 +3,8 @@
 configurations:
 
 let
-  system = "x86_64-linux";
   unstable-overlay = final: prev: {
-    unstable = nixpkgs-unstable.legacyPackages.${system};
+    unstable = nixpkgs-unstable.legacyPackages.${prev.system};
   };
 in
 nixpkgs.lib.attrsets.mapAttrs (config_name: extraOptions: nixpkgs.lib.nixosSystem (
