@@ -43,6 +43,7 @@ in {
 
       # programs
       lf
+      fd
 
       (vim-full.customize {
         name = "vim";
