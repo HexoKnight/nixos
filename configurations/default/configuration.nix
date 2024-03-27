@@ -76,7 +76,7 @@ in {
 
   networking.hostName = "HARVEY-nixos";
   networking.interfaces.eno1.wakeOnLan = {
-    enable = false;
+    enable = true;
     policy = [ "magic" ];
   };
   services.xrdp = {
