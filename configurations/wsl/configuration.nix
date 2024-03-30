@@ -19,11 +19,10 @@ in {
 
   networking.hostName = "nixos";
 
-  userhome-config = {
-    enable = true;
-    host = {};
-    users.${username} = {
-      cansudo = true;
+  userhome-config.${username} = {
+    cansudo = true;
+    extraOptions = {
+      # isNormalUser = true;
     };
   };
 
