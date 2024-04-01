@@ -11,4 +11,9 @@
       impermanence = true;
     })
   ];
+
+  fileSystems."/windows" = {
+    device = "/dev/nvme0n1p3";
+    fsType = "ntfs3";
+  };
 }
