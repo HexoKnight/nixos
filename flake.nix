@@ -38,6 +38,7 @@
     {
       nixosConfigurations = mkNixosConfigurations {
         default = {};
+        dual-boot = {};
         wsl = {};
       };
     };

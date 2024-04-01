@@ -5,14 +5,10 @@
     ./hardware-configuration.nix
     (import ../../modules/desktop/configuration.nix {
       username = "harvey";
-      hostName = "HARVEY-nixos";
-      device = "/dev/sda";
+      hostName = "HARVEY";
+      device = "/dev/nvme0n1";
+      dual-boot = true;
       impermanence = true;
     })
   ];
-
-  networking.interfaces.eno1.wakeOnLan = {
-    enable = true;
-    policy = [ "magic" ];
-  };
 }
