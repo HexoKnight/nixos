@@ -130,6 +130,11 @@ in {
     programs.alacritty = {
       enable = true;
     };
+
+    home.pointerCursor = {
+      name = "Win10OS-cursors";
+      package = pkgs.callPackage "${inputs.self}/packages/Win10OS-cursors.nix" {};
+    };
   })
   (attrsets.optionalAttrs (personal-gaming) {
     home.packages = with pkgs; [
