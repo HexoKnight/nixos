@@ -126,6 +126,10 @@ in {
       google-chrome
       github-desktop
     ];
+
+    programs.alacritty = {
+      enable = true;
+    };
   })
   (attrsets.optionalAttrs (personal-gaming) {
     home.packages = with pkgs; [
