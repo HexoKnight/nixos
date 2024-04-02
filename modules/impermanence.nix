@@ -34,4 +34,9 @@
       "/etc/machine-id"
     ];
   };
+
+  # sudo message plays after every roboot otherwise
+  security.sudo.extraConfig = ''
+    Defaults  lecture="never"
+  '';
 }
