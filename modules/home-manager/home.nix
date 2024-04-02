@@ -9,7 +9,7 @@ in {
   imports = [
     inputs.impermanence.nixosModules.home-manager.impermanence
     inputs.nix-index-database.hmModules.nix-index
-  ];
+  ] ++ lists.optional desktop ./plasma.nix;
 
   options = {
   };
