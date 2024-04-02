@@ -111,13 +111,21 @@ in {
       directories = [
         "Documents"
         ".nixos"
+        ".ssh"
         "dotfiles"
         ".vim"
-        ".config/GitHub Desktop"
         ".config/sops"
         ".config/syncthing"
+        # applications
+        ".config/GitHub Desktop"
+        ".config/discord"
         ".config/Vencord"
-        ".ssh"
+        ".config/google-chrome"
+        {
+          directory = ".local/share/Steam";
+          method = "symlink";
+        }
+        ".config/unity3d"
       ];
     };
   })
