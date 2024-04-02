@@ -15,12 +15,19 @@
       cursorTheme = "Win10OS-cursors";
     };
     configFile = {
+      # extra cursor stuff
+      "kcminputrc"."Mouse"."cursorTheme".value = "Win10OS-cursors";
+      # fonts
       "kdeglobals"."General"."fixed".value = "Monospace,10,-1,5,50,0,0,0,0,0";
       "kdeglobals"."General"."font".value = "Sans Serif,10,-1,5,50,0,0,0,0,0";
       "kdeglobals"."General"."menuFont".value = "Sans Serif,10,-1,5,50,0,0,0,0,0";
       "kdeglobals"."General"."smallestReadableFont".value = "Sans Serif,8,-1,5,50,0,0,0,0,0";
       "kdeglobals"."General"."toolBarFont".value = "Sans Serif,10,-1,5,50,0,0,0,0,0";
       "kdeglobals"."WM"."activeFont".value = "Sans Serif,10,-1,5,50,0,0,0,0,0";
+
+      # night light
+      "kwinrc"."NightColor"."Active".value = true;
+      "kwinrc"."NightColor"."Mode".value = "Constant";
     };
   };
 }
