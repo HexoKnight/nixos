@@ -30,6 +30,9 @@
   fileSystems."/persist".neededForBoot = true;
   environment.persistence."/persist/system" = {
     hideMounts = true;
+    directories = [
+      "/etc/NetworkManager/system-connections"
+    ];
     files = [
       "/etc/machine-id"
     ];
