@@ -8,6 +8,7 @@ let
 in {
   imports = [
     inputs.impermanence.nixosModules.home-manager.impermanence
+    inputs.nix-index-database.hmModules.nix-index
   ];
 
   options = {
@@ -67,6 +68,8 @@ in {
         };
       })
     ];
+
+    programs.nix-index-database.comma.enable = true;
 
     programs.git = {
       enable = true;
