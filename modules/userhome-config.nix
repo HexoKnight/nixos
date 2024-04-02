@@ -29,6 +29,11 @@ in {
           type = types.bool;
           description = "whether the user gets a nice rebuild command";
         };
+        hasPersistCommand = mkOption {
+          default = true;
+          type = types.bool;
+          description = "whether the user gets a nice persist command";
+        };
         personal-gaming = mkOption {
           default = false;
           description = "whether the user should have personal/gaming applications";
@@ -60,6 +65,8 @@ in {
         # required for the rebuild command
         (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
         unstable.nixVersions.nix_2_19
+      ] ++ lists.optionals value.hasPersistCommand [
+        (writeShellScriptBin "persist" (builtins.readFile "${inputs.self}/persist.sh"))
       ];
     } value.extraOptions]) users;
 
