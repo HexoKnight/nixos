@@ -21,6 +21,8 @@ in {
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
       "google-chrome"
       "discord"
+      "code"
+      "vscode"
     ];
 
     # This value determines the Home Manager release that your configuration is
@@ -119,8 +121,11 @@ in {
         ".vim"
         ".config/sops"
         ".config/syncthing"
-        # applications
+      ] ++ lists.optionals desktop [
         ".config/GitHub Desktop"
+        ".config/Code"
+        ".vscode"
+      ] ++ lists.optionals personal-gaming [
         ".config/discord"
         ".config/Vencord"
         ".config/google-chrome"
@@ -140,6 +145,11 @@ in {
 
     programs.alacritty = {
       enable = true;
+    };
+
+    programs.vscode = {
+      enable = true;
+      package = pkgs.vscode.fhs;
     };
 
     home.pointerCursor = {
