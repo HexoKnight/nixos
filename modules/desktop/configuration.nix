@@ -21,6 +21,8 @@
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
   sops.defaultSopsFormat = "json";
 
+  sops.gnupg.sshKeyPaths = [];
+  sops.age.sshKeyPaths = [];
   sops.age.keyFile = (if impermanence then "/persist" else "") + "/home/${username}/.config/sops/agekey";
 
   sops.secrets.hashedPassword = {
