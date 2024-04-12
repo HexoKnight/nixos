@@ -129,7 +129,7 @@ git add .
 echo "NixOS Rebuilding..."
 
 # Rebuild, output simplified errors, log tracebacks
-sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK=\"$SSH_AUTH_SOCK\" nixos-rebuild $rebuild_type --flake ".#$configuration"
+sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nixos-rebuild $rebuild_type --flake ".#$configuration"
   #\
   #|& tee nixos-rebuild.log 2>/dev/null ||
   #(cat nixos-rebuild.log | grep -- color error && false)
