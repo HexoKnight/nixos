@@ -47,7 +47,7 @@
     in
     {
       nixosConfigurations = mkNixosConfigurations {
-        default = {};
+        desktop = {};
         dual-boot = {};
         wsl = {};
       };
