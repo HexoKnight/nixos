@@ -1,6 +1,7 @@
 { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
 
 configurations:
+extraModules:
 
 let
   unstable-overlay = final: prev: {
@@ -18,7 +19,7 @@ nixpkgs.lib.attrsets.mapAttrs (config_name: extraOptions: nixpkgs.lib.nixosSyste
       ./internationalisation.nix
       ./host-config.nix
       ./userhome-config.nix
-    ];
+    ] ++ extraModules;
   }
   // extraOptions
 )) configurations

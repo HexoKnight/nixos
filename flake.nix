@@ -50,6 +50,7 @@
         desktop = {};
         dual-boot = {};
         wsl = {};
-      };
+      } [
+      ];
     };
 }
