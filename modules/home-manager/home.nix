@@ -129,6 +129,8 @@ in {
         ".config/discord"
         ".config/Vencord"
         ".config/google-chrome"
+        # cache for logged in accounts and stuff
+        ".cache/google-chrome"
         {
           directory = ".local/share/Steam";
           method = "symlink";
