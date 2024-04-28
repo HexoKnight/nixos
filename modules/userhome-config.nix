@@ -70,7 +70,10 @@ in {
       ];
     } value.extraOptions]) users;
 
-    home-manager.extraSpecialArgs = {inherit inputs unstable-overlay;};
+    home-manager.extraSpecialArgs = {
+      inherit inputs unstable-overlay;
+      system-config = config;
+    };
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
       value = import ./home-manager/home.nix ({ inherit username; } // config.host-config // value);
