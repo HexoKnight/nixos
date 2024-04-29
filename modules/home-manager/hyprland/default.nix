@@ -133,8 +133,8 @@ with lib; {
       "$mainMod" = "SUPER";
       bind = [
         # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-        "$mainMod, Q, exec, $TERMINAL"
-        "$mainMod, C, killactive, "
+        "$mainMod, Q, killactive, "
+        "$mainMod, T, exec, ${config.home.sessionVariables.TERMINAL}"
         "$mainMod, M, exit, "
         "$mainMod, E, exec, lf"
         "$mainMod, V, togglefloating, "
