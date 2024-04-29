@@ -32,6 +32,7 @@
     hideMounts = true;
     directories = [
       "/etc/NetworkManager/system-connections"
+      "/var/lib/systemd/timers"
     ];
     files = [
       "/etc/machine-id"
