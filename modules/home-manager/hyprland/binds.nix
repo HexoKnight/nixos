@@ -9,7 +9,6 @@
 
       "$mainMod" = "SUPER";
       bind = [
-        # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
         "$mainMod, Q, killactive, "
         "$mainMod, T, exec, ${config.home.sessionVariables.TERMINAL}"
         "$mainMod, M, exit, "
@@ -18,7 +17,6 @@
         "$mainMod, R, exec, rofi -show run"
         "$mainMod SHIFT, R, exec, rofi -show drun"
 
-        # Move focus with mainMod + arrow keys
         "$mainMod, H, movefocus, l"
         "$mainMod, J, movefocus, d"
         "$mainMod, K, movefocus, u"
@@ -36,14 +34,24 @@
         "$mainMod, tab, workspace, previous"
         "ALT, tab, workspace, previous"
       ]
+
+      ++ (let
+        brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+      in [
+        ", XF86KbdBrightnessUp,   exec, ${brightnessctl} -d *::kbd_backlight s +1"
+        ", XF86KbdBrightnessDown, exec, ${brightnessctl} -d *::kbd_backlight s 1-"
+        ", XF86MonBrightnessUp,   exec, ${brightnessctl} s +5%"
+        ", XF86MonBrightnessDown, exec, ${brightnessctl} s 5%-"
+      ])
+
       ++ (let
         swayosd = "${pkgs.swayosd}/bin/swayosd";
       in [
-        # volume
         ", XF86AudioRaiseVolume, exec, ${swayosd} --output-volume raise"
         ", XF86AudioLowerVolume, exec, ${swayosd} --output-volume lower"
         ", XF86AudioMute,        exec, ${swayosd} --output-volume mute-toggle"
       ])
+
       ++ builtins.concatLists (builtins.genList (
         x:
         let
