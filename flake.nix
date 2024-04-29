@@ -35,6 +35,20 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    hyprland = {
+      url = "github:hyprwm/Hyprland/v0.39.0";
+      # maybe when nixpgs is updated but rn it's too out of date
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
+    hycov = {
+      url = "github:DreamMaoMao/hycov/0.39.0.1";
+      inputs.hyprland.follows = "hyprland";
+    };
+
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,6 +65,12 @@
         dual-boot = {};
         wsl = {};
       } [
+        {
+          nix.settings = {
+            substituters = ["https://hyprland.cachix.org"];
+            trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+          };
+        }
       ];
     };
 }

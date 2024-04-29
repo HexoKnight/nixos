@@ -62,10 +62,15 @@
 
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-  environment.plasma5.excludePackages = with pkgs.libsForQt5; [
-    oxygen
-  ];
+  # services.xserver.desktopManager.plasma5.enable = true;
+  # environment.plasma5.excludePackages = with pkgs.libsForQt5; [
+  #   oxygen
+  # ];
+
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  };
 
   # Enable sound with pipewire.
   sound.enable = true;
