@@ -44,7 +44,10 @@ with lib; {
     settings = with pkgs; {
       monitor = ",preferred,auto,1";
 
-      env = [
+      env = (attrsets.mapAttrsToList (
+          name: value: name + "," + builtins.toString value
+        ) config.home.sessionVariables)
+      ++ [
         # idk if this is necessary
         # "XCURSOR_SIZE,24"
       ];
