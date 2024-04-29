@@ -59,6 +59,8 @@ with lib; {
         "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
 
+        no_cursor_warps = true;
+
         layout = "dwindle";
 
         # Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
@@ -69,7 +71,7 @@ with lib; {
         kb_layout = system-config.services.xserver.layout;
         kb_variant = system-config.services.xserver.xkbVariant;
 
-        follow_mouse = 1;
+        follow_mouse = 3;
         mouse_refocus = false;
 
         touchpad = {
@@ -123,6 +125,7 @@ with lib; {
       misc = {
         force_default_wallpaper = -1;
         disable_hyprland_logo = true;
+        hide_cursor_on_key_press = true;
       };
 
       binds = {
