@@ -141,7 +141,9 @@ in {
   })
   (attrsets.optionalAttrs (desktop) {
     home.packages = with pkgs; [
-      google-chrome
+      (google-chrome.override {
+        commandLineArgs = "--incognito --check-for-update-interval 604800";
+      })
       github-desktop
     ];
 
