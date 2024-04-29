@@ -1,7 +1,10 @@
+{ disable-touchpad, ... }@home-inputs:
+
 { config, system-config, lib, pkgs, inputs, ... }:
 
 with lib; {
-  imports = [ ./main-settings.nix ./binds.nix ];
+  imports = [ ./main-settings.nix ./binds.nix ]
+    ++ lists.optional (disable-touchpad != null) (import ./toggle-touchpad.nix disable-touchpad);
 
   home.packages = with pkgs; [
     kitty

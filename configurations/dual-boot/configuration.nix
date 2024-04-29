@@ -12,6 +12,8 @@
     })
   ];
 
+  host-config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
+
   fileSystems."/c:" = {
     device = "/dev/nvme0n1p3";
     fsType = "ntfs3";

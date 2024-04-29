@@ -1,4 +1,4 @@
-{ username, persistence, desktop, personal-gaming, ... }:
+{ username, persistence, desktop, personal-gaming, disable-touchpad, ... }@home-inputs:
 
 { config, lib, pkgs, inputs, unstable-overlay, ... }:
 
@@ -9,7 +9,7 @@ in {
   imports = [
     inputs.impermanence.nixosModules.home-manager.impermanence
     inputs.nix-index-database.hmModules.nix-index
-  ] ++ lists.optionals desktop [ ./plasma.nix ./hyprland ];
+  ] ++ lists.optionals desktop [ ./plasma.nix (import ./hyprland home-inputs ) ];
 
   options = {
   };
