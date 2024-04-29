@@ -48,8 +48,6 @@ with lib; {
           name: value: name + "," + builtins.toString value
         ) config.home.sessionVariables)
       ++ [
-        # idk if this is necessary
-        # "XCURSOR_SIZE,24"
       ];
 
       general = {

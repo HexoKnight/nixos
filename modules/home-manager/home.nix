@@ -168,6 +168,7 @@ in {
 
     home.pointerCursor = {
       name = "Win10OS-cursors";
+      size = 24;
       package = pkgs.callPackage "${inputs.self}/packages/Win10OS-cursors.nix" {};
     };
   })
