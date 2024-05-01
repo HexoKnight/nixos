@@ -43,11 +43,6 @@ in {
     startAgent = true;
   };
 
-  home-manager = {
-    # extraSpecialArgs = {inherit inputs unstable-overlay;};
-    # users.nixos = import "${inputs.self}/modules/home.nix";
-  };
-
   environment.systemPackages = with pkgs; [
   ];
 
