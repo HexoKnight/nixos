@@ -8,7 +8,12 @@
       };
 
       "$mainMod" = "SUPER";
+      bindr = [
+        "$mainMod, grave, exec, hyprctl keyword input:follow_mouse 3"
+      ];
       bind = [
+        "$mainMod, grave, exec, hyprctl keyword input:follow_mouse 1"
+
         "$mainMod, Q, killactive, "
         "$mainMod, T, exec, ${config.home.sessionVariables.TERMINAL}"
         "$mainMod, M, exit, "
