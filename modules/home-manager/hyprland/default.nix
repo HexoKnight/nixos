@@ -24,14 +24,10 @@ with lib; {
       package = pkgs.gnome.gnome-themes-extra;
     };
     gtk3.extraConfig = {
-      Setting = ''
-        gtk-application-prefer-dark-theme=1
-      '';
+      gtk-application-prefer-dark-theme = 1;
     };
     gtk4.extraConfig = {
-      Setting = ''
-        gtk-application-prefer-dark-theme=1
-      '';
+      gtk-application-prefer-dark-theme = 1;
     };
   };
 
