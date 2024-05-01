@@ -109,6 +109,10 @@
       hashedPasswordFile = config.sops.secrets.hashedPassword.path;
     };
   };
+  # for adb
+  services.udev.packages = [
+    pkgs.android-udev-rules
+  ];
 
   environment.variables = {
     # This is not very pure but only nixos-rebuild scripts depend on it
