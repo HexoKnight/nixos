@@ -133,6 +133,7 @@
   ];
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+      "nvidia-x11" "nvidia-settings"
       "steam" "steam-original" "steam-run"
     ];
   environment.systemPackages = with pkgs; [
