@@ -61,7 +61,13 @@
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "where_is_my_sddm_theme_qt5";
+    settings = {
+    };
+  };
   # services.xserver.desktopManager.plasma5.enable = true;
   # environment.plasma5.excludePackages = with pkgs.libsForQt5; [
   #   oxygen
@@ -137,6 +143,22 @@
       "steam" "steam-original" "steam-run"
     ];
   environment.systemPackages = with pkgs; [
+    (libsForQt5.callPackage "${inputs.self}/packages/where-is-my-sddm-theme-qt5.nix" {
+      # variants = [ "qt6" "qt5" ];
+      themeConfig.General = {
+        background = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+        backgroundFill = "#000000";
+        backgroundFillMode = "none";
+        blurRadius = 32;
+        passwordCharacter = "∗"; # ● • >∗ ﹡ ＊ ✲
+        passwordInputWidth = 1.0;
+        passwordCursorColor = "#ffffff";
+        passwordInputCursorVisible = false;
+        # sessionsFontSize = 24;
+        # usersFontSize = 24;
+        showUserRealNameByDefault = false;
+      };
+    })
   ];
 
   programs.steam = {
