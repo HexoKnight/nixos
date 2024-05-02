@@ -16,11 +16,14 @@
 
         "$mainMod, Q, killactive, "
         "$mainMod, T, exec, ${config.home.sessionVariables.TERMINAL}"
-        "$mainMod, M, exit, "
+        "$mainMod CTRL ALT, XKB_KEY_Delete, exit, "
         "$mainMod, E, exec, lf"
         "$mainMod, V, togglefloating, "
         "$mainMod, R, exec, rofi -show run"
         "$mainMod SHIFT, R, exec, rofi -show drun"
+        "$mainMod, S, layoutmsg, togglesplit"
+
+        ''$mainMod SHIFT, S, exec, ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"''
 
         "$mainMod, H, movefocus, l"
         "$mainMod, J, movefocus, d"
@@ -28,8 +31,8 @@
         "$mainMod, L, movefocus, r"
 
         # Example special workspace (scratchpad)
-        "$mainMod, S, togglespecialworkspace, magic"
-        "$mainMod SHIFT, S, movetoworkspace, special:magic"
+        # "$mainMod, S, togglespecialworkspace, magic"
+        # "$mainMod SHIFT, S, movetoworkspace, special:magic"
 
         # Scroll through existing workspaces with mainMod + scroll
         "$mainMod, mouse_down, workspace, e+1"
