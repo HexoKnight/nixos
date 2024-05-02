@@ -156,6 +156,13 @@ in {
       longitude = "";
     };
 
+    home.sessionVariables = {
+      TERMINAL = "kitty";
+    };
+
+    programs.kitty = {
+      enable = true;
+    };
     programs.alacritty = {
       enable = true;
     };
