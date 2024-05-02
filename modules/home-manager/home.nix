@@ -126,8 +126,7 @@ in {
         ".config/Code"
         ".vscode"
       ] ++ lists.optionals personal-gaming [
-        ".config/discord"
-        ".config/Vencord"
+        ".config/vesktop"
         ".config/google-chrome"
         # cache for logged in accounts and stuff
         ".cache/google-chrome"
@@ -174,10 +173,7 @@ in {
   })
   (attrsets.optionalAttrs (personal-gaming) {
     home.packages = with pkgs; [
-      (discord.override {
-        withOpenASAR = true;
-        withVencord = true;
-      })
+      unstable.vesktop
     ];
   })];
 }
