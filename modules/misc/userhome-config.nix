@@ -76,7 +76,7 @@ in {
     };
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
-      value = import ./home-manager/home.nix ({ inherit username; } // config.host-config // value);
+      value = import "${inputs.self}/modules/home-manager/home.nix" ({ inherit username; } // config.host-config // value);
     }) users;
   };
 }
