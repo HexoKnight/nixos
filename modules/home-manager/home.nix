@@ -149,8 +149,8 @@ in {
     services.wlsunset = {
       enable = true;
       # they are in fact not allowed to be identical :/
-      temperature.day = 5001;
-      temperature.night = 5000;
+      temperature.day = 4501;
+      temperature.night = 4500;
       # i do not care but they have to be set
       latitude = "";
       longitude = "";
