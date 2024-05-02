@@ -5,7 +5,9 @@ extraModules:
 
 let
   unstable-overlay = final: prev: {
-    unstable = nixpkgs-unstable.legacyPackages.${prev.system};
+    unstable = import nixpkgs-unstable {
+      inherit (prev) system config;
+    };
   };
 in
 nixpkgs.lib.attrsets.mapAttrs (config_name: extraOptions: nixpkgs.lib.nixosSystem (
