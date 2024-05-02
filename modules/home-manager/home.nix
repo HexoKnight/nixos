@@ -47,6 +47,8 @@ in {
       # programs
       lf
       fd
+      bat
+      ripgrep
 
       (vim-full.customize {
         name = "vim";
