@@ -23,6 +23,7 @@ in {
       "discord"
       "code"
       "vscode"
+      "cudatoolkit"
     ];
 
     # This value determines the Home Manager release that your configuration is
@@ -146,6 +147,7 @@ in {
         commandLineArgs = "--incognito";
       })
       github-desktop
+      nvtop
     ];
 
     services.wlsunset = {

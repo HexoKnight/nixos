@@ -42,6 +42,7 @@
   });
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
   nix.channel.enable = false; # only flakes :)
 
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
@@ -143,10 +144,10 @@
     (nerdfonts.override { fonts = [ "RobotoMono" ]; })
   ];
 
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
-      "nvidia-x11" "nvidia-settings"
-      "steam" "steam-original" "steam-run"
-    ];
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+    "nvidia-x11" "nvidia-settings"
+    "steam" "steam-original" "steam-run"
+  ];
   environment.systemPackages = with pkgs; [
     (libsForQt5.callPackage "${inputs.self}/packages/where-is-my-sddm-theme-qt5.nix" {
       # variants = [ "qt6" "qt5" ];
