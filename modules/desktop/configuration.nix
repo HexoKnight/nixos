@@ -37,6 +37,7 @@
   } // (lib.mkIf dual-boot {
     grub.devices = [ "nodev" ];
     grub.efiSupport = true;
+    grub.timestampFormat = "%F %H:%M";
     efi.canTouchEfiVariables = true;
   });
 
