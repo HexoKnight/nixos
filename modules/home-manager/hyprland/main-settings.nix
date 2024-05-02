@@ -24,7 +24,7 @@
         kb_layout = system-config.services.xserver.layout;
         kb_variant = system-config.services.xserver.xkbVariant;
 
-        follow_mouse = 3;
+        follow_mouse = 2;
         mouse_refocus = false;
 
         touchpad = {

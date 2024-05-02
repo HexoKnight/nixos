@@ -9,7 +9,7 @@
 
       "$mainMod" = "SUPER";
       bindr = [
-        "$mainMod, grave, exec, hyprctl keyword input:follow_mouse 3"
+        "$mainMod, grave, exec, hyprctl keyword input:follow_mouse 2"
       ];
       bind = [
         "$mainMod, grave, exec, hyprctl keyword input:follow_mouse 1"
