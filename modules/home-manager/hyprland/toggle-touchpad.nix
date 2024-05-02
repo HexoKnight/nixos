@@ -33,8 +33,10 @@ in
 {
   wayland.windowManager.hyprland = {
     extraConfig = ''
-      device {
-        name = ${touchpad-name}
+      # later hyprland versions
+      # device {
+      #   name = ${touchpad-name}
+      device:${touchpad-name} {
         enabled = ${touchpad-enabled}
       }
     '';

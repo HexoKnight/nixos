@@ -40,7 +40,7 @@ with lib; {
     enable = true;
     package = system-config.programs.hyprland.finalPackage;
     plugins = [
-      inputs.hycov.packages.${pkgs.system}.hycov
+      # inputs.hycov.packages.${pkgs.system}.hycov
     ];
     settings = with pkgs; {
 

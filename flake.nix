@@ -35,19 +35,19 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    hyprland = {
-      url = "github:hyprwm/Hyprland/v0.39.0";
-      # maybe when nixpgs is updated but rn it's too out of date
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
-    hycov = {
-      url = "github:DreamMaoMao/hycov/0.39.0.1";
-      inputs.hyprland.follows = "hyprland";
-    };
+    # hyprland = {
+    #   url = "github:hyprwm/Hyprland/v0.39.0";
+    #   # maybe when nixpgs is updated but rn it's too out of date
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    # hyprland-plugins = {
+    #   url = "github:hyprwm/hyprland-plugins";
+    #   inputs.hyprland.follows = "hyprland";
+    # };
+    # hycov = {
+    #   url = "github:DreamMaoMao/hycov/0.39.0.1";
+    #   inputs.hyprland.follows = "hyprland";
+    # };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-wsl = {

@@ -78,7 +78,8 @@
       misc = {
         force_default_wallpaper = -1;
         disable_hyprland_logo = true;
-        hide_cursor_on_key_press = true;
+        # later hyprland versions
+        # hide_cursor_on_key_press = true;
       };
     };
   };
