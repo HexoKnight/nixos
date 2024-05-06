@@ -50,6 +50,7 @@ in {
       fd
       bat
       ripgrep
+      jq
 
       (vim-full.customize {
         name = "vim";
@@ -148,6 +149,7 @@ in {
       })
       github-desktop
       nvtop
+      mpv
     ];
 
     services.wlsunset = {
