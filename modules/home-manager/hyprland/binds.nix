@@ -29,6 +29,8 @@
         "$mainMod, J, movefocus, d"
         "$mainMod, K, movefocus, u"
         "$mainMod, L, movefocus, r"
+        "$mainMod, M, focusmonitor, +1"
+        "$mainMod SHIFT, M, movecurrentworkspacetomonitor, +1"
 
         # Example special workspace (scratchpad)
         # "$mainMod, S, togglespecialworkspace, magic"
