@@ -21,6 +21,7 @@
         "$mainMod, V, togglefloating, "
         "$mainMod, R, exec, rofi -show run"
         "$mainMod SHIFT, R, exec, rofi -show drun"
+        "$mainMod, P, pseudo, "
         "$mainMod, S, layoutmsg, togglesplit"
 
         ''$mainMod SHIFT, S, exec, ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"''
