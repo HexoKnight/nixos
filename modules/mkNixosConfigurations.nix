@@ -7,6 +7,12 @@ let
   unstable-overlay = final: prev: {
     unstable = import nixpkgs-unstable {
       inherit (prev) system config;
+      overlays = [
+        (final-unstable: prev-unstable: {
+          # TODO: move elsewhere
+          xwayland = prev.xwayland;
+        })
+      ];
     };
   };
 in
