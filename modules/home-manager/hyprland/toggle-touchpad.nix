@@ -5,29 +5,29 @@ touchpad-name:
 let
   touchpad-enabled = "$TOUCHPAD_ENABLED";
   toggle-touchpad = (pkgs.pkgs.writeShellScriptBin "toggle-touchpad" ''
-  export STATUS_FILE="$XDG_RUNTIME_DIR/keyboard.status"
+    export STATUS_FILE="$XDG_RUNTIME_DIR/keyboard.status"
 
-  enable() {
-    printf "true" >"$STATUS_FILE"
-    notify-send -u normal "Enabling Touchpad"
-    hyprctl keyword '${touchpad-enabled}' "true" -r
-  }
+    enable() {
+      printf "true" >"$STATUS_FILE"
+      notify-send -u normal "Enabling Touchpad"
+      hyprctl keyword '${touchpad-enabled}' "true" -r
+    }
 
-  disable() {
-    printf "false" >"$STATUS_FILE"
-    notify-send -u normal "Disabling Touchpad"
-    hyprctl keyword '${touchpad-enabled}' "false" -r
-  }
+    disable() {
+      printf "false" >"$STATUS_FILE"
+      notify-send -u normal "Disabling Touchpad"
+      hyprctl keyword '${touchpad-enabled}' "false" -r
+    }
 
-  if ! [ -f "$STATUS_FILE" ]; then
-    enable
-  else
-    if [ $(cat "$STATUS_FILE") = "true" ]; then
-      disable
-    elif [ $(cat "$STATUS_FILE") = "false" ]; then
+    if ! [ -f "$STATUS_FILE" ]; then
       enable
+    else
+      if [ $(cat "$STATUS_FILE") = "true" ]; then
+        disable
+      elif [ $(cat "$STATUS_FILE") = "false" ]; then
+        enable
+      fi
     fi
-  fi
   '') + "/bin/toggle-touchpad";
 in
 {
