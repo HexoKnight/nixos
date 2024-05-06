@@ -34,12 +34,11 @@
     grub.enable = true;
     grub.useOSProber = true;
     grub.device = device;
-  } // (lib.mkIf dual-boot {
     grub.devices = [ "nodev" ];
     grub.efiSupport = true;
     grub.timestampFormat = "%F %H:%M";
     efi.canTouchEfiVariables = true;
-  });
+  };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
