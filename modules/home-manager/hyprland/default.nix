@@ -7,6 +7,7 @@ with lib; {
     ./main-settings.nix
     ./binds.nix
     ./special-workspaces.nix
+    ./audio.nix
   ] ++ lists.optional (disable-touchpad != null) (import ./toggle-touchpad.nix disable-touchpad);
 
   home.packages = with pkgs; [
