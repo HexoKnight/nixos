@@ -6,38 +6,52 @@
     let
       pactl =  "${pkgs.pulseaudio}/bin/pactl";
       jq =  "${pkgs.jq}/bin/jq";
-      selectAudio = extra: (pkgs.pkgs.writeShellScriptBin "selectAudio" (
-      let
-        selectSinkSource = isSink:
-        let
-          type = if isSink then "sink" else "source";
-        in ''
-          defaultDevice="$(${pactl} get-default-${type})"
-          devices="$(${pactl} --format json list ${type}s | ${jq} --raw-output '
-            ${if extra || isSink then "" else ''map(select(.monitor_source == "")) |''}
-            map({
-              name,
-              description: (if .name == "'"$defaultDevice"'" then "* " else "" end + .description)
-            })
-          ')"
-          deviceIndex="$(echo "$devices" | ${jq} --raw-output '.[].description' | rofi -dmenu -format i)"
-          if [ -n "deviceIndex" ] && [ "deviceIndex" != "-1" ]; then
-            deviceName="$(echo "$devices" | ${jq} --raw-output ".[$deviceIndex].name")"
-            ${pactl} set-default-${type} "$deviceName"
-          fi
-        '';
-      in ''
-        type=$(echo -e "sinks\nsources" | rofi -dmenu)
-        if [ "$type" == "sinks" ]; then
-          ${selectSinkSource true}
-        elif [ "$type" == "sources" ]; then
-          ${selectSinkSource false}
+      selectAudio = (pkgs.pkgs.writeShellScriptBin "selectAudio" (
+      ''
+        if [ "$ROFI_RETV" == "0" ]; then
+          echo -e "\0data\x1ftype"
+          echo "sinks"
+          echo "sources"
+          echo "sources (extra)"
+          exit 0
         fi
+
+        case "$ROFI_DATA" in
+          "type")
+            case "$1" in
+              "sinks")
+                type="sink"
+              ;;
+              "sources")
+                type="source"
+                filterMonitors=1
+              ;;
+              "sources (extra)")
+                type="source"
+              ;;
+              *)
+                exit 0
+              ;;
+            esac
+            echo -e "\0data\x1f$type"
+            defaultDevice="$(${pactl} get-default-''${type})"
+            ${pactl} --format json list ''${type}s | ${jq} --raw-output '
+              '"''${filterMonitors+'map(select(.monitor_source == "")) |'}"'
+              map(
+                if .name == "'"$defaultDevice"'" then "* " else "" end +
+                .description + "\u0000info\u001f" + .name
+              ) |
+              .[]
+            '
+          ;;
+          "sink" | "source")
+            ${pactl} set-default-$ROFI_DATA "$ROFI_INFO"
+          ;;
+        esac
       '')) + "/bin/selectAudio";
     in {
       bind = [
-        "SUPER, A, exec, ${selectAudio false}"
-        "SUPER SHIFT, A, exec, ${selectAudio true}"
+        "SUPER, A, exec, rofi -show selectAudio -modes \"selectAudio:${selectAudio}\" "
       ];
     };
   };
