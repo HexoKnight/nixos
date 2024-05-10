@@ -47,6 +47,11 @@ with lib; {
       # inputs.hycov.packages.${pkgs.system}.hycov
     ];
     settings = with pkgs; {
+      exec-once = [
+        "vesktop --disable-gpu"
+        "steam"
+      ];
+
       windowrulev2 = [
         "workspace name:__discord silent, initialtitle:(Discord)"
         "workspace name:__steam silent, initialclass:(steam)"
