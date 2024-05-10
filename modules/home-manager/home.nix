@@ -130,6 +130,9 @@ in {
         ".config/Code"
         ".vscode"
       ] ++ lists.optionals personal-gaming [
+        "Pictures"
+        "Videos"
+        "Music"
         ".config/vesktop"
         ".config/google-chrome"
         # cache for logged in accounts and stuff
@@ -139,6 +142,7 @@ in {
           method = "symlink";
         }
         ".config/unity3d"
+        ".config/termusic"
       ];
     };
   })
@@ -187,6 +191,7 @@ in {
   (attrsets.optionalAttrs (personal-gaming) {
     home.packages = with pkgs; [
       unstable.vesktop
+      termusic
     ];
   })];
 }
