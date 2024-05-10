@@ -47,6 +47,13 @@ with lib; {
       # inputs.hycov.packages.${pkgs.system}.hycov
     ];
     settings = with pkgs; {
+      windowrulev2 = [
+        "workspace name:__discord silent, initialtitle:(Discord)"
+        "workspace name:__steam silent, initialclass:(steam)"
+
+        "workspace name:__gvim, initialclass:(Gvim)"
+        "workspace name:__github-desktop, initialclass:(GitHub Desktop)"
+      ];
 
       env = (attrsets.mapAttrsToList (
           name: value: name + "," + builtins.toString value
