@@ -26,10 +26,6 @@
 
         ''$mainMod SHIFT, S, exec, ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"''
 
-        "$mainMod, H, movefocus, l"
-        "$mainMod, J, movefocus, d"
-        "$mainMod, K, movefocus, u"
-        "$mainMod, L, movefocus, r"
         "$mainMod, M, focusmonitor, +1"
         "$mainMod SHIFT, M, movecurrentworkspacetomonitor, +1"
 
@@ -61,6 +57,18 @@
         ", XF86AudioRaiseVolume, exec, ${swayosd} --output-volume raise"
         ", XF86AudioLowerVolume, exec, ${swayosd} --output-volume lower"
         ", XF86AudioMute,        exec, ${swayosd} --output-volume mute-toggle"
+      ])
+
+      ++ (builtins.concatMap (directionList: with with lib; builtins.listToAttrs
+        ((lists.zipListsWith attrsets.nameValuePair) ["arrowKey" "homeKey" "hyprDir"] directionList);
+        builtins.concatMap (key: [
+          "$mainMod, ${key}, movefocus, ${hyprDir}"
+        ]) [arrowKey homeKey]
+      ) [
+        ["left"  "h" "l"]
+        ["down"  "j" "d"]
+        ["up"    "k" "u"]
+        ["right" "l" "r"]
       ])
 
       ++ builtins.concatLists (builtins.genList (
