@@ -12,9 +12,13 @@
         let
           type = if isSink then "sink" else "source";
         in ''
+          defaultDevice="$(${pactl} get-default-${type})"
           devices="$(${pactl} --format json list ${type}s | ${jq} --raw-output '
             ${if extra || isSink then "" else ''map(select(.monitor_source == "")) |''}
-            map({ name, description })
+            map({
+              name,
+              description: (if .name == "'"$defaultDevice"'" then "* " else "" end + .description)
+            })
           ')"
           deviceIndex="$(echo "$devices" | ${jq} --raw-output '.[].description' | rofi -dmenu -format i)"
           if [ -n "deviceIndex" ] && [ "deviceIndex" != "-1" ]; then
@@ -38,6 +42,3 @@
     };
   };
 }
-
-
-
