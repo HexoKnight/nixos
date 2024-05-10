@@ -37,6 +37,7 @@
     grub.devices = [ "nodev" ];
     grub.efiSupport = true;
     grub.timestampFormat = "%F %H:%M";
+    grub.default = "saved";
     efi.canTouchEfiVariables = true;
   };
 
