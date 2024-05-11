@@ -1,28 +1,14 @@
-{ self, nixpkgs, nixpkgs-unstable, ... }@inputs:
+{ self, nixpkgs, ... }@inputs:
 
 configurations:
 extraModules:
 
-let
-  unstable-overlay = final: prev: {
-    unstable = import nixpkgs-unstable {
-      inherit (prev) system config;
-      overlays = [
-        (final-unstable: prev-unstable: {
-          # TODO: move elsewhere
-          xwayland = prev.xwayland;
-        })
-      ];
-    };
-  };
-in
 nixpkgs.lib.attrsets.mapAttrs (config_name: extraOptions: nixpkgs.lib.nixosSystem (
   {
     specialArgs = {
-      inherit inputs unstable-overlay config_name;
+      inherit inputs config_name;
     };
     modules = [
-      { nixpkgs.overlays = [ unstable-overlay ]; }
       ../configurations/${config_name}/configuration.nix
       ./misc
     ] ++ extraModules;

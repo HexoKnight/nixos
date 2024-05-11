@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, unstable-overlay, config_name, ... }:
+{ config, pkgs, inputs, config_name, ... }:
 
 let
   username = "nixos";

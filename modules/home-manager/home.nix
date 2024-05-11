@@ -1,6 +1,6 @@
 { username, persistence, desktop, personal-gaming, disable-touchpad, ... }@home-inputs:
 
-{ config, lib, pkgs, inputs, unstable-overlay, ... }:
+{ config, lib, pkgs, inputs, system-config, ... }:
 
 with lib;
 let
@@ -17,7 +17,7 @@ in {
   config = mkMerge [{
     home = { inherit username homeDirectory; };
 
-    nixpkgs.overlays = [ unstable-overlay ];
+    nixpkgs.overlays = system-config.nixpkgs-overlays;
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
       "google-chrome"
       "discord"

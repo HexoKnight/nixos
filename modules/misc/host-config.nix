@@ -1,4 +1,4 @@
-{ config, options, pkgs, lib, inputs, unstable-overlay, ... }:
+{ config, options, pkgs, lib, inputs, ... }:
 
 with lib;
 let

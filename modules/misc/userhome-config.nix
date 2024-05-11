@@ -1,4 +1,4 @@
-{ config, options, pkgs, lib, inputs, unstable-overlay, ... }:
+{ config, options, pkgs, lib, inputs, ... }:
 
 with lib;
 let
@@ -52,7 +52,6 @@ in {
   };
 
   config = mkIf (users != {}) {
-    nixpkgs.overlays = [ unstable-overlay ];
     # required for persistence
     programs.fuse.userAllowOther = true;
 
@@ -71,7 +70,7 @@ in {
     } value.extraOptions]) users;
 
     home-manager.extraSpecialArgs = {
-      inherit inputs unstable-overlay;
+      inherit inputs;
       system-config = config;
     };
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
