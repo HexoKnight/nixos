@@ -2,6 +2,7 @@
 
 {
   # straight from impermanence repo: https://github.com/nix-community/impermanence#btrfs-subvolumes
+  # adapted to use a subvolume for `old_roots` (but nothing actually needed to change)
   boot.initrd.postDeviceCommands = lib.mkAfter ''
     mkdir /btrfs_tmp
     mount /dev/root_vg/root /btrfs_tmp

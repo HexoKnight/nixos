@@ -56,6 +56,7 @@
                 "/root" = {
                   mountpoint = "/";
                 };
+                "/old_roots" = {};
 
                 "/persist" = {
                   mountOptions = ["subvol=persist" "noatime"];
