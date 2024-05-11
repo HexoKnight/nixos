@@ -1,5 +1,6 @@
 { config, system-config, lib, pkgs, inputs, ... }:
 
+with lib;
 let
   workspaces = rec {
     # NORMAL WORKSPACES
@@ -126,29 +127,33 @@ in
       # actOnWorkspace must return a non-zero exit code if the db
       # should not be updated (eg. it was a noop or it was invalid)
       createWorkspaceAction = binName: getWorkspaces: actOnWorkspace:
-        (pkgs.pkgs.writeShellScriptBin binName (let
-            updateFrece =  ''
-              extraWorkspaces="$(${getWorkspaces})"
-              ${frece} update "$DB_FILE" <(echo "$extraWorkspaces")
-            '';
-          in ''
+        scripts.mkScript pkgs binName ''
           DB_FILE="''${XDG_STATE_HOME:-$HOME/.local/state}/${binName}.db"
 
-          ${updateFrece}
-          options="$(${frece} print "$DB_FILE")"
+          workspaces="$(
+            ${getWorkspaces}
+          )"
+          ${frece} update "$DB_FILE" <(echo "$workspaces")
+          options="$(${frece} print "$DB_FILE" | grep -Fx "$workspaces")"
           workspace=$(if [ -n "$options" ]; then echo "$options"; fi | rofi -dmenu)
-          if [ -n "$workspace" ] && [ "$workspace" != "$(${getCurrentExtraWorkspace})" ]; then
-            ( ${actOnWorkspace "\${workspace}"} ) && {
-              ${updateFrece}
+          if [ -n "$workspace" ]; then
+            {
+              ${actOnWorkspace "\${workspace}"}
+            } && {
+              workspaces="$(
+                ${getWorkspaces}
+              )"
+              ${frece} update "$DB_FILE" <(echo "$workspaces")
               ${frece} increment "$DB_FILE" "$workspace"
             }
           fi
-        '')) + "/bin/" + binName;
-      # TODO: finish up
-      ifNotCurrent = getCurrent: workspace: ''
+        '';
+      ifNotEqualTo = getOther: actOnWorkspace: workspace: ''
+        [ "${workspace}" != "$(${getOther})" ] &&
+        ${actOnWorkspace workspace}
       '';
       gotoExtraWorkspaceBin = createWorkspaceAction
-        "gotoExtraWorkspace" getExtraWorkspaces gotoExtraWorkspace;
+        "gotoExtraWorkspace" getExtraWorkspaces (ifNotEqualTo getCurrentExtraWorkspace gotoExtraWorkspace);
       moveToExtraWorkspaceBin = createWorkspaceAction
         "moveToExtraWorkspace" getExtraWorkspaces moveToExtraWorkspace;
       # closeCurrentSpecialWorkspaceBin = (pkgs.pkgs.writeShellScriptBin "closeCurrentSpecialWorkspace" ''
