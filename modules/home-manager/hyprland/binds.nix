@@ -59,15 +59,17 @@
       ])
 
       ++ (builtins.concatMap (directionList: with with lib; builtins.listToAttrs
-        ((lists.zipListsWith attrsets.nameValuePair) ["arrowKey" "homeKey" "hyprDir"] directionList);
+        ((lists.zipListsWith attrsets.nameValuePair) ["arrowKey" "homeKey" "hyprDir" "resize"] directionList);
         builtins.concatMap (key: [
           "SUPER, ${key}, movefocus, ${hyprDir}"
+          "SUPER SHIFT, ${key}, swapwindow, ${hyprDir}"
+          "SUPER CTRL, ${key}, resizeactive, ${resize "10"}"
         ]) [arrowKey homeKey]
       ) [
-        ["left"  "h" "l"]
-        ["down"  "j" "d"]
-        ["up"    "k" "u"]
-        ["right" "l" "r"]
+        ["left"  "h" "l" (amount: "-${amount} 0")]
+        ["down"  "j" "d" (amount: "0 ${amount}")]
+        ["up"    "k" "u" (amount: "0 -${amount}")]
+        ["right" "l" "r" (amount: "${amount} 0")]
       ])
 
       ++ builtins.concatLists (builtins.genList (
