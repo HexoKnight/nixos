@@ -8,6 +8,7 @@ with lib; {
     ./binds.nix
     ./workspaces.nix
     ./audio.nix
+    ./hyprbinds.nix
   ] ++ lists.optional (disable-touchpad != null) (import ./toggle-touchpad.nix disable-touchpad);
 
   home.packages = with pkgs; [
