@@ -47,7 +47,11 @@ in {
             internal = true;
             visible = false;
             type = str;
-            default = "${config.dispatcher}, ${config.args}";
+            default = if elem "m" (stringToCharacters config.flags)
+              then
+                assert (config.args == "" || throw "mouse bind ('m' flag) cannot have args");
+                config.dispatcher
+              else "${config.dispatcher}, ${config.args}";
           };
         };
         config = {
