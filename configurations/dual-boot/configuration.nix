@@ -18,7 +18,11 @@
   fileSystems."/c:" = {
     device = "/dev/nvme0n1p3";
     fsType = "ntfs3";
-    options = [ "nofail" ];
+    options = [
+      # "nofail"
+      "uid=1000"
+      "gid=100"
+    ];
   };
 
   hardware.nvidia = {
