@@ -19,7 +19,7 @@ let
       description = "character flags";
       descriptionClass = "noun";
       check = x: types.str.check x && isValid x;
-      merge = loc: defs: concatStrings (unique (concatMap (x: stringToCharacters x.value) defs));
+      merge = loc: defs: hyprbinds.mergeFlags (getValues defs);
     };
 in {
   options.hyprbinds = mkOption {
