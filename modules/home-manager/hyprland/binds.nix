@@ -10,11 +10,17 @@
     "SUPER, T" = mkExec config.home.sessionVariables.TERMINAL;
     "SUPER CTRL ALT, XKB_KEY_Delete" = mkNoArgBind "exit";
     "SUPER, E" = mkExec "lf";
-    "SUPER, V" = mkNoArgBind "togglefloating";
     "SUPER, R" = mkExec "rofi -show run";
     "SUPER SHIFT, R" = mkExec "rofi -show drun";
+
     "SUPER, P" = mkNoArgBind "pseudo";
     "SUPER, S" = mkBind "layoutmsg" "togglesplit";
+
+    "SUPER, V" = mkNoArgBind "togglefloating";
+    "SUPER, F" = mkBind "fullscreen" "0"; # proper fullscreen
+    "SUPER SHIFT, F" = mkBind "fullscreen" "1"; # maximise
+    "SUPER ALT, F" = mkBind "fullscreen" "2"; # fullscreen (but doesn't tell application)
+    "SUPER CTRL, F" = mkBind "fakefullscreen" ""; # only tells application that it is fullscreen
 
     "SUPER SHIFT, S" = mkExec ''${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"'';
 
