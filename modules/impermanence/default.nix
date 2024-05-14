@@ -1,6 +1,14 @@
-{ lib }:
+{ device }:
+
+{ lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.disko.nixosModules.default
+    (import ./disko.nix { inherit device; })
+    inputs.impermanence.nixosModules.impermanence
+  ];
+
   # straight from impermanence repo: https://github.com/nix-community/impermanence#btrfs-subvolumes
   # adapted to use a subvolume for `old_roots` (but nothing actually needed to change)
   boot.initrd.postDeviceCommands = lib.mkAfter ''
