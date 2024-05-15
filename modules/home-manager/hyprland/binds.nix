@@ -49,15 +49,15 @@
   in {
     ", XF86KbdBrightnessUp"   = mkExec "${brightnessctl} -d *::kbd_backlight s +1";
     ", XF86KbdBrightnessDown" = mkExec "${brightnessctl} -d *::kbd_backlight s 1-";
-    ", XF86MonBrightnessUp"   = mkExec "${brightnessctl} s +5%";
-    ", XF86MonBrightnessDown" = mkExec "${brightnessctl} s 5%-";
+    ", XF86MonBrightnessUp"   = repeating mkExec "${brightnessctl} s +5%";
+    ", XF86MonBrightnessDown" = repeating mkExec "${brightnessctl} s 5%-";
   })
 
   (let
     swayosd = "${pkgs.swayosd}/bin/swayosd";
   in {
-    ", XF86AudioRaiseVolume" = mkExec "${swayosd} --output-volume raise";
-    ", XF86AudioLowerVolume" = mkExec "${swayosd} --output-volume lower";
+    ", XF86AudioRaiseVolume" = repeating mkExec "${swayosd} --output-volume raise";
+    ", XF86AudioLowerVolume" = repeating mkExec "${swayosd} --output-volume lower";
     ", XF86AudioMute"        = mkExec "${swayosd} --output-volume mute-toggle";
   })
 
@@ -71,7 +71,7 @@
     mergeMap (key: {
       "SUPER, ${key}" = mkBind "movefocus" hyprDir;
       "SUPER SHIFT, ${key}" = mkBind "swapwindow" hyprDir;
-      "SUPER CTRL, ${key}" = mkBind "resizeactive" (resize "10");
+      "SUPER CTRL, ${key}" = repeating mkBind "resizeactive" (resize "10");
     }) [arrowKey homeKey]
   ) [
     ["left"  "h" "l" (amount: "-${amount} 0")]

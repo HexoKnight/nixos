@@ -21,4 +21,6 @@ rec {
   withFlags = flags: bind:
     if lib.isFunction bind then arg: withFlags flags (bind arg)
     else addFlags flags bind;
+
+  repeating = withFlags "e";
 }
