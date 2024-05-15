@@ -1,6 +1,6 @@
 { device }:
 
-{ lib, inputs, ... }:
+{ lib, inputs, pkgs, ... }:
 
 {
   imports = [
@@ -35,6 +35,17 @@
     btrfs subvolume create /btrfs_tmp/root
     umount /btrfs_tmp
   '';
+
+  environment.systemPackages = [
+    (pkgs.writeShellScriptBin "mount-oldroots" ''
+      if [ -n "$OLD_ROOTS_RW" ]; then rtype=rw
+      else rtype=ro
+      fi
+
+      mkdir -p /old_roots &&
+      mount /dev/root_vg/root /old_roots -o subvol=/old_roots,''${rtype},noatime
+    '')
+  ];
 
   fileSystems."/persist".neededForBoot = true;
   environment.persistence."/persist/system" = {
