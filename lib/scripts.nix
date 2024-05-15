@@ -3,5 +3,8 @@ lib:
 {
   mkScript =
     pkgs: binName: content:
-    (pkgs.writeShellScriptBin binName content) + "/bin/" + binName;
+    let
+      script = pkgs.writeShellScriptBin binName content;
+    in
+    script // { outPath = "${script}/bin/${binName}"; };
 }
