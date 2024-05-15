@@ -1,4 +1,4 @@
-{ username, persistence, desktop, personal-gaming, disable-touchpad, ... }@home-inputs:
+{ username, persistence, desktop, personal-gaming, disable-touchpad, hasRebuildCommand, ... }@home-inputs:
 
 { config, lib, pkgs, inputs, system-config, ... }:
 
@@ -107,6 +107,18 @@ in {
     home.file = {
     };
 
+    programs.bash = {
+      enable = true;
+      historyControl = [ "ignorespace" "erasedups" ];
+      historyIgnore = [ "exit" ];
+    };
+    home.shellAliases = {
+    }
+    // (optionalAttrs hasRebuildCommand {
+      rebuild-reboot = "rebuild -t boot && reboot";
+      rebuild-test = "rebuild -t test";
+    });
+
     home.sessionVariables = {
       EDITOR = "vim";
     };
@@ -174,6 +186,9 @@ in {
 
     programs.kitty = {
       enable = true;
+      shellIntegration.mode = "no-cursor";
+      settings = {
+      };
     };
     programs.alacritty = {
       enable = true;
