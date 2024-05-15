@@ -20,9 +20,6 @@ in {
     nixpkgs.overlays = system-config.nixpkgs-overlays;
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
       "google-chrome"
-      "discord"
-      "code"
-      "vscode"
       "cudatoolkit"
     ];
 
@@ -196,7 +193,7 @@ in {
 
     programs.vscode = {
       enable = true;
-      package = pkgs.vscode.fhs;
+      package = pkgs.unstable.vscodium.fhs;
     };
 
     home.pointerCursor = {
