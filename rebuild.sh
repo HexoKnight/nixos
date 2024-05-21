@@ -6,7 +6,7 @@
 # exit on any command returning a non-zero status
 set -e
 
-ARGS=$(getopt --options "t:d:c:u:" --longoptions "type:,directory:,configuration:,update:,diff,no-diff" -- "${@}") || exit
+ARGS=$(getopt --options "t:d:c:u:" --longoptions "type:,directory:,configuration:,update:,diff,no-diff,timeout:" -- "${@}") || exit
 eval "set -- ${ARGS}"
 
 while true; do
@@ -34,6 +34,10 @@ while true; do
     (--no-diff)
       show_diff='false'
       shift 1
+    ;;
+    (--timeout)
+      timeout="$2"
+      shift 2
     ;;
     (--)
       shift
@@ -74,7 +78,10 @@ fi
 
 read_password () {
   if [ ! -v passkey ]; then
-    read -s -p "Password: " passkey
+    read ${timeout:+-t "$timeout"} -rsp "Password: " passkey || {
+      echo timed out
+      exit 1
+    }
     echo
   fi
 }
