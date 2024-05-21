@@ -59,13 +59,13 @@ in {
       name = value.username;
       extraGroups = lists.optional value.cansudo "wheel";
       packages = with pkgs; lists.optionals value.hasRebuildCommand [
-        (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/rebuild.sh"))
+        (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/scripts/rebuild.sh"))
 
         # required for the rebuild command
-        (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/evalvar.sh"))
+        (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/scripts/evalvar.sh"))
         unstable.nixVersions.nix_2_19
       ] ++ lists.optionals value.hasPersistCommand [
-        (writeShellScriptBin "persist" (builtins.readFile "${inputs.self}/persist.sh"))
+        (writeShellScriptBin "persist" (builtins.readFile "${inputs.self}/scripts/persist.sh"))
       ];
     } value.extraOptions]) users;
 
