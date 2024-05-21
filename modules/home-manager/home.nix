@@ -187,6 +187,7 @@ in {
           method = "symlink";
         }
         ".config/termusic"
+        ".config/qBittorrent"
       ];
     };
   })
@@ -339,6 +340,7 @@ in {
     home.packages = with pkgs; [
       unstable.vesktop
       termusic
+      qbittorrent
       linkSaveDir
       linkSaveDirs
       addLinkedSave
