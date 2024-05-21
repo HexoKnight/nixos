@@ -221,9 +221,6 @@ in {
       settings = {
       };
     };
-    programs.alacritty = {
-      enable = true;
-    };
 
     programs.vscode = {
       enable = true;
