@@ -219,6 +219,8 @@ in {
       enable = true;
       shellIntegration.mode = "no-cursor";
       settings = {
+        dynamic_background_opacity = true;
+        allow_remote_control = true;
       };
     };
 
