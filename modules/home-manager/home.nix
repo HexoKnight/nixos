@@ -109,11 +109,6 @@ in {
     home.file = {
     };
 
-    programs.bash = {
-      enable = true;
-      historyControl = [ "ignorespace" "erasedups" ];
-      historyIgnore = [ "exit" ];
-    };
     home.shellAliases = {
       man = "${pkgs.bat-extras.batman}/bin/batman";
     }
@@ -121,6 +116,39 @@ in {
       rebuild-reboot = "rebuild -t boot && reboot";
       rebuild-test = "rebuild -t test";
     });
+    programs.bash = {
+      enable = true;
+      historyControl = [ "ignorespace" "erasedups" ];
+      historyIgnore = [ "exit" ];
+      initExtra = ''
+        alias bathelp='bat --plain --language=help'
+        function help() {
+          "$@" --help 2>&1 | bathelp
+        }
+        function h() {
+          "$@" -h 2>&1 | bathelp
+        }
+
+        function nixrun() (
+          if [ "$1" = "-u" ]; then
+            shift 1
+            unstable="-unstable"
+          fi
+          nix run "nixpkgs''${unstable}#$1" -- "''${@:2}"
+        )
+        function nixshell() (
+          if [ "$1" = "-u" ]; then
+            shift 1
+            unstable="-unstable"
+          fi
+          nix shell "nixpkgs''${unstable}#$1" "''${@:2}"
+        )
+
+        function realwhich() {
+          realpath $(which "$@")
+        }
+      '';
+    };
 
     home.sessionVariables = {
       EDITOR = "vim";
