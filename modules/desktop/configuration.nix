@@ -91,6 +91,13 @@
     #media-session.enable = true;
   };
 
+  services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    openFirewall = true;
+  };
+
   host-config = {
     mutableUsers = false;
     desktop = true;
