@@ -41,11 +41,9 @@ in {
       ethtool
       ssh-to-age
 
-
       # programs
       lf
       fd
-      bat
       ripgrep
       jq
 
@@ -73,6 +71,13 @@ in {
     ];
 
     programs.nix-index-database.comma.enable = true;
+
+    programs.bat = {
+      enable = true;
+      extraPackages = with pkgs.bat-extras; [
+        batman
+      ];
+    };
 
     programs.git = {
       enable = true;
@@ -110,6 +115,7 @@ in {
       historyIgnore = [ "exit" ];
     };
     home.shellAliases = {
+      man = "${pkgs.bat-extras.batman}/bin/batman";
     }
     // (optionalAttrs hasRebuildCommand {
       rebuild-reboot = "rebuild -t boot && reboot";
