@@ -12,8 +12,6 @@ with lib; {
   ] ++ lists.optional (disable-touchpad != null) (import ./toggle-touchpad.nix disable-touchpad);
 
   home.packages = with pkgs; [
-    kitty
-
     rofi-wayland
 
     mako
