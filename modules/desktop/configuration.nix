@@ -40,11 +40,6 @@
   services.envfs.enable = true;
 
   networking.hostName = hostName;
-  services.xrdp = {
-    enable = true;
-    defaultWindowManager = "startplasma-x11";
-    openFirewall = true;
-  };
 
   networking.networkmanager.enable = true;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
