@@ -58,13 +58,10 @@ in {
       })
       (vim-full.customize {
         name = "vim-local";
-        executableName = "$exe-local";
+        # executableName = "$exe-local";
         gvimrcFile = (config.lib.file.mkOutOfStoreSymlink "${homeDirectory}/dotfiles/gvimrc");
         vimrcConfig = {
-          customRC = ''
-            source ${vimPlugins.vim-plug}/plug.vim
-            source ${homeDirectory}/dotfiles/vimrc
-          '';
+          customRC = "source ${homeDirectory}/dotfiles/vimrc";
           plug.plugins = [];
         };
       })
