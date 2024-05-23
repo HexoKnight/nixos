@@ -299,7 +299,7 @@ in {
 
       test ! -e "$LINKED_SAVES_LIST" && {
         test ! -n "$LINK_SAVE_QUIET" && echo "linked saves list ('$LINKED_SAVES_LIST') not found"
-        # exit 0
+        exit 0
       }
 
       cat "$LINKED_SAVES_LIST" |
