@@ -112,6 +112,8 @@ in {
     // (optionalAttrs hasRebuildCommand {
       rebuild-reboot = "rebuild -t boot && reboot";
       rebuild-test = "rebuild -t test";
+      rebuild-poweroff = "rebuild -t boot --timeout 10 ; poweroff";
+      rebuild-gc-poweroff = "rebuild -t boot --timeout 10 && nix-collect-garbage --delete-older-than 14d ; poweroff";
     });
     programs.bash = {
       enable = true;
