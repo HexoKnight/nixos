@@ -28,12 +28,12 @@
   boot.loader = {
     grub.enable = true;
     grub.useOSProber = true;
-    grub.device = device;
-    grub.devices = [ "nodev" ];
+    grub.devices = [ device ];
     grub.efiSupport = true;
+    efi.canTouchEfiVariables = true;
+
     grub.timestampFormat = "%F %H:%M";
     grub.default = "saved";
-    efi.canTouchEfiVariables = true;
   };
 
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
