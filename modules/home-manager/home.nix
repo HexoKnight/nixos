@@ -179,10 +179,7 @@ in {
         ".config/google-chrome"
         # cache for logged in accounts and stuff
         ".cache/google-chrome"
-        {
-          directory = ".local/share/Steam";
-          method = "symlink";
-        }
+        ".local/share/Steam"
         ".config/termusic"
         ".config/qBittorrent"
       ];
