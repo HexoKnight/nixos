@@ -57,21 +57,21 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
-    let
-      mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix inputs;
-    in
-    {
-      nixosConfigurations = mkNixosConfigurations {
-        desktop = {};
-        dual-boot = {};
-        wsl = {};
-      } [
-        {
-          nix.settings = {
-            substituters = ["https://hyprland.cachix.org"];
-            trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-          };
-        }
-      ];
-    };
+  let
+    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix inputs;
+  in
+  {
+    nixosConfigurations = mkNixosConfigurations {
+      desktop = {};
+      dual-boot = {};
+      wsl = {};
+    } [
+      {
+        nix.settings = {
+          substituters = ["https://hyprland.cachix.org"];
+          trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+        };
+      }
+    ];
+  };
 }

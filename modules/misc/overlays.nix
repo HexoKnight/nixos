@@ -12,13 +12,19 @@ let
       ];
     };
   };
+  local-overlay = final: prev: {
+    local = import "${inputs.self}/packages" {
+      inherit (prev) lib system;
+      pkgs = prev;
+    };
+  };
 in
 {
   options.nixpkgs-overlays =
     options.nixpkgs.overlays;
 
   config = {
-    nixpkgs-overlays = [ unstable-overlay ];
+    nixpkgs-overlays = [ unstable-overlay local-overlay ];
     nixpkgs.overlays = config.nixpkgs-overlays;
   };
 }

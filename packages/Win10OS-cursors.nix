@@ -15,4 +15,11 @@ stdenvNoCC.mkDerivation rec {
     install -dm 0755 $out/share/icons
     cp -pr dist $out/share/icons/Win10OS-cursors
   '';
+
+  meta = with lib; {
+    description = "An x-cursor theme inspired by WinOS and based on capitaine-cursors";
+    homepage = "https://github.com/yeyushengfan258/Win10OS-cursors";
+    license = licenses.gpl3Only;
+    platforms = platforms.all;
+  };
 }

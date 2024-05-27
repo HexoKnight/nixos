@@ -145,7 +145,7 @@
     "steam" "steam-original" "steam-run"
   ];
   environment.systemPackages = with pkgs; [
-    (libsForQt5.callPackage "${inputs.self}/packages/where-is-my-sddm-theme-qt5.nix" {
+    (local.where-is-my-sddm-theme-qt5.override {
       # variants = [ "qt6" "qt5" ];
       themeConfig.General = {
         background = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";

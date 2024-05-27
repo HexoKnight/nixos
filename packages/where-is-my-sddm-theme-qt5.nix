@@ -46,5 +46,6 @@ stdenvNoCC.mkDerivation rec {
     homepage = "https://github.com/stepanzubkov/where-is-my-sddm-theme";
     license = licenses.mit;
     # maintainers = with maintainers; [ name-snrl ];
+    platforms = platforms.linux;
   };
 }
