@@ -106,6 +106,16 @@ in {
     home.file = {
     };
 
+    programs.readline = {
+      enable = true;
+      variables = {
+        editing-mode = "vim";
+        show-mode-in-prompt = true;
+        vi-cmd-mode-string = ''\1\e[2 q\2'';
+        vi-ins-mode-string = ''\1\e[0 q\2'';
+      };
+    };
+
     home.shellAliases = {
       man = "${pkgs.bat-extras.batman}/bin/batman";
     }
