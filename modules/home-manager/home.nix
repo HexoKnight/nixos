@@ -97,6 +97,27 @@ in {
           filter.lfs.process = "git-lfs filter-process";
         };
       };
+
+      delta = {
+        enable = true;
+        options = rec {
+          features = "default";
+          default = {
+            file-decoration-style = "";
+            file-style = "purple";
+            hunk-header-decoration-style = "";
+          };
+          line-numbers = {
+            hunk-header-style = "omit";
+            line-numbers-left-format = "{nm:>3} ";
+            line-numbers-right-format = "{np:>3} ";
+          };
+          side-by-side = {
+            line-numbers-left-format = "{nm:>3} ";
+            line-numbers-right-format = "│{np:>3} ";
+          };
+        };
+      };
     };
 
     programs.ssh = {
