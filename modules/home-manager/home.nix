@@ -9,6 +9,7 @@ in {
   imports = [
     inputs.impermanence.nixosModules.home-manager.impermanence
     inputs.nix-index-database.hmModules.nix-index
+    ./neovim
   ] ++ lists.optionals desktop [ ./plasma.nix (import ./hyprland home-inputs ) ];
 
   options = {
@@ -286,6 +287,7 @@ in {
       github-desktop
       nvtop
       mpv
+      unstable.neovide
     ];
 
     services.wlsunset = {
