@@ -189,6 +189,21 @@ in {
           nix shell "nixpkgs''${unstable}#$1" "''${@:2}"
         )
 
+        function nixrepl-system() (
+          nix repl \
+            --override-flake flake "''${1-$NIXOS_BUILD_DIR}" \
+            --expr '
+              let
+                hostconfig = (__getFlake "flake").nixosConfigurations.'"$NIXOS_BUILD_CONFIGURATION"';
+              in
+              # pass inputs that would be available to a module
+              {
+                inherit (hostconfig) config options pkgs;
+                inherit (hostconfig._module) specialArgs;
+              } // hostconfig._module.specialArgs
+            '
+        )
+
         function realwhich() {
           realpath $(which "$@")
         }
