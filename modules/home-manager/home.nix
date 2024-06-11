@@ -76,6 +76,12 @@ in {
       ];
     };
 
+    programs.eza = {
+      enable = true;
+      enableAliases = true;
+      icons = true;
+    };
+
     programs.git = {
       enable = true;
       userName = "HexoKnight";
@@ -136,6 +142,15 @@ in {
         }
         function h() {
           "$@" -h 2>&1 | bathelp
+        }
+
+        alias batpage='bat --style=plain --paging=always'
+        function page() {
+          "$@" | batpage
+        }
+
+        function ezap() {
+          eza --colour=always --icons=always "$@" | batpage --pager="less -r"
         }
 
         function nixrun() (
