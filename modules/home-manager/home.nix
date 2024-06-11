@@ -207,6 +207,33 @@ in {
         function realwhich() {
           realpath $(which "$@")
         }
+
+        function rgdiff() {
+          # these will break if '--' is passed
+          # but swapping the order will break them if '-C3', etc. are passed
+          # so idk
+          rg "$@" -l |
+          while read -r file; do
+            rg "$@" --passthru -- "$file" |
+            # labels to prevent a filename of '-' from stdin
+            diff -L "a/$file" -L "b/$file" -u "$file" -
+            # add whitespace between diffs for viewing pleasure
+            echo
+          done
+        }
+        function rgr() {
+          rgdiff "$@" | patch -p1
+        }
+
+        function keepsudo() {
+          sudo -v && {
+            while
+              sleep ''${1:-240} &&
+              sudo -v
+            do true
+            done &
+          }
+        }
       '';
     };
 
