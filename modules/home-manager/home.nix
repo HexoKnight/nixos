@@ -264,7 +264,9 @@ in {
         "Pictures"
         "Videos"
         "Music"
+        "Downloads"
         "Saves"
+        "Torrents"
         ".config/vesktop"
         ".config/google-chrome"
         # cache for logged in accounts and stuff
