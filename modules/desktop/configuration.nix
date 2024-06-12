@@ -49,7 +49,7 @@
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.sddm = {
+  services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
     theme = "where_is_my_sddm_theme_qt5";
@@ -64,9 +64,9 @@
   programs.hyprland = {
     enable = true;
     # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    package = pkgs.unstable.hyprland.override {
-      inherit (pkgs) mesa;
-    };
+    # package = pkgs.hyprland.override {
+    #   inherit (pkgs) mesa;
+    # };
   };
 
   # Enable sound with pipewire.
@@ -89,7 +89,7 @@
   services.printing.enable = true;
   services.avahi = {
     enable = true;
-    nssmdns = true;
+    nssmdns4 = true;
     openFirewall = true;
   };
 

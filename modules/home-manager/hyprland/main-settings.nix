@@ -21,8 +21,8 @@
       };
 
       input = {
-        kb_layout = system-config.services.xserver.layout;
-        kb_variant = system-config.services.xserver.xkbVariant;
+        kb_layout = system-config.services.xserver.xkb.layout;
+        kb_variant = system-config.services.xserver.xkb.variant;
 
         follow_mouse = 2;
         mouse_refocus = false;

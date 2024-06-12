@@ -41,7 +41,6 @@ with lib; {
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = system-config.programs.hyprland.finalPackage;
     plugins = [
       # inputs.hycov.packages.${pkgs.system}.hycov
     ];

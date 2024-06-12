@@ -19,9 +19,10 @@ in {
     home = { inherit username homeDirectory; };
 
     nixpkgs.overlays = system-config.nixpkgs-overlays;
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (getName pkg) [
       "google-chrome"
-      "cudatoolkit"
+    ] || builtins.elem pkg.meta.license.shortName [
+      "CUDA EULA"
     ];
 
     # This value determines the Home Manager release that your configuration is
@@ -31,7 +32,7 @@ in {
     # You should not change this value, even if you update Home Manager. If you do
     # want to update the value, then make sure to first check the Home Manager
     # release notes.
-    home.stateVersion = "23.11"; # Please read the comment before changing.
+    home.stateVersion = "24.05"; # Please read the comment before changing.
 
     home.packages = with pkgs; [
       # tools
@@ -79,7 +80,6 @@ in {
 
     programs.eza = {
       enable = true;
-      enableAliases = true;
       icons = true;
     };
 
@@ -285,7 +285,7 @@ in {
         commandLineArgs = "--incognito";
       })
       github-desktop
-      nvtop
+      nvtopPackages.full
       mpv
       unstable.neovide
     ];
