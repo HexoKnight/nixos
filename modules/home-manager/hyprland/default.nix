@@ -30,6 +30,12 @@ with lib; {
     '';
   };
 
+  programs.eww = {
+    enable = true;
+    package = pkgs.eww;
+    configDir = ./eww;
+  };
+
   gtk = {
     enable = true;
     theme = {
@@ -44,11 +50,6 @@ with lib; {
     };
   };
 
-  programs.waybar = {
-    enable = true;
-    systemd.enable = true;
-  };
-
   wayland.windowManager.hyprland = {
     enable = true;
     plugins = [
@@ -56,6 +57,11 @@ with lib; {
     ];
     settings = with pkgs; {
       exec-once = [
+        (concatStringsSep " && " [
+          "${config.programs.eww.package}/bin/eww daemon"
+          "${config.programs.eww.package}/bin/eww open bar0"
+          "${config.programs.eww.package}/bin/eww open bar1"
+        ])
         "vesktop"
         "steam"
       ];

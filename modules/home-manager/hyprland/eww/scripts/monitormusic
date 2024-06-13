@@ -1,0 +1,5 @@
+#!/usr/bin/env nix
+#! nix shell nixpkgs#playerctl
+#! nix --command bash
+
+playerctl --follow metadata --format '{{ artist }} - {{ title }}'

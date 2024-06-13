@@ -1,0 +1,45 @@
+#!/usr/bin/env nix
+#! nix shell nixpkgs#jc nixpkgs#jq nixpkgs#moreutils
+#! nix --command bash
+
+jc nmcli -f active,type,device connection |
+jq -r '
+  .[] |
+  select(.type != "loopback" and .active == "yes") |
+  .device
+' |
+ifne -n echo 'no connection' |
+while IFS=$'\n' read -r device; do
+  if [ "$device" = "no connection" ]; then
+    echo "Disconnected "
+    break
+  fi
+  jc nmcli -f general,ip4,ap device show "$device" |
+  jq -r '
+    .[] |
+    if .type == "ethernet" then
+      "Ethernet 󰈀" # 󰌗
+    elif .type == "wifi" then
+      # there are many flat "ap_{1,2,..}_{in_use,ssid,bars,..}" entries
+      # so the single "in_use" one must be extracted
+      to_entries |
+        reduce .[] as $entry ({};
+          ($entry.key | capture("ap_(?<ap>[0-9]+)_(?<key>.+)")) as $captures |
+          if $captures != {} then
+            .[$captures.ap].[$captures.key]=$entry.value
+          end
+      ) |
+      .[] |
+      select(.in_use == "*") |
+      {
+        "▂___": "󰤟",
+        "▂▄__": "󰤢",
+        "▂▄▆_": "󰤥",
+        "▂▄▆█": "󰤨"
+      }.[.bars] as $signal_strength |
+      "\(.ssid) \($signal_strength)(\(.signal)%)"
+    else
+      empty # idk what to do with this??
+    end
+  '
+done

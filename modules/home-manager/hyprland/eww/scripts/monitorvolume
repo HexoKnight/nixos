@@ -1,0 +1,27 @@
+#!/usr/bin/env nix
+#! nix shell nixpkgs#jq nixpkgs#pulseaudio nixpkgs#pamixer
+#! nix --command bash
+
+function output_volume() {
+  if [ "$(pamixer --get-mute)" = "true" ]; then
+    echo 0
+    exit
+  else
+    pamixer --get-volume
+  fi
+}
+
+output_volume
+
+pactl -f json subscribe |
+# only way I could get jq to not buffer :/ (I don't like awk)
+# see https://github.com/jqlang/jq/issues/1530#issuecomment-343676215
+stdbuf -oL awk 'BEGIN{ORS=RS="}"}{print $0 "\n"}' |
+jq --unbuffered '
+  if .event != "change" then
+    empty
+  end
+' |
+while read; do
+  output_volume
+done
