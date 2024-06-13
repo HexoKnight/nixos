@@ -83,6 +83,26 @@ in {
       icons = true;
     };
 
+    programs.lazygit = {
+      enable = true;
+      settings = {
+        keybinding = {
+          universal = {
+            rangeSelectUp = "K";
+            rangeSelectDown = "J";
+            scrollUpMain-alt1 = "<disabled>";
+            scrollDownMain-alt1 = "<disabled>";
+          };
+        };
+        gui = {
+          nerdFontsVersion = "3";
+        };
+        git.paging = {
+          pager = "delta --paging=never";
+        };
+      };
+    };
+
     programs.git = {
       enable = true;
       userName = "HexoKnight";
@@ -257,6 +277,7 @@ in {
         ".vim"
         ".config/sops"
         ".config/syncthing"
+        ".local/state/lazygit"
       ] ++ lists.optionals desktop [
         ".config/GitHub Desktop"
         ".config/Code"
