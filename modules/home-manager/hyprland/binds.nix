@@ -45,20 +45,25 @@
   }
 
   (let
-    brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+    brightnessctl = lib.getExe pkgs.brightnessctl;
   in {
     ", XF86KbdBrightnessUp"   = mkExec "${brightnessctl} -d *::kbd_backlight s +1";
     ", XF86KbdBrightnessDown" = mkExec "${brightnessctl} -d *::kbd_backlight s 1-";
-    ", XF86MonBrightnessUp"   = repeating mkExec "${brightnessctl} s +5%";
-    ", XF86MonBrightnessDown" = repeating mkExec "${brightnessctl} s 5%-";
   })
 
   (let
-    swayosd = "${pkgs.swayosd}/bin/swayosd";
+    swayosd-client = lib.getExe' config.services.swayosd.package "swayosd-client";
   in {
-    ", XF86AudioRaiseVolume" = repeating mkExec "${swayosd} --output-volume raise";
-    ", XF86AudioLowerVolume" = repeating mkExec "${swayosd} --output-volume lower";
-    ", XF86AudioMute"        = mkExec "${swayosd} --output-volume mute-toggle";
+    ", XF86MonBrightnessUp"   = repeating mkExec "${swayosd-client} --brightness +5";
+    ", XF86MonBrightnessDown" = repeating mkExec "${swayosd-client} --brightness -5";
+
+    ", XF86AudioRaiseVolume" = repeating mkExec "${swayosd-client} --output-volume +5";
+    ", XF86AudioLowerVolume" = repeating mkExec "${swayosd-client} --output-volume -5";
+    ", XF86AudioMute"        = mkExec "${swayosd-client} --output-volume mute-toggle";
+
+    "SHIFT, XF86AudioRaiseVolume"  = repeating mkExec "${swayosd-client} --input-volume +5";
+    "SHIFT, XF86AudioLowerVolume"  = repeating mkExec "${swayosd-client} --input-volume -5";
+    "SHIFT, XF86AudioMute"         = mkExec "${swayosd-client} --input-volume mute-toggle";
   })
 
   (let

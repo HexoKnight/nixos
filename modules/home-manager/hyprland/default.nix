@@ -20,6 +20,16 @@ with lib; {
   # Optional, hint electron apps to use wayland:
   # environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+  services.swayosd = {
+    enable = true;
+    # https://github.com/ErikReider/SwayOSD/blob/main/data/style/style.scss
+    stylePath = pkgs.writeText "swayosd-style" ''
+      #osd {
+        background: alpha(@theme_bg_color, 0.8);
+      }
+    '';
+  };
+
   gtk = {
     enable = true;
     theme = {
