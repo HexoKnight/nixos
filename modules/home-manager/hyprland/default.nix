@@ -56,7 +56,7 @@ with lib; {
     ];
     settings = with pkgs; {
       exec-once = [
-        "vesktop --disable-gpu"
+        "vesktop"
         "steam"
       ];
 

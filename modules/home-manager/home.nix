@@ -426,7 +426,7 @@ in {
   in
   {
     home.packages = with pkgs; [
-      unstable.vesktop
+      vesktop
       termusic
       qbittorrent
       linkSaveDir
