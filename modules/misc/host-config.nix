@@ -23,5 +23,9 @@ in {
   };
   config = {
     users.mutableUsers = cfg.mutableUsers;
+
+    programs.nix-ld = {
+      enable = true;
+    };
   };
 }
