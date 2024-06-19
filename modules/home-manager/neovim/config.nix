@@ -33,13 +33,39 @@
 
     " Move to the next buffer
     nmap <silent> <C-l> :bnext<CR>
-    tmap <silent> <C-l> <C-\><C-O>:bnext<CR>
+    tmap <silent> <C-l> <Cmd>:bnext<CR>
     " Move to the previous buffer
     nmap <silent> <C-h> :bprevious<CR>
-    tmap <silent> <C-h> <C-\><C-O>:bprevious<CR>
+    tmap <silent> <C-h> <Cmd>:bprevious<CR>
     " quit current buffer and move to previous
     nmap <silent> <C-q> :BClose<CR>
-    tmap <silent> <C-q> <C-\><C-O>:BClose<CR>
+    tmap <silent> <C-q> <Cmd>:BClose<CR>
+
+    augroup terminal_mode
+      au!
+      au BufLeave * call s:SaveTerminalMode()
+      au BufEnter * call s:LoadTerminalMode()
+      " seems BufEnter doesn't activate on the initial opening?? or smthn
+      au TermOpen * call s:LoadTerminalMode()
+    augroup END
+
+    function! s:SaveTerminalMode()
+      if &buftype == "terminal"
+        let b:terminal_mode = mode()
+      endif
+    endfunction
+    function! s:LoadTerminalMode()
+      if &buftype == "terminal"
+        if !exists('b:terminal_mode')
+          let b:terminal_mode = "t"
+        endif
+        if b:terminal_mode == "t"
+          startinsert
+        elseif b:terminal_mode == "n"
+          stopinsert
+        endif
+      endif
+    endfunction
 
     function! s:BClose()
       if(&modified)
@@ -82,7 +108,7 @@
     command! BClose call s:BClose()
 
     nmap <C-t> :term<CR>
-    tmap <C-t> <C-\><C-O>:term<CR>
+    tmap <C-t> <Cmd>:term<CR>
 
     nmap <C-S> :w<CR>
     nmap <C-f> za
