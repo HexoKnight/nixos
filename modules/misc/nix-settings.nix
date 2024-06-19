@@ -1,19 +1,25 @@
-{ inputs, ... }:
+{ lib, inputs, ... }:
 
 {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  # nix.settings.auto-optimise-store = true;
-  nix.channel.enable = false; # only flakes :)
+  nix = {
+    settings.experimental-features = [ "nix-command" "flakes" ];
+    # settings.auto-optimise-store = true;
+    channel.enable = false; # only flakes :)
 
-  nix.optimise = {
-    automatic = true;
-    dates = [ "weekly" ];
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
+    };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 14d";
+    };
+
+    registry = builtins.mapAttrs (_name: value: { flake = value; }) inputs;
+    nixPath = [ "/etc/nix/path" ];
+    settings.nix-path = "/etc/nix/path";
   };
 
-  nix.registry = builtins.mapAttrs (_name: value: { flake = value; }) inputs;
+  environment.etc = lib.mapAttrs' (name: value: lib.nameValuePair "nix/path/${name}" { source = value; }) inputs;
 }
