@@ -107,8 +107,8 @@
 
     command! BClose call s:BClose()
 
-    nmap <C-t> :term<CR>
-    tmap <C-t> <Cmd>:term<CR>
+    nmap <C-t> :term bash<CR>
+    tmap <C-t> <Cmd>:term bash<CR>
 
     nmap <C-S> :w<CR>
     nmap <C-f> za
@@ -227,7 +227,7 @@
     augroup END
 
     " just to limit the size of the terminal buffer name
-    set shell=bash
+    " set shell=bash
     " let $SHELL = 'bash'
 
     augroup commentstrings
