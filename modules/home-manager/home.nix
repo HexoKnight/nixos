@@ -166,6 +166,7 @@ in {
 
     home.shellAliases = {
       man = "${pkgs.bat-extras.batman}/bin/batman";
+      ":q" = "exit";
     }
     // (optionalAttrs hasRebuildCommand {
       rebuild-reboot = "rebuild -t boot && reboot";
@@ -176,7 +177,7 @@ in {
     programs.bash = {
       enable = true;
       historyControl = [ "ignorespace" "erasedups" ];
-      historyIgnore = [ "exit" ];
+      historyIgnore = [ "exit" ":q" ];
       initExtra = ''
         alias bathelp='bat --plain --language=help'
         function help() {
