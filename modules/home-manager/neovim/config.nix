@@ -32,14 +32,14 @@
     map <silent> <expr> <F5> ':wa \| !' . g:build_cmd . '<CR>'
 
     " Move to the next buffer
-    nmap <silent> <C-l> :bnext<CR>
-    tmap <silent> <C-l> <Cmd>:bnext<CR>
+    nmap <silent> <C-l> <Cmd>bnext<CR>
+    tmap <silent> <C-l> <Cmd>bnext<CR>
     " Move to the previous buffer
-    nmap <silent> <C-h> :bprevious<CR>
-    tmap <silent> <C-h> <Cmd>:bprevious<CR>
+    nmap <silent> <C-h> <Cmd>bprevious<CR>
+    tmap <silent> <C-h> <Cmd>bprevious<CR>
     " quit current buffer and move to previous
-    nmap <silent> <C-q> :BClose<CR>
-    tmap <silent> <C-q> <Cmd>:BClose<CR>
+    nmap <silent> <C-q> <Cmd>BClose<CR>
+    tmap <silent> <C-q> <Cmd>BClose<CR>
 
     function! s:BClose()
       if(&modified)
@@ -81,18 +81,18 @@
 
     command! BClose call s:BClose()
 
-    nmap <C-S> :w<CR>
+    nmap <C-S> <Cmd>w<CR>
     nmap <C-f> za
     imap <C-z> <C-o>zz
 
-    nmap <C-Tab> :set et! et?<CR>
+    nmap <C-Tab> <Cmd>set et! et?<CR>
 
     imap <C-h> <Left>
     imap <C-j> <Down>
     imap <C-k> <Up>
     imap <C-l> <Right>
 
-    nnoremap <silent> # :noh<CR>
+    nnoremap <silent> # <Cmd>noh<CR>
 
     " ########## TERMINAL-RELATED MAPPINGS #########
 
@@ -122,7 +122,7 @@
       endif
     endfunction
 
-    nmap <C-t> :term bash<CR>
+    nmap <C-t> <Cmd>term bash<CR>
     tmap <C-t> <Cmd>term bash<CR>
 
     " ########## COMMAND ABBREVS ##########
