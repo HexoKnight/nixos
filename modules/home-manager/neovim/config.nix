@@ -41,6 +41,7 @@
     nmap <silent> <C-q> <Cmd>BClose<CR>
     tmap <silent> <C-q> <Cmd>BClose<CR>
 
+    command! BClose call s:BClose()
     function! s:BClose()
       if(&modified)
         let answer = confirm("This buffer has been modified. Are you sure you want to delete it?", "&Yes\n&No", 2)
@@ -78,8 +79,6 @@
         Startify
       endif
     endfunction
-
-    command! BClose call s:BClose()
 
     nmap <C-S> <Cmd>w<CR>
     nmap <C-f> za
