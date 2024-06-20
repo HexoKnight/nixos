@@ -41,32 +41,6 @@
     nmap <silent> <C-q> :BClose<CR>
     tmap <silent> <C-q> <Cmd>:BClose<CR>
 
-    augroup terminal_mode
-      au!
-      au BufLeave * call s:SaveTerminalMode()
-      au BufEnter * call s:LoadTerminalMode()
-      " seems BufEnter doesn't activate on the initial opening?? or smthn
-      au TermOpen * call s:LoadTerminalMode()
-    augroup END
-
-    function! s:SaveTerminalMode()
-      if &buftype == "terminal"
-        let b:terminal_mode = mode()
-      endif
-    endfunction
-    function! s:LoadTerminalMode()
-      if &buftype == "terminal"
-        if !exists('b:terminal_mode')
-          let b:terminal_mode = "t"
-        endif
-        if b:terminal_mode == "t"
-          startinsert
-        elseif b:terminal_mode == "n"
-          stopinsert
-        endif
-      endif
-    endfunction
-
     function! s:BClose()
       if(&modified)
         let answer = confirm("This buffer has been modified. Are you sure you want to delete it?", "&Yes\n&No", 2)
@@ -107,9 +81,6 @@
 
     command! BClose call s:BClose()
 
-    nmap <C-t> :term bash<CR>
-    tmap <C-t> <Cmd>:term bash<CR>
-
     nmap <C-S> :w<CR>
     nmap <C-f> za
     imap <C-z> <C-o>zz
@@ -122,6 +93,37 @@
     imap <C-l> <Right>
 
     nnoremap <silent> # :noh<CR>
+
+    " ########## TERMINAL-RELATED MAPPINGS #########
+
+    augroup terminal_mode
+      au!
+      au BufLeave * call s:SaveTerminalMode()
+      au BufEnter * call s:LoadTerminalMode()
+      " seems BufEnter doesn't activate on the initial opening?? or smthn
+      au TermOpen * call s:LoadTerminalMode()
+    augroup END
+
+    function! s:SaveTerminalMode()
+      if &buftype == "terminal"
+        let b:terminal_mode = mode()
+      endif
+    endfunction
+    function! s:LoadTerminalMode()
+      if &buftype == "terminal"
+        if !exists('b:terminal_mode')
+          let b:terminal_mode = "t"
+        endif
+        if b:terminal_mode == "t"
+          startinsert
+        elseif b:terminal_mode == "n"
+          stopinsert
+        endif
+      endif
+    endfunction
+
+    nmap <C-t> :term bash<CR>
+    tmap <C-t> <Cmd>term bash<CR>
 
     " ########## COMMAND ABBREVS ##########
     cabbr <expr> %% expand('%:p:h')
