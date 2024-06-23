@@ -143,8 +143,8 @@
       let currentWindow = winnr()
       let currentBuffer = bufnr("%")
       keepjumps windo call s:GotoLastListedBuffer(currentBuffer)
-      execute "bdelete!".currentBuffer
-      execute "keepjumps ".currentWindow."wincmd w"
+      execute "bdelete!" currentBuffer
+      execute "keepjumps" currentWindow "wincmd w"
     endfunction
     function! s:GotoLastListedBuffer(bufferToBeDeleted)
       if bufnr("%") == a:bufferToBeDeleted
@@ -274,13 +274,13 @@
       " dist#script#DetectFromHashBang(fullshebang)
       " to avoid all this malarky but oh well
       let currentbuffer = bufnr('%')
-      exec "e " . tempname()
+      exec "e" tempname()
       let tempbuffer = bufnr('%')
       call append(0, fullshebang)
       call dist#script#DetectFiletype()
       let acfiletype = &ft
-      exec "buffer! " . currentbuffer
-      exec "bwipeout! " . tempbuffer
+      exec "buffer!" currentbuffer
+      exec "bwipeout!" tempbuffer
       let &ft = acfiletype
     endfunction
 
