@@ -135,11 +135,23 @@
     endfunction
 
     " ########## TERMINAL-RELATED MAPPINGS #########
-
-
-
     nmap <C-t> <Cmd>term bash<CR>
     tmap <C-t> <Cmd>term bash<CR>
+
+    tnoremap <expr> <C-\><C-R> getreg(nr2char(getchar()))
+    tnoremap <Esc> <Cmd>TerminalEsc<CR>
+
+    command! TerminalEsc call s:TerminalEsc()
+    function! s:TerminalEsc()
+      if buffer_name('%') =~ '^.*:bash$' 
+        stopinsert
+      else
+        call feedkeys("\<Esc>", 'n')
+      endif
+    endfunction
+
+    " a tad odd when switching buffers (enters insert mode in switched buffer) but eh
+    tmap <C-\>: <C-\><C-O>:
 
     " ########## COMMAND ABBREVS ##########
     cabbr <expr> %% expand('%:p:h')
