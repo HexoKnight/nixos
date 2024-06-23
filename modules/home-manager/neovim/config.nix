@@ -53,6 +53,10 @@
     augroup END
 
     function! s:SaveMode()
+      if exists('b:ignore_next_mode') && b:ignore_next_mode
+        let b:ignore_next_mode = v:false
+        return
+      endif
       let b:buffer_mode = mode()
     endfunction
     function! s:LoadMode()
@@ -83,6 +87,35 @@
           exe "normal! \<C-\>\<C-N>"
         endif
       endif
+    endfunction
+
+    " ALT+hjkl to move windows
+    nmap <silent> <A-h> <C-W>h
+    nmap <silent> <A-j> <C-W>j
+    nmap <silent> <A-k> <C-W>k
+    nmap <silent> <A-l> <C-W>l
+    " multiple '<Cmd>..<CR>'s because insert mode can
+    " only fully stop after leaving the <Cmd> scope
+    imap <A-h> <Cmd>PrepareWindowMove h<CR><Cmd>wincmd h<CR>
+    imap <A-j> <Cmd>PrepareWindowMove j<CR><Cmd>wincmd j<CR>
+    imap <A-k> <Cmd>PrepareWindowMove k<CR><Cmd>wincmd k<CR>
+    imap <A-l> <Cmd>PrepareWindowMove l<CR><Cmd>wincmd l<CR>
+    tmap <A-h> <Cmd>PrepareWindowMove h<CR><Cmd>wincmd h<CR>
+    tmap <A-j> <Cmd>PrepareWindowMove j<CR><Cmd>wincmd j<CR>
+    tmap <A-k> <Cmd>PrepareWindowMove k<CR><Cmd>wincmd k<CR>
+    tmap <A-l> <Cmd>PrepareWindowMove l<CR><Cmd>wincmd l<CR>
+
+    command! -nargs=1 PrepareWindowMove call s:PrepareWindowMove("<args>")
+    function! s:PrepareWindowMove(direction)
+      if winbufnr(winnr(a:direction)) ==# bufnr()
+        " cursor would not actually move or it would move
+        " to the same buffer so this would mess it up
+        return
+      endif
+
+      call s:SaveMode()
+      let b:ignore_next_mode = v:true
+      stopinsert
     endfunction
 
     " Move to the next buffer
