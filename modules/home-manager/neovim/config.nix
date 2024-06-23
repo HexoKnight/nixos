@@ -46,6 +46,45 @@
 
     " ########## BUFFER/WINDOW MOVEMENT/MANIPULATION #########
 
+    augroup save_load_mode
+      au!
+      au BufLeave * call s:SaveMode()
+      au BufEnter * call s:LoadMode()
+    augroup END
+
+    function! s:SaveMode()
+      let b:buffer_mode = mode()
+    endfunction
+    function! s:LoadMode()
+      if !exists('b:buffer_mode')
+        if &buftype == "terminal"
+          let b:buffer_mode = "t"
+        else
+          let b:buffer_mode = "n"
+        endif
+      endif
+      if b:buffer_mode == mode()
+        return
+      endif
+
+      if b:buffer_mode == "t"
+        startinsert
+      elseif b:buffer_mode == "i"
+        exe "normal! \<C-\>\<C-N>`^"
+        if col("'^") > len(getline("'^"))
+          startinsert!
+        else
+          startinsert
+        endif
+      elseif b:buffer_mode == "n"
+        if mode() == "t"
+          stopinsert
+        else
+          exe "normal! \<C-\>\<C-N>"
+        endif
+      endif
+    endfunction
+
     " Move to the next buffer
     nmap <silent> <C-l> <Cmd>bnext<CR>
     tmap <silent> <C-l> <Cmd>bnext<CR>
@@ -97,31 +136,7 @@
 
     " ########## TERMINAL-RELATED MAPPINGS #########
 
-    augroup terminal_mode
-      au!
-      au BufLeave * call s:SaveTerminalMode()
-      au BufEnter * call s:LoadTerminalMode()
-      " seems BufEnter doesn't activate on the initial opening?? or smthn
-      au TermOpen * call s:LoadTerminalMode()
-    augroup END
 
-    function! s:SaveTerminalMode()
-      if &buftype == "terminal"
-        let b:terminal_mode = mode()
-      endif
-    endfunction
-    function! s:LoadTerminalMode()
-      if &buftype == "terminal"
-        if !exists('b:terminal_mode')
-          let b:terminal_mode = "t"
-        endif
-        if b:terminal_mode == "t"
-          startinsert
-        elseif b:terminal_mode == "n"
-          stopinsert
-        endif
-      endif
-    endfunction
 
     nmap <C-t> <Cmd>term bash<CR>
     tmap <C-t> <Cmd>term bash<CR>
