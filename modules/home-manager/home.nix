@@ -260,7 +260,6 @@ in {
     };
 
     home.sessionVariables = {
-      EDITOR = "vim";
     };
 
     # Let Home Manager install and manage itself.
