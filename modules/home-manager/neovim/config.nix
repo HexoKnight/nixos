@@ -31,6 +31,21 @@
     " ########## MAPPINGS ##########
     map <silent> <expr> <F5> ':wa \| !' . g:build_cmd . '<CR>'
 
+    nmap <C-S> <Cmd>w<CR>
+    nmap <C-f> za
+    imap <C-z> <C-o>zz
+
+    nmap <C-Tab> <Cmd>set et! et?<CR>
+
+    imap <C-h> <Left>
+    imap <C-j> <Down>
+    imap <C-k> <Up>
+    imap <C-l> <Right>
+
+    nnoremap <silent> # <Cmd>noh<CR>
+
+    " ########## BUFFER/WINDOW MOVEMENT/MANIPULATION #########
+
     " Move to the next buffer
     nmap <silent> <C-l> <Cmd>bnext<CR>
     tmap <silent> <C-l> <Cmd>bnext<CR>
@@ -79,19 +94,6 @@
         Startify
       endif
     endfunction
-
-    nmap <C-S> <Cmd>w<CR>
-    nmap <C-f> za
-    imap <C-z> <C-o>zz
-
-    nmap <C-Tab> <Cmd>set et! et?<CR>
-
-    imap <C-h> <Left>
-    imap <C-j> <Down>
-    imap <C-k> <Up>
-    imap <C-l> <Right>
-
-    nnoremap <silent> # <Cmd>noh<CR>
 
     " ########## TERMINAL-RELATED MAPPINGS #########
 
