@@ -18,7 +18,7 @@ with lib; {
     libnotify
   ];
   # Optional, hint electron apps to use wayland:
-  # environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  home.sessionVariables.NIXOS_OZONE_WL = "1";
 
   services.swayosd = {
     enable = true;
