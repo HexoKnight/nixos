@@ -48,6 +48,7 @@ in {
       fd
       ripgrep
       jq
+      neovim-remote
 
       (vim-full.customize {
         name = "vim";
@@ -94,6 +95,14 @@ in {
             scrollDownMain-alt1 = "<disabled>";
           };
         };
+        os = {
+          edit = "nvr -s --remote {{filename}}";
+          editAtLine = "nvr -s --remote +{{line}} {{filename}}";
+          editAtLineAndWait = "nvr -s --remote-wait +{{line}} {{filename}}";
+          openDirInEditor = "nvr -s --remote {{dir}}";
+        };
+        promptToReturnFromSubprocess = false;
+        disableStartupPopups = true;
         gui = {
           nerdFontsVersion = "3";
         };
