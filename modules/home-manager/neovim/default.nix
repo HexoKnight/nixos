@@ -10,12 +10,8 @@
   };
 
   home.sessionVariables = {
-    EDITOR = lib.getExe (pkgs.writeShellApplication {
-      name = "remote-nvim-open";
-      runtimeInputs = [ ];
-      text = ''
-        exec nvim --server "''${NVIM:-}" --remote "$@"
-      '';
-    });
+    EDITOR = lib.getExe (pkgs.writeShellScriptBin "remote-nvim-edit" ''
+      exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait "$@"
+    '');
   };
 }
