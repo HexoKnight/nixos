@@ -16,6 +16,8 @@ with lib; {
 
     mako
     libnotify
+
+    wl-clipboard-rs
   ];
   # Optional, hint electron apps to use wayland:
   home.sessionVariables.NIXOS_OZONE_WL = "1";
