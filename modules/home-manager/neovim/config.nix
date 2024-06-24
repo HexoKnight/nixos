@@ -322,6 +322,7 @@
       colors.generate()
 
       require("ayu").setup({
+        terminal = false,
         overrides = {
           Normal = { bg = colors.black },
           LineNr = { fg = colors.comment },
