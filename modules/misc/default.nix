@@ -6,5 +6,6 @@
     ./grub-timestamp-format.nix
     ./overlays.nix
     ./nix-settings.nix
+    ./syncthing.nix
   ];
 }

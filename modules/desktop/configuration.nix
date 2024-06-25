@@ -10,7 +10,6 @@
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
-    (import ./syncthing.nix { inherit username; })
   ] ++ (lib.lists.optional impermanence (import ../impermanence { inherit device; }));
 
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
