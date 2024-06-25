@@ -1,11 +1,14 @@
 { config, lib, pkgs, inputs, config_name, ... }:
 
+let
+  username = "harvey";
+in
 {
   imports = [
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
     (import ../../modules/desktop/configuration.nix {
-      username = "harvey";
+      inherit username;
       hostName = "HARVEY";
       device = "/dev/nvme0n1";
       dual-boot = true;
@@ -23,6 +26,31 @@
       "uid=1000"
       "gid=100"
     ];
+  };
+
+  syncthing = {
+    enable = true;
+    inherit username;
+    settings = {
+      devices."Swift 2".id = "CWYRKMN-CSQXLVO-EJXUNGJ-WMFBR3G-UTIME5C-EA4FAKU-OMT4E2S-5OHECQU";
+      folders = {
+        "Swift 2 Camera" = {
+          id = "swift_2_camera";
+          path = "/home/${username}/Documents/Phone/Camera";
+          devices = [ "Swift 2" ];
+        };
+        "Swift 2 Downloads" = {
+          id = "swift_2_downloads";
+          path = "/home/${username}/Documents/Phone/Downloads";
+          devices = [ "Swift 2" ];
+        };
+        "Swift 2 Pictures" = {
+          id = "swift_2_pictures";
+          path = "/home/${username}/Documents/Phone/Pictures";
+          devices = [ "Swift 2" ];
+        };
+      };
+    };
   };
 
   hardware.nvidia = {
@@ -46,7 +74,7 @@
     # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
     # Only available from driver 515.43.04+
     # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = true;
+    open = false;
 
     # Enable the Nvidia settings menu,
     # accessible via `nvidia-settings`.
