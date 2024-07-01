@@ -18,6 +18,7 @@ in {
   };
   config = {
     users.mutableUsers = mkDefault false;
+    boot.tmp.useTmpfs = mkDefault true;
 
     programs.nix-ld = {
       enable = true;
