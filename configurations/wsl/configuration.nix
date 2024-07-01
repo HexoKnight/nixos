@@ -26,7 +26,7 @@ in {
     };
   };
 
-  # users.mutableUsers = false;
+  users.mutableUsers = true;
 
   wsl.defaultUser = username;
 

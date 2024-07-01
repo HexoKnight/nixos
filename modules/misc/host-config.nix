@@ -5,11 +5,6 @@ let
   cfg = config.host-config;
 in {
   options.host-config = {
-    mutableUsers = mkOption {
-      default = true;
-      description = "literally just users.mutableUsers";
-      type = types.bool;
-    };
     desktop = mkOption {
       default = false;
       description = "whether the host has a desktop";
@@ -22,7 +17,7 @@ in {
     };
   };
   config = {
-    users.mutableUsers = cfg.mutableUsers;
+    users.mutableUsers = mkDefault false;
 
     programs.nix-ld = {
       enable = true;

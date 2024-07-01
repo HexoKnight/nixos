@@ -93,7 +93,6 @@
   };
 
   host-config = {
-    mutableUsers = false;
     desktop = true;
   };
   userhome-config.${username} = {
