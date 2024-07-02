@@ -189,14 +189,14 @@ in {
     programs.bash = {
       enable = true;
       historyControl = [ "ignorespace" "erasedups" ];
-      initExtra = ''
       historyIgnore = [ "exit" "?" "??" ];
+      initExtra = /* bash */ ''
         alias bathelp='bat --plain --language=help'
         function help() {
-          "$@" --help 2>&1 | bathelp
+          "$@" --help | bathelp
         }
         function h() {
-          "$@" -h 2>&1 | bathelp
+          "$@" -h | bathelp
         }
 
         alias batpage='bat --style=plain --paging=always'
