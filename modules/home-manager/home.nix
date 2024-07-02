@@ -75,6 +75,7 @@ in {
     ];
 
     programs.nix-index-database.comma.enable = true;
+    programs.nix-index.enableBashIntegration = false;
 
     programs.bat = {
       enable = true;
@@ -269,6 +270,52 @@ in {
             done &
           }
         }
+
+        nix-locate-bin() {
+          nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$1"
+        }
+        nix-locate-choose-bin() {
+          nix-locate-bin "$@" | fzf -0
+        }
+
+        command_not_found_handle() {
+          package="$(nix-locate-choose-bin "$@")" || {
+            if [ "$?" -eq 1 ]; then
+              >&2 echo "bash: $1: command not found"
+            else
+              >&2 echo "bash: $1: package-choosing failed"
+            fi
+            return 1
+          }
+          bin_path="$(nix build --no-link --print-out-paths nixpkgs#"$package")/bin/$1" &&
+          add_to_local_path "$bin_path" "$1" &&
+          exec "$@"
+        }
+
+        add_to_local_path() {
+          ln -sfT "$1" "$BASH_LOCAL_PATH/''${2:-$(basename "$1")}"
+        }
+        remove_from_local_path() {
+          test -d "$BASH_LOCAL_PATH" &&
+          rm "$BASH_LOCAL_PATH/$1"
+        }
+
+        # on most systems, $XDG_RUNTIME_DIR is tmpfs
+        export BASH_LOCAL_PATH="''${XDG_RUNTIME_DIR:-''${TMPDIR:-/tmp}}/bash-local-path/$$"
+        mkdir -p "$BASH_LOCAL_PATH"
+        export PATH="$BASH_LOCAL_PATH:$PATH"
+
+        _remove_local_path() {
+          test -d "$BASH_LOCAL_PATH" &&
+          case "$BASH_LOCAL_PATH" in *$$)
+            # an `rm -rf` like this could be bad but
+            # this level of tamper protection
+            # is probably enough...
+            rm -rf "$BASH_LOCAL_PATH"
+          esac
+        }
+
+        trap _remove_local_path EXIT
       '';
     };
 
