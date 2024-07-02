@@ -10,7 +10,10 @@ in {
     inputs.impermanence.nixosModules.home-manager.impermanence
     inputs.nix-index-database.hmModules.nix-index
     ./neovim
-  ] ++ lists.optionals desktop [ ./plasma.nix (import ./hyprland home-inputs ) ];
+  ] ++ lists.optionals desktop [
+    # ./plasma.nix
+    (import ./hyprland home-inputs)
+  ];
 
   options = {
   };
