@@ -369,7 +369,21 @@ in {
   (attrsets.optionalAttrs (desktop) {
     home.packages = with pkgs; [
       (google-chrome.override {
-        commandLineArgs = "--incognito";
+        commandLineArgs = [
+          "--incognito"
+          "--enable-blink-features=MiddleClickAutoscroll"
+
+          # can't get hardware acceleration to work :/
+          # https://wiki.archlinux.org/title/Chromium#Hardware_video_acceleration
+          # "--enable-features=VaapiVideoDecodeLinuxGL"
+          # "--ignore-gpu-blocklist"
+          # "--enable-zero-copy"
+
+          # so forcing xwayland
+          "--ozone-platform=x11"
+          # dunno if webgpu is really necessary
+          "--enable-unsafe-webgpu"
+        ];
       })
       github-desktop
       nvtopPackages.full
