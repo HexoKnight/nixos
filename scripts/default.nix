@@ -34,7 +34,8 @@ rec {
   };
   persist = pkgs.writeShellApplication {
     name = "persist";
-    excludeShellChecks = [ "SC2086" ];
+    runtimeInputs = [ mklink configopts ];
+    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
     text = builtins.readFile ./persist.sh;
   };
 
