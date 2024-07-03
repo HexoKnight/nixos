@@ -13,11 +13,16 @@ let
     };
   };
   local-overlay = final: prev: {
-    local = import "${inputs.self}/packages" {
-      inherit (prev) system;
-      inherit lib;
-      pkgs = prev;
-    };
+    local =
+      import "${inputs.self}/packages" {
+        inherit (prev) system;
+        inherit lib;
+        pkgs = prev;
+      } //
+      import "${inputs.self}/scripts" {
+        inherit lib;
+        pkgs = prev;
+      };
   };
 in
 {

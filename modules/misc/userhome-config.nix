@@ -58,15 +58,9 @@ in {
     users.users = attrsets.mapAttrs (_: value: mkMerge [{
       name = value.username;
       extraGroups = lists.optional value.cansudo "wheel";
-      packages = with pkgs; lists.optionals value.hasRebuildCommand [
-        (writeShellScriptBin "rebuild" (builtins.readFile "${inputs.self}/scripts/rebuild.sh"))
-
-        # required for the rebuild command
-        (writeShellScriptBin "evalvar" (builtins.readFile "${inputs.self}/scripts/evalvar.sh"))
-        unstable.nixVersions.nix_2_19
-      ] ++ lists.optionals value.hasPersistCommand [
-        (writeShellScriptBin "persist" (builtins.readFile "${inputs.self}/scripts/persist.sh"))
-      ];
+      packages = with pkgs;
+        lists.optional value.hasRebuildCommand local.rebuild ++
+        lists.optional value.hasPersistCommand local.persist;
     } value.extraOptions]) users;
 
     home-manager.extraSpecialArgs = {
