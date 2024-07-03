@@ -25,6 +25,13 @@ rec {
       '';
   };
 
+  mklink = pkgs.writeShellApplication {
+    name = "mklink";
+    runtimeInputs = [ configopts ];
+    bashOptions = [];
+    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
+    text = builtins.readFile ./mklink.sh;
+  };
   persist = pkgs.writeShellApplication {
     name = "persist";
     excludeShellChecks = [ "SC2086" ];
