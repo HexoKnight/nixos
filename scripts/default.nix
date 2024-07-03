@@ -1,6 +1,30 @@
 { lib, pkgs }:
 
 rec {
+  configopts = pkgs.writeTextFile {
+    name = "configopts";
+    destination = "/bin/configopts.sh";
+    text = builtins.readFile ./configopts.sh;
+    # mostly straight from writeShellApplication source
+    checkPhase =
+      # GHC (=> shellcheck) isn't supported on some platforms (such as risc-v)
+      # but we still want to use writeShellApplication on those platforms
+      let
+        inherit (pkgs) stdenv shellcheck-minimal;
+        shellcheckSupported = lib.meta.availableOn stdenv.buildPlatform shellcheck-minimal.compiler;
+        shellcheckCommand = lib.optionalString shellcheckSupported ''
+          # use shellcheck which does not include docs
+          # pandoc takes long to build and documentation isn't needed for just running the cli
+          ${lib.getExe shellcheck-minimal} "$target"
+        '';
+      in ''
+        runHook preCheck
+        ${stdenv.shellDryRun} -o posix "$target"
+        ${shellcheckCommand}
+        runHook postCheck
+      '';
+  };
+
   persist = pkgs.writeShellApplication {
     name = "persist";
     excludeShellChecks = [ "SC2086" ];
