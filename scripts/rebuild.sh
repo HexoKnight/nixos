@@ -3,140 +3,154 @@
 # originally from (but now largely altered beyond recognition):
 # https://gist.github.com/0atman/1a5133b842f929ba4c1e195ee67599d5
 
-# exit on any command returning a non-zero status
-set -e
+# shellcheck source=configopts.sh
+source "${CONFIGOPTS_SCRIPT:-configopts.sh}" || {
+  cat << 'EOF'
+failed to source configopts!
+to fix:
+-    provide its path in $CONFIGOPTS_SCRIPT
+- or put it in $PATH
+- or put it in the current directory
+EOF
+  exit 1
+}
 
-ARGS=$(getopt --options "t:d:c:u:" --longoptions "type:,directory:,configuration:,update:,diff,no-diff,timeout:" -- "${@}") || exit
-eval "set -- ${ARGS}"
+parse_args "$@" << EOF
+@description
+rebuild the current system using nixos-rebuild
+@option t,type=TYPE Specify the type of rebuild (defaults to switch)
+@option d,directory=DIR Specify the directory in which to perform the build
+(defaults to \$NIXOS_BUILD_DIR if set or /etc/nixos)
+@option c,configuration=CONFIG Specify the configuration to load into
+(defaults to \$NIXOS_BUILD_CONFIGURATION if set or the system hostname)
+@option u,update=FLAKE Update FLAKE (or all flakes if FLAKE=all) before building
+@option ,diff=?WHEN Specify when to display a diff: auto, never, always.
+(defaults to auto without this flag, defaults to always when just --diff is given)
+@option ,no-diff Alias of --diff=never
+@option ,timeout=TIME Timeout password reading after TIMEOUT seconds
+@option =EXTRAARGS... extra args to be passed to nixos-rebuild
+EOF
 
-while true; do
-  case "$1" in
-    (-t | --type)
-      rebuild_type="$2"
-      shift 2
-    ;;
-    (-d | --directory)
-      build_dir="$2"
-      shift 2
-    ;;
-    (-c | --configuration)
-      configuration="$2"
-      shift 2
-    ;;
-    (-u | --update)
-      update_flakes+=" $2"
-      shift 2
-    ;;
+rebuild_type=switch
+build_dir=${NIXOS_BUILD_DIR-/etc/nixos}
+configuration=${NIXOS_BUILD_CONFIGURATION-}
+update_flakes=()
+diff=auto
+timeout=""
+
+while readoption option arg; do
+  # readoption sets $arg
+  # shellcheck disable=SC2154,SC2269
+  arg=$arg
+  case "$option" in
+    (-t | --type) rebuild_type=$arg ;;
+    (-d | --directory) build_dir=$arg ;;
+    (-c | --configuration) configuration=$arg ;;
+    (-u | --update) update_flakes+=("$arg") ;;
+
     (--diff)
-      show_diff='true'
-      shift 1
+      case "$arg" in
+        (auto|never|always|"") diff=${arg:-always} ;;
+        (*)
+          echoerr "invalid value '$arg' for $option"
+          tryhelpexit
+        ;;
+      esac
     ;;
-    (--no-diff)
-      show_diff='false'
-      shift 1
-    ;;
-    (--timeout)
-      timeout="$2"
-      shift 2
-    ;;
-    (--)
-      shift
-      break
-    ;;
-    (*)
-      exit 1 # error
-    ;;
+    (--no-diff) diff=never ;;
+
+    (--timeout) timeout=$arg ;;
+
+    (*) exit 1 ;;
   esac
 done
-extra_args="$*"
-
-rebuild_type="${rebuild_type-switch}"
-build_dir="${build_dir-"${NIXOS_BUILD_DIR-'/etc/nixos'}"}"
-configuration="${configuration-"$NIXOS_BUILD_CONFIGURATION"}"
+# to satisfy shellcheck
+nixos_rebuild_args=()
+readremainingpositionalargs nixos_rebuild_args
 
 # cd into directory
-pushd "$build_dir" >/dev/null
+pushd "$build_dir" >/dev/null || {
+  echoerr "could not enter build dir ('$build_dir')"
+  exit 1
+}
 
-# Edit config but I won't do that bc flake is a tad more complicated
-# ./configuration.nix
-
-# Autoformat nix files
-# alejandra . >/dev/null
-
-if [ ! -v show_diff ]; then
-  show_diff='false'
-  if [ "$rebuild_type" != "dry-activate" ] && \
-     [ "$rebuild_type" != "dry-build" ]; then
-    show_diff='true'
-  fi
-fi
+show_diff=1
+case "$diff-$rebuild_type" in never-*|auto-dry-*)
+  show_diff=""
+esac
 
 if [ ! -v SSH_AUTH_SOCK ]; then
-  echo ssh-agent not running cannot continue
+  echoerr 'ssh-agent not running cannot continue'
   exit 1
 fi
 
-read_password () {
-  if [ ! -v passkey ]; then
-    read ${timeout:+-t "$timeout"} -rsp "Password: " passkey || {
-      echo timed out
+read_password() {
+  while [ ! -v passkey ]; do
+    if read ${timeout:+-t "$timeout"} -rsp "Password: " passkey; then
+      >&2 echo
+      sudo -k
+      if ! echo "$passkey" | sudo -Sv 2>/dev/null; then
+        >&2 echo 'Password incorrect, try again'
+        unset passkey
+      fi
+    else
+      >&2 echo
+      echoerr "timed out after '$timeout' seconds"
       exit 1
-    }
-    echo
-  fi
+    fi
+  done
 }
+get_password() {
+  printf %s "${passkey-}"
+}
+
+if ! sudo -vn &>/dev/null; then
+  echo 'sudo password required...'
+  read_password
+fi
 
 if [ ! -f ~/.config/sops/agekey ]; then
   echo 'age key not found, generating from ssh...'
   mkdir -p ~/.config/sops/
   read_password
-  SSH_TO_AGE_PASSPHRASE="$passkey" nix run nixpkgs#ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o ~/.config/sops/agekey
+  SSH_TO_AGE_PASSPHRASE=$(get_password) ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o ~/.config/sops/agekey
 fi
 
 if ! ssh-add -L; then
   read_password
-  EVALVAR=$(cat <<-EOF
-  case \$* in
-    Bad*)
-      >&2 echo Bad password
-      exit 1
-    ;;
-  esac
-  echo $passkey
-EOF
-  ) SSH_ASKPASS_REQUIRE="force" SSH_ASKPASS="evalvar" ssh-add
+  EVALVAR="cat "<(get_password) SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=evalvar ssh-add || {
+    echoerr "ssh password doesn't match sudo password..."
+    ssh-add
+  }
 fi
 
-export NIX_CONFIG="$NIX_CONFIG"$'\n''warn-dirty = false'
+nix_options=(--option warn-dirty false)
 
-if ! sudo -vn &>/dev/null; then
-  read_password
-  export EVALVAR="echo $passkey"
-  export SUDO_ASKPASS="$(which evalvar)"
-  sudoarg="-A"
-fi
-
-if [ -v update_flakes ]; then
+if [ "${#update_flakes[@]}" -gt 0 ]; then
   echo "Updating Flakes..."
-  if [ "$update_flakes" == " all" ]; then
-    update_flakes=""
-  fi
-  sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nix flake update $update_flakes
+  case "${update_flakes[*]}" in "all")
+    update_flakes=()
+  esac
+  nix "${nix_options[@]}" flake update "${update_flakes[@]}" || exit 1
 fi
 
-if [ "$show_diff" == "true" ]; then
-  set +e
-  diff -r /etc/nixos-current-system-source ./ --exclude=".git" --color
-  set -e
+if [ -n "$show_diff" ]; then
+  diff -r /etc/nixos-current-system-source ./ --exclude=".git" --color || true
 fi
 
-# track all non-ignored files to ensure new files are picked up by nixos-rebuild
-git add .
+# test for a git repo
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  # track all non-ignored files (-A) to ensure new (as yet uncommited) files
+  # are correctly copied to the store but don't actually stage them (-N)
+  git add -AN || {
+    >&2 echo "failed to run 'git add -AN' but continuing..."
+  }
+fi
 
 echo "NixOS Rebuilding..."
 
-# Rebuild, output simplified errors, log tracebacks
-sudo $sudoarg NIX_CONFIG="$NIX_CONFIG" SSH_AUTH_SOCK="$SSH_AUTH_SOCK" nixos-rebuild $rebuild_type --flake ".#$configuration"
+# TODO: very probably write custom nixos-rebuild for only local development (eg. no buildHost/targetHost)
+sudo --preserve-env=SSH_AUTH_SOCK -- nixos-rebuild "${nix_options[@]}" "$rebuild_type" --flake ".#$configuration" "${nixos_rebuild_args[@]}" || exit 1
   #\
   #|& tee nixos-rebuild.log 2>/dev/null ||
   #(cat nixos-rebuild.log | grep -- color error && false)
@@ -150,7 +164,10 @@ if [ "$rebuild_type" != "test" ] && \
 fi
 
 # Back to prev dir
-popd >/dev/null
+popd >/dev/null || {
+  echoerr "could not return to prev dir (???)"
+  exit 1
+}
 
 # Notify all OK!
 echo "all built successfully :)"

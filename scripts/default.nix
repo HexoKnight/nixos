@@ -42,9 +42,8 @@ rec {
   evalvar = pkgs.writeShellScriptBin "evalvar" ''eval "$EVALVAR"'';
   rebuild = pkgs.writeShellApplication {
     name = "rebuild";
-    runtimeInputs = [ evalvar pkgs.nixVersions.nix_2_19 ];
-    bashOptions = [];
-    excludeShellChecks = [ "SC2034" "SC2155" "SC2086" ];
+    runtimeInputs = [ configopts pkgs.ssh-to-age evalvar pkgs.nixVersions.nix_2_19 ];
+    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
     text = builtins.readFile ./rebuild.sh;
   };
 }
