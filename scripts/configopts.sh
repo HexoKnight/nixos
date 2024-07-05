@@ -40,6 +40,13 @@ ensure_getopt() {
   fi
 }
 
+is_exe_name() {
+  [ "$(basename "$(ps -p $$ -o exe=)")" = "$1" ]
+}
+is_bash() {
+  is_exe_name bash
+}
+
 ########### CONSTANTS FOR POSIX ###########
 
 NEWLINE=$(printf '\nx')
@@ -512,6 +519,21 @@ readexactpositionalargs() {
   fi
 
   test -z "$tryhelpexit" || tryhelpexit
+}
+
+readremainingpositionalargs() {
+  if ! is_bash; then
+    1>&2 echo "readremainingpositionalargs: function only available in bash"
+    return 1
+  fi
+  if [ "$#" -ne 1 ]; then
+    1>&2 echo "readremainingpositionalargs: exactly 1 arg required but $# were supplied"
+    return 1
+  fi
+
+  check_varname "$@"
+  eval "$1=($positional_args)"
+  positional_args=""
 }
 
 ########## EXTRA PUBLIC UTILITIES ##########
