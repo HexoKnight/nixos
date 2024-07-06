@@ -3,7 +3,11 @@
 {
   wayland.windowManager.hyprland = {
     settings = {
-      monitor = ",preferred,auto,1";
+      monitor = [
+        ",preferred,auto,1"
+        # TODO: move this into a host-specific config
+        "HDMI-A-1,preferred,auto-left,1"
+      ];
 
       general = {
         gaps_in = 0;
