@@ -532,6 +532,9 @@ in {
       vesktop
       termusic
       qbittorrent
+
+      prismlauncher
+
       linkSaveDir
       linkSaveDirs
       addLinkedSave
