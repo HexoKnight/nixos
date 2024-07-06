@@ -54,6 +54,8 @@ in {
       jq
       neovim-remote
 
+      nixVersions.nix_2_19
+
       (vim-full.customize {
         name = "vim";
         # vimrcFile = inputs.dotfiles + "/vimrc";
