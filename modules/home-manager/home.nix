@@ -196,30 +196,30 @@ in {
       historyIgnore = [ "exit" "?" "??" ];
       initExtra = /* bash */ ''
         alias bathelp='bat --plain --language=help'
-        function help() {
+        help() {
           "$@" --help | bathelp
         }
-        function h() {
+        h() {
           "$@" -h | bathelp
         }
 
         alias batpage='bat --style=plain --paging=always'
-        function page() {
+        page() {
           "$@" | batpage
         }
 
-        function ezap() {
+        ezap() {
           eza --colour=always --icons=always "$@" | batpage --pager="less -r"
         }
 
-        function nixrun() (
+        nixrun() (
           if [ "$1" = "-u" ]; then
             shift 1
             unstable="-unstable"
           fi
           nix run "nixpkgs''${unstable}#$1" -- "''${@:2}"
         )
-        function nixshell() (
+        nixshell() (
           if [ "$1" = "-u" ]; then
             shift 1
             unstable="-unstable"
@@ -227,7 +227,7 @@ in {
           nix shell "nixpkgs''${unstable}#$1" "''${@:2}"
         )
 
-        function nixrepl-system() (
+        nixrepl-system() (
           nix repl \
             --override-flake flake "''${1-$NIXOS_BUILD_DIR}" \
             --expr '
@@ -242,11 +242,11 @@ in {
             '
         )
 
-        function realwhich() {
+        realwhich() {
           realpath $(which "$@")
         }
 
-        function rgdiff() {
+        rgdiff() {
           # these will break if '--' is passed
           # but swapping the order will break them if '-C3', etc. are passed
           # so idk
@@ -259,11 +259,11 @@ in {
             echo
           done
         }
-        function rgr() {
+        rgr() {
           rgdiff "$@" | patch -p1
         }
 
-        function keepsudo() {
+        keepsudo() {
           sudo -v && {
             while
               sleep ''${1:-240} &&
