@@ -4,7 +4,15 @@ rec {
   configopts = pkgs.writeTextFile {
     name = "configopts";
     destination = "/bin/configopts.sh";
-    text = builtins.readFile ./configopts.sh;
+    text = ''
+      #!/usr/bin/env sh
+
+      getopt() {
+        ${lib.getExe' pkgs.util-linux "getopt"} "$@"
+      }
+
+      ${builtins.readFile ./configopts.sh}
+    '';
     # mostly straight from writeShellApplication source
     checkPhase =
       # GHC (=> shellcheck) isn't supported on some platforms (such as risc-v)
