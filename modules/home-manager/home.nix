@@ -217,14 +217,14 @@ in {
             shift 1
             unstable="-unstable"
           fi
-          nix run "nixpkgs''${unstable}#$1" -- "''${@:2}"
+          nix run "nixpkgs$unstable#$1" -- "''${@:2}"
         )
         nixshell() (
           if [ "$1" = "-u" ]; then
             shift 1
             unstable="-unstable"
           fi
-          nix shell "nixpkgs''${unstable}#$1" "''${@:2}"
+          nix shell "nixpkgs$unstable#$1" "''${@:2}"
         )
 
         nixrepl-system() (
@@ -281,7 +281,7 @@ in {
         }
 
         command_not_found_handle() {
-          package="$(nix-locate-choose-bin "$@")" || {
+          package=$(nix-locate-choose-bin "$@") || {
             if [ "$?" -eq 1 ]; then
               >&2 echo "bash: $1: command not found"
             else
@@ -289,7 +289,7 @@ in {
             fi
             return 1
           }
-          bin_path="$(nix build --no-link --print-out-paths nixpkgs#"$package")/bin/$1" &&
+          bin_path=$(nix build --no-link --print-out-paths nixpkgs#"$package")/bin/$1 &&
           add_to_local_path "$bin_path" "$1" &&
           exec "$@"
         }
@@ -328,7 +328,7 @@ in {
     programs.home-manager.enable = true;
   }
 
-  (attrsets.optionalAttrs (persistence) {
+  (attrsets.optionalAttrs persistence {
     home.persistence."/persist/home/${username}" = {
       allowOther = true;
       directories = [
@@ -368,7 +368,7 @@ in {
     };
   })
 
-  (attrsets.optionalAttrs (desktop) {
+  (attrsets.optionalAttrs desktop {
     home.packages = with pkgs; [
       (google-chrome.override {
         commandLineArgs = [
@@ -428,7 +428,7 @@ in {
     };
   })
 
-  (attrsets.optionalAttrs (personal-gaming) (
+  (attrsets.optionalAttrs personal-gaming (
   let
     declareDefault = name: default: ''${name}="''${${name}:-${default}}"'';
     declare-LINKED_SAVES_DIR = declareDefault "LINKED_SAVES_DIR" "$HOME/Saves";
