@@ -21,6 +21,7 @@ let
 
   genFzfCommand = {
     defaultCommand ? null,
+    withData ? false,
     binds ? {},
     options ? {},
     extraArgs ? []
@@ -45,20 +46,24 @@ let
     commandLineArgs = genCommandLineArgs (options // {
       bind = genFzfbinds binds ++ toList options.bind or [];
     });
-  in /* bash */ ''(
+
+    mainCommand = toString [
+      setDefaultCommand
+      fzfBin
+      commandLineArgs
+      extraArgs
+    ];
+  in 
+  if withData then /* bash */ ''(
     FZF_DATA_DIR=''${XDG_RUNTIME_DIR:-''${TMPDIR:-/tmp}}/fzf-data
     mkdir -p "$FZF_DATA_DIR"
     export FZF_DATA_FILE=$(mktemp -p "$FZF_DATA_DIR" "XXXXXXXXXX.json")
     echo '{}' >"$FZF_DATA_FILE"
     export PATH="${fzfDataBinPath}":$PATH
-    ${toString [
-      setDefaultCommand
-      fzfBin
-      commandLineArgs
-      extraArgs
-    ]}
+    ${mainCommand}
     rm -rf "$FZF_DATA_FILE"
-  )'';
+  )''
+  else mainCommand;
 
   withArg = name: arg: { inherit name arg; };
 
@@ -119,6 +124,10 @@ let
   );
 in
 {
+  lib.fzf = {
+    inherit genFzfCommand genFzfbinds fzf-data;
+  };
+
   programs.fzf = {
     enable = true;
     defaultCommand = fdBin;
@@ -149,6 +158,7 @@ in
     __fzf_select__() {
       ${genFzfCommand rec {
         defaultCommand = "fd -HE '.git'";
+        withData = true;
         binds =
         let
           toggle-flag = fzf-data.toggle-flag-update-prompt defaultCommand;
@@ -173,6 +183,7 @@ in
     __fzf_cd__() {
       ${genFzfCommand rec {
         defaultCommand = "fd -td -HE '.git'";
+        withData = true;
         binds = rec {
           alt-l.transform = fzf-data.toggle-flag-update-prompt defaultCommand "-L";
           enter.become = "printf 'cd -- %q' {}";
