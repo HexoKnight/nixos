@@ -11,7 +11,11 @@ in {
   options.userhome-config = mkOption {
     default = {};
     description = "users to configure";
-    type = let host-config = config.host-config; in types.attrsOf (types.submodule ({name, config, ...}: {
+    type =
+    let
+      host-config = config.host-config;
+    in
+    types.attrsOf (types.submodule ({name, config, ...}: {
       options = {
         username = mkOption {
           type = types.str;
@@ -46,8 +50,6 @@ in {
           description = "extra options passed to users.users.<name>";
         };
       };
-      config = {
-      };
     }));
   };
 
@@ -55,8 +57,8 @@ in {
     # required for persistence
     programs.fuse.userAllowOther = true;
 
-    users.users = attrsets.mapAttrs (_: value: mkMerge [{
-      name = value.username;
+    users.users = attrsets.mapAttrs (_: {username, ...}@value: mkMerge [{
+      name = username;
       extraGroups = lists.optional value.cansudo "wheel";
       packages = with pkgs;
         lists.optional value.hasRebuildCommand local.rebuild ++
