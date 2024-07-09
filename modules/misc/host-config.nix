@@ -20,6 +20,8 @@ in {
     users.mutableUsers = mkDefault false;
     boot.tmp.useTmpfs = mkDefault true;
 
+    documentation.man.generateCaches = true;
+
     programs.nix-ld = {
       enable = true;
     };

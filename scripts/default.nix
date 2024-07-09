@@ -108,4 +108,56 @@ rec {
       ${mklinkBin} "$LINKED_SAVES_DIR/$save_name" "$save_dir"
     '';
   };
+
+  batman = pkgs.writeShellApplication {
+    name = "batman";
+    text =
+    let
+      sedBin = lib.getExe pkgs.gnused;
+      batBin = lib.getExe pkgs.bat;
+
+      # essentially just removes then reinserts some ANSI colour codes around man page references ('... man-page(7) ...')
+      # to avoid bat misinterpreting (part of) them as literal text
+      # this then allows default man highlighting to coexist with bat's highlighting :)
+
+      # some bat manpage parsing is reimplemented here... :/
+      # really it shouldn't be hard for bat itself to take ansi codes into account when highlighting but eh
+    in /* bash */ ''
+      ${sedBin} -Ee '
+        # escape <ANSI>man-page<ANSI>(7) -> xxESCAPESTARTxx<ANSI>xxESCAPEENDxxman-pagexxESCAPESTARTxx<ANSI>xxESCAPEENDxx(7)
+        s/((\x1B\[[;0-9]+m)*)([-A-Za-z0-9]+)((\x1B\[[;0-9]+m)*)(\([0-9]+\))/xxESCAPESTARTxx\1xxESCAPEENDxx\3xxESCAPESTARTxx\4xxESCAPEENDxx\6/g
+
+        # escape word(just stuff in brackets) -> word xxESCAPESPACExx (just stuff in brackets)
+        s/([^([:space:]]+)\(/\1 xxESCAPESPACExx (/g
+        s/(xxESCAPEENDxx|-|=) xxESCAPESPACExx \(/\1(/g
+
+        # remove empty escapes
+        s/xxESCAPESTARTxxxxESCAPEENDxx//g
+
+        # continue escaping in xx..xx \e[1;2m\e[3;4m -> 1;2-3;4-
+        : escape_ansi
+        s/(xxESCAPESTARTxx[-;0-9]*)\x1B\[([;0-9]+)m([\x1B[m;0-9]*xxESCAPEENDxx)/\1\2-\3/g
+        t escape_ansi
+
+        # continue escaping in xx..xx 1;2-3;4- -> 1-2-3-4-
+        : escape_delim
+        s/(xxESCAPESTARTxx[-0-9]*);([;0-9]*xxESCAPEENDxx)/\1-\2/g
+        t escape_delim
+      ' |
+      ${batBin} -pp --language=man --color=always |
+      ${sedBin} -Ee '
+        # unescape word xxESCAPESPACExx (just stuff in brackets) -> word(just stuff in brackets)
+        s/ xxESCAPESPACExx //g
+
+        # unescape in xx..xx 1-2-3-4- -> 1;2;3;4;
+        : unescape_delim
+        s/(xxESCAPESTARTxx[;0-9]*)-([-0-9]*xxESCAPEENDxx)/\1;\2/g
+        t unescape_delim
+
+        # unescape xxESCAPESTARTxx1;2;3;4;xxESCAPEENDxx -> \e[1;2;3;4m
+        s/xxESCAPESTARTxx([;0-9]+);xxESCAPEENDxx/\x1B[\1m/g
+      ' |
+      ${batBin} --style=plain --paging=always "$@"
+    '';
+  };
 }

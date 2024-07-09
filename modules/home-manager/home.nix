@@ -58,6 +58,7 @@ in {
       ripgrep
       jq
       neovim-remote
+      local.batman
 
       nixVersions.nix_2_19
 
@@ -84,10 +85,11 @@ in {
     programs.nix-index-database.comma.enable = true;
     programs.nix-index.enableBashIntegration = false;
 
+    programs.man.generateCaches = true;
+
     programs.bat = {
       enable = true;
       extraPackages = with pkgs.bat-extras; [
-        batman
       ];
     };
 
@@ -186,7 +188,6 @@ in {
     };
 
     home.shellAliases = {
-      man = "${pkgs.bat-extras.batman}/bin/batman";
       ":q" = "exit";
     }
     // (optionalAttrs hasRebuildCommand {
@@ -268,6 +269,28 @@ in {
           rgdiff "$@" | patch -p1
         }
 
+        man() (
+          test "$#" -gt 0 && exec env man "$@"
+
+          ${config.lib.fzf.genFzfCommand {
+            defaultCommand = "man -k .";
+            binds.enter.become = "man {1}{2}";
+            options = {
+              preview = "man {1}{2}";
+              delimiter = "\\s+";
+              exit-0 = true;
+              height = "~20";
+            };
+          }} || {
+            if [ "$?" -eq 1 ]; then
+              >&2 echo "No manuals found"
+            else
+              >&2 echo "manpage-choosing failed"
+            fi
+            return 1
+          }
+        )
+
         keepsudo() {
           sudo -v && {
             while
@@ -327,6 +350,7 @@ in {
     };
 
     home.sessionVariables = {
+      MANPAGER = "batman";
     };
 
     # Let Home Manager install and manage itself.
