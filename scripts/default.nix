@@ -54,4 +54,58 @@ rec {
     extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
     text = builtins.readFile ./rebuild.sh;
   };
+
+  linkSaveDirs = pkgs.writeShellApplication {
+    name = "linkSaveDirs";
+    text =
+    let
+      jqBin = lib.getExe pkgs.jq;
+      mklinkBin = lib.getExe mklink;
+      xargsBin = lib.getExe' pkgs.findutils "xargs";
+    in /* bash */ ''
+      LINKED_SAVES_DIR=''${LINKED_SAVES_DIR:-$HOME/Saves}
+      LINKED_SAVES_LIST=''${LINKED_SAVES_LIST:-$LINKED_SAVES_DIR/list.json}
+
+      if [ ! -f "$LINKED_SAVES_LIST" ]; then
+        >&2 echo "linked saves list ('$LINKED_SAVES_LIST') not found"
+        exit 1
+      fi
+
+      <"$LINKED_SAVES_LIST" ${jqBin} --raw-output0 \
+        --arg savesDir "$LINKED_SAVES_DIR" '
+        to_entries[] |
+        ($ARGS.named.savesDir + "/" + .key, .value)
+      ' |
+      ${xargsBin} -0 -L2 ${mklinkBin}
+    '';
+  };
+  addLinkedSave = pkgs.writeShellApplication {
+    name = "addLinkedSave";
+    text =
+    let
+      jqBin = lib.getExe pkgs.jq;
+      mklinkBin = lib.getExe mklink;
+      spongeBin = lib.getExe' pkgs.moreutils "sponge";
+    in /* bash */ ''
+      LINKED_SAVES_DIR=''${LINKED_SAVES_DIR:-$HOME/Saves}
+      LINKED_SAVES_LIST=''${LINKED_SAVES_LIST:-$LINKED_SAVES_DIR/list.json}
+
+      if [ -z "$1" ]; then
+        >&2 echo 'the save location must be passed as the first parameter'
+        exit 1
+      fi
+      save_dir=$(realpath -s "$1")
+      save_name=''${2:-$(basename "$save_dir")}
+
+      test ! -e "$LINKED_SAVES_LIST" && echo '{}' >"$LINKED_SAVES_LIST"
+
+      <"$LINKED_SAVES_LIST" ${jqBin} \
+        --arg name "$save_name" \
+        --arg dir "$save_dir" \
+        '.[$name] = $dir' |
+      ${spongeBin} "$LINKED_SAVES_LIST"
+
+      ${mklinkBin} "$LINKED_SAVES_DIR/$save_name" "$save_dir"
+    '';
+  };
 }
