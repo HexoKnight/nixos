@@ -2,32 +2,32 @@
 
 let
   touchpad-name = config.home-inputs.disable-touchpad;
+
   touchpad-enabled = "$TOUCHPAD_ENABLED";
-  toggle-touchpad = (pkgs.pkgs.writeShellScriptBin "toggle-touchpad" ''
-    export STATUS_FILE="$XDG_RUNTIME_DIR/keyboard.status"
+  toggle-touchpad = lib.getExe (pkgs.writeShellScriptBin "toggle-touchpad" ''
+    export STATUS_FILE=$XDG_RUNTIME_DIR/touchpad-status
 
     enable() {
-      printf "true" >"$STATUS_FILE"
+      printf "enabled" >"$STATUS_FILE"
       notify-send -u normal "Enabling Touchpad"
       hyprctl keyword '${touchpad-enabled}' "true" -r
     }
 
     disable() {
-      printf "false" >"$STATUS_FILE"
+      printf "disabled" >"$STATUS_FILE"
       notify-send -u normal "Disabling Touchpad"
       hyprctl keyword '${touchpad-enabled}' "false" -r
     }
 
-    if ! [ -f "$STATUS_FILE" ]; then
+    if [ ! -f "$STATUS_FILE" ]; then
       enable
     else
-      if [ $(cat "$STATUS_FILE") = "true" ]; then
-        disable
-      elif [ $(cat "$STATUS_FILE") = "false" ]; then
-        enable
-      fi
+      case "$(cat "$STATUS_FILE")" in
+        enabled) disable ;;
+        disabled) enable ;;
+      esac
     fi
-  '') + "/bin/toggle-touchpad";
+  '');
 in
 lib.mkIf (touchpad-name != null) {
   wayland.windowManager.hyprland = {
