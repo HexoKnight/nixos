@@ -1,15 +1,17 @@
-{ disable-touchpad, ... }@home-inputs:
-
 { config, system-config, lib, pkgs, inputs, ... }:
 
-with lib; {
+with lib;
+let
+  inherit (config.home-inputs) disable-touchpad;
+in {
   imports = [
     ./main-settings.nix
     ./binds.nix
     ./workspaces.nix
     ./audio.nix
     ./hyprbinds.nix
-  ] ++ lists.optional (disable-touchpad != null) (import ./toggle-touchpad.nix disable-touchpad);
+    ./toggle-touchpad.nix
+  ];
 
   home.packages = with pkgs; [
     rofi-wayland

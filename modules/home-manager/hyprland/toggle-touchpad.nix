@@ -1,8 +1,7 @@
-touchpad-name:
-
 { config, system-config, lib, pkgs, inputs, ... }:
 
 let
+  touchpad-name = config.home-inputs.disable-touchpad;
   touchpad-enabled = "$TOUCHPAD_ENABLED";
   toggle-touchpad = (pkgs.pkgs.writeShellScriptBin "toggle-touchpad" ''
     export STATUS_FILE="$XDG_RUNTIME_DIR/keyboard.status"
@@ -30,7 +29,7 @@ let
     fi
   '') + "/bin/toggle-touchpad";
 in
-{
+lib.mkIf (touchpad-name != null) {
   wayland.windowManager.hyprland = {
     extraConfig = ''
       device {

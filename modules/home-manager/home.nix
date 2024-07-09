@@ -13,10 +13,15 @@ in {
     ./fzf.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
-    (import ./hyprland home-inputs)
+    ./hyprland
   ];
 
   options = {
+    home-inputs = mkOption {
+      type = types.attrsOf types.anything;
+      readOnly = true;
+      default = home-inputs;
+    };
   };
 
   config = mkMerge [{
