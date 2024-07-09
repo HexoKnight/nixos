@@ -140,7 +140,8 @@ in
           ctrl-f = "preview-page-down";
           ctrl-u = "preview-half-page-up";
           ctrl-d = "preview-half-page-down";
-          tab = "accept";
+          tab = "down";
+          shift-tab = "up";
         };
         no-mouse = true;
         reverse = true;
@@ -163,7 +164,7 @@ in
         let
           toggle-flag = fzf-data.toggle-flag-update-prompt defaultCommand;
         in
-        rec {
+        {
           focus.transform-header = "${fileBin} -Lb {}";
           alt-l.transform = toggle-flag "-L";
           alt-d.transform = toggle-flag "-td";
@@ -171,7 +172,6 @@ in
           alt-x.transform = toggle-flag "-tx";
           alt-e.transform = toggle-flag "-te";
           enter.become = "printf '%q' {}";
-          tab = enter;
         };
         options = {
           preview = "${batBin} -n --color=always {} | head -200";
@@ -184,10 +184,9 @@ in
       ${genFzfCommand rec {
         defaultCommand = "fd -td -HE '.git'";
         withData = true;
-        binds = rec {
+        binds = {
           alt-l.transform = fzf-data.toggle-flag-update-prompt defaultCommand "-L";
           enter.become = "printf 'cd -- %q' {}";
-          tab = enter;
         };
         options = {
           preview = "${ezaBin} --tree --colour=always {} | head -200";
