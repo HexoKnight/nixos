@@ -233,6 +233,75 @@ in {
           nix shell "nixpkgs$unstable#$1" "''${@:2}"
         )
 
+        nixman() (
+          # WTF idek..: nix shell nixpkgs#texliveInfraOnly.man -c env man --path texhash
+
+          if [ "$1" = "-u" ]; then
+            shift 1
+            unstable="-unstable"
+          fi
+
+          dot_section=""
+          case "$1" in
+            *\(*\))
+              manual=''${1%(*)}
+              section=''${1#"$manual"}
+              section=''${section#(}
+              section=''${section%)}
+            ;;
+            *.*)
+              dot_section=1
+              manual=''${1%.*}
+              section=''${1#"$manual"}
+              section=''${section#.}
+            ;;
+            *)
+              manual=$1
+              section=""
+            ;;
+          esac
+          section_first_char=''${section%"''${section#?}"}
+
+          if [ -n "$dot_section" ]; then
+            # dot might be part of name rather than section
+            # eg. `man python3.12` == `man python3.12.1` == `man python3.12(1)`
+            section_regex=''${section:+"$section(\.[0-9a-z]+)?"}
+            section_regex=''${section_regex:-[0-9a-z]+}
+          else
+            section_regex=''${section:-[0-9a-z]+}
+          fi
+          section_first_char_regex=''${section_first_char:-[0-9a-z]}
+
+          export fullregex="/share/man/man$section_first_char_regex/$manual\.$section_regex(\.[^.]+)?"
+          export manual
+
+          pkg=$(${config.lib.fzf.genFzfCommand {
+            defaultCommand = /* bash */ ''
+              nix-locate --whole-name --at-root --regex "$fullregex" |
+              # what the fuck
+              sed -Ee 's|(\S+).*/nix/store/.{32}-(.*)/share/man/man./'"$manual"'\.([^.])(\.[^.]+)?|start=$(printf "%-20s - " "\1 (\3)"); printf "%s%*s" "$start" "$((43 - ''${#start}))" "\2"|e'
+            '';
+            binds.enter.become = "printf %s {1} | tr -d '()'";
+            options = {
+              delimiter = "\\s+";
+              exit-0 = true;
+            };
+          }}) || {
+            if [ "$?" -eq 1 ]; then
+              >&2 echo "No manual entry for $1"
+            else
+              >&2 echo "package-choosing failed"
+            fi
+            return 1
+          }
+
+          pkgexpr="nixpkgs$unstable#$pkg"
+
+          # hope multiple out paths are never produced (whcih SHOULD be impossible...)
+          manpath=$(nix build "$pkgexpr" --no-link --print-out-paths)
+          nix shell "$pkgexpr" -c env MANPATH="$manpath/share/man" man "$1"
+        )
+
         nixrepl-system() (
           nix repl \
             --override-flake flake "''${1-$NIXOS_BUILD_DIR}" \
