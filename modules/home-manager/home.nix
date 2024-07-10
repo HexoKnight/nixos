@@ -220,28 +220,19 @@ in {
           eza --colour=always --icons=always "$@" | batpage --pager="less -r"
         }
 
+        u() { NIXPKGS_FLAKE=nixpkgs-unstable "$@"; }
+
         nixrun() (
-          if [ "$1" = "-u" ]; then
-            shift 1
-            unstable="-unstable"
-          fi
-          nix run "nixpkgs$unstable#$1" -- "''${@:2}"
+          nix run "''${NIXPKGS_FLAKE:-nixpkgs}#$1" -- "''${@:2}"
         )
+        nixrun-u() { u nixrun "$@"; }
         nixshell() (
-          if [ "$1" = "-u" ]; then
-            shift 1
-            unstable="-unstable"
-          fi
-          nix shell "nixpkgs$unstable#$1" "''${@:2}"
+          nix shell "''${NIXPKGS_FLAKE:-nixpkgs}#$1" "''${@:2}"
         )
+        nixshell-u() { u nixshell "$@"; }
 
         nixman() (
           # WTF idek..: nix shell nixpkgs#texliveInfraOnly.man -c env man --path texhash
-
-          if [ "$1" = "-u" ]; then
-            shift 1
-            unstable="-unstable"
-          fi
 
           dot_section=""
           case "$1" in
@@ -297,12 +288,13 @@ in {
             return 1
           }
 
-          pkgexpr="nixpkgs$unstable#$pkg"
+          pkgexpr="''${NIXPKGS_FLAKE:-nixpkgs}#$pkg"
 
           # hope multiple out paths are never produced (whcih SHOULD be impossible...)
           manpath=$(nix build "$pkgexpr" --no-link --print-out-paths)
           nix shell "$pkgexpr" -c env MANPATH="$manpath/share/man" man "$1"
         )
+        nixman-u() { u nixman "$@"; }
 
         nixrepl-system() (
           nix repl \
