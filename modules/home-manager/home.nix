@@ -86,6 +86,7 @@ in {
     programs.nix-index.enableBashIntegration = false;
 
     programs.man.generateCaches = true;
+    programs.info.enable = true;
 
     programs.bat = {
       enable = true;
@@ -188,6 +189,7 @@ in {
     };
 
     home.shellAliases = {
+      "info" = "info --vi-keys";
       ":q" = "exit";
     }
     // (optionalAttrs hasRebuildCommand {
