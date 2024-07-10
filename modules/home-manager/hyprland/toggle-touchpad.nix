@@ -1,4 +1,4 @@
-{ config, system-config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
   touchpad-name = config.home-inputs.disable-touchpad;

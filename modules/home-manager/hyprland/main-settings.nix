@@ -1,4 +1,4 @@
-{ config, system-config, lib, pkgs, inputs, ... }:
+{ config, nixosConfig, lib, pkgs, inputs, ... }:
 
 {
   wayland.windowManager.hyprland = {
@@ -25,8 +25,8 @@
       };
 
       input = {
-        kb_layout = system-config.services.xserver.xkb.layout;
-        kb_variant = system-config.services.xserver.xkb.variant;
+        kb_layout = nixosConfig.services.xserver.xkb.layout;
+        kb_variant = nixosConfig.services.xserver.xkb.variant;
 
         follow_mouse = 2;
         mouse_refocus = false;

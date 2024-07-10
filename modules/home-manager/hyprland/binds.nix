@@ -1,4 +1,4 @@
-{ config, system-config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   hyprbinds = with lib.hyprbinds; lib.mkMerge [{

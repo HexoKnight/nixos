@@ -1,6 +1,6 @@
 { username, persistence, desktop, personal-gaming, disable-touchpad, hasRebuildCommand, ... }@home-inputs:
 
-{ config, lib, pkgs, inputs, system-config, ... }:
+{ config, lib, pkgs, inputs, nixosConfig, ... }:
 
 with lib;
 let
@@ -27,7 +27,7 @@ in {
   config = mkMerge [{
     home = { inherit username homeDirectory; };
 
-    nixpkgs.overlays = system-config.nixpkgs-overlays;
+    nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (getName pkg) [
       "google-chrome"
     ] || builtins.elem pkg.meta.license.shortName [

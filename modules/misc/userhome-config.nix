@@ -65,10 +65,7 @@ in {
         lists.optional value.hasPersistCommand local.persist;
     } value.extraOptions]) users;
 
-    home-manager.extraSpecialArgs = {
-      inherit inputs;
-      system-config = config;
-    };
+    home-manager.extraSpecialArgs = { inherit inputs; };
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
       value = import "${inputs.self}/modules/home-manager/home.nix" ({ inherit username; } // config.host-config // value);
