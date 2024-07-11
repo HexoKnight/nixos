@@ -301,13 +301,17 @@ in {
             --override-flake flake "''${1-$NIXOS_BUILD_DIR}" \
             --expr '
               let
-                hostconfig = (__getFlake "flake").nixosConfigurations.'"$NIXOS_BUILD_CONFIGURATION"';
+                hostconfig = (__getFlake "flake").nixosConfigurations."'"$NIXOS_BUILD_CONFIGURATION"'";
               in
               # pass inputs that would be available to a module
               {
                 inherit (hostconfig) config options pkgs;
                 inherit (hostconfig._module) specialArgs;
               } // hostconfig._module.specialArgs
+              # plus some home-manager stuff
+              // {
+                hmConfig = hostconfig.config.home-manager.users."'"$USER"'";
+              }
             '
         )
 
