@@ -357,7 +357,10 @@ _processspec() {
     esac
   done
   _processline "$currentcommand" "$currentargs"
-  programname=$(get_programname)
+  if [ -z "${programname+x}" ]; then
+    calc_better0
+    programname=$better0
+  fi
 }
 
 ########## PARSING ARGS ##########
@@ -576,24 +579,31 @@ readremainingpositionalargs() {
 # but I just can't hack it :/
 
 # use a shorter $0 if possible
-get_better0() {
+calc_better0() {
+  test -n "${better0-}" && return 0
+
   scriptname=$(basename "$0")
-  scriptinPATH=$(command -v "$scriptname")
-  if [ -n "$scriptinPATH" ] && [ "$(realpath "$scriptinPATH")" = "$(realpath "$0")" ]; then
+  if scriptinPATH=$(command -v "$scriptname") && [ "$(realpath "$scriptinPATH")" = "$(realpath "$0")" ]; then
     # scriptname is in PATH and it points to the same place as the
     # one that is currently running so it's fine to use it instead
-    printf %s "$scriptname"
+    better0=$scriptname
   else
-    printf %s "$0"
+    better0=$0
   fi
 }
 
 get_programname() {
-  printf %s "${programname-$(get_better0)}"
+  if [ -z "${programname+x}" ]; then
+    calc_better0
+    printf %s "$better0"
+  else
+    printf %s "$programname"
+  fi
 }
 
 echoerr() {
-  >&2 echo "$(get_programname): ${1-an error occured}"
+  >&2 get_programname
+  >&2 echo ": ${1-an error occured}"
 }
 
 tryhelpexit() {
