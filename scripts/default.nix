@@ -55,6 +55,18 @@ rec {
     text = builtins.readFile ./rebuild.sh;
   };
 
+  nixos = pkgs.writeShellApplication {
+    name = "nixos";
+    runtimeInputs = [
+      configopts evalvar
+      pkgs.jq
+      pkgs.ssh-to-age
+      pkgs.nixVersions.nix_2_19
+    ];
+    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
+    text = builtins.readFile ./nixos.sh;
+  };
+
   linkSaveDirs = pkgs.writeShellApplication {
     name = "linkSaveDirs";
     text =

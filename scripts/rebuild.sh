@@ -149,7 +149,6 @@ fi
 
 echo "NixOS Rebuilding..."
 
-# TODO: very probably write custom nixos-rebuild for only local development (eg. no buildHost/targetHost)
 sudo --preserve-env=SSH_AUTH_SOCK -- nixos-rebuild "${nix_options[@]}" "$rebuild_type" --flake ".#$configuration" "${nixos_rebuild_args[@]}" || exit 1
   #\
   #|& tee nixos-rebuild.log 2>/dev/null ||
