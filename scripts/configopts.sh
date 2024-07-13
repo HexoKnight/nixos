@@ -110,9 +110,12 @@ escape_string() {
 ########### DISPLAYING HELP ###########
 
 _displayoptionshelp() (
-  MAX_OPTION_SPACE=40
+  MAX_WIDTH=80
+  MAX_OPTION_SPACE=30
   OPTION_DESCRIPTION_GAP=2
-  MAX_DESCRIPTION_SPACE=40
+  MIN_DESCRIPTION_FIRST_LINE_SPACE=20
+
+  OPTION_INDENT=2
   DESCRIPTION_INDENT=2
 
   formattedoptions=""
@@ -144,15 +147,16 @@ _displayoptionshelp() (
       requiredarg="${requiredarg%...}"
     fi
 
-    formattedoptions="${formattedoptions:+$formattedoptions$NEWLINE}  ${short}${comma}${long}${requiredarg}$TAB${description}"
+    formattedoptions="${formattedoptions:+$formattedoptions$NEWLINE}$(repeatchar ' ' "$OPTION_INDENT")${short}${comma}${long}${requiredarg}$TAB${description}"
   done
 
   test -n "$requiredargexists" && echo 'Mandatory arguments to long options are mandatory for short options too.'
 
+  MAX_MAX_OPTION_LENGTH=$((MAX_WIDTH - OPTION_DESCRIPTION_GAP - MIN_DESCRIPTION_FIRST_LINE_SPACE))
   max_option_length="$(echo "$formattedoptions" |
-    awk -F "$TAB" '
-      length($1) > maxlen {
-      maxlen = length($1)
+    awk -F "$TAB" -v max_maxlen="$MAX_MAX_OPTION_LENGTH" '
+      max_maxlen >= length($1) && length($1) > maxlen {
+        maxlen = length($1)
       }
       END {
         print maxlen
@@ -163,16 +167,24 @@ _displayoptionshelp() (
   if [ "$MAX_OPTION_SPACE" -gt "$((max_option_length + OPTION_DESCRIPTION_GAP))" ]; then
     MAX_OPTION_SPACE="$((max_option_length + OPTION_DESCRIPTION_GAP))"
   fi
+  MAX_OPTION_LENGTH=$((MAX_OPTION_SPACE - OPTION_DESCRIPTION_GAP))
 
   echo "$formattedoptions" |
   while IFS="$TAB" read -r option description; do
-    optionhelp="$(printf "%-$((MAX_OPTION_SPACE - OPTION_DESCRIPTION_GAP))s" "$option")"
+    if [ "${#option}" -gt "$MAX_MAX_OPTION_LENGTH" ]; then
+      # start description on next line
+      optionhelp=$option$NEWLINE$(repeatchar ' ' "$MAX_OPTION_LENGTH")
+      option_length=$MAX_OPTION_SPACE
+    else
+      optionhelp=$(printf "%-${MAX_OPTION_LENGTH}s" "$option")
+      option_length=${#optionhelp}
+    fi
 
     placeholder="$(repeatchar '@' "$((OPTION_DESCRIPTION_GAP + 1))")"
-    firstline="$(printf "%-$((${#optionhelp} - 2))s" '')${placeholder}"
+    firstline="$(repeatchar ' ' "$((option_length - 2))")${placeholder}"
     secondline="$(printf "%-$((MAX_OPTION_SPACE + DESCRIPTION_INDENT))s" '')$description"
 
-    fmteddescription=$(echo "$firstline$NEWLINE$secondline" | fmt -"$((MAX_OPTION_SPACE + MAX_DESCRIPTION_SPACE))" -t)
+    fmteddescription=$(echo "$firstline$NEWLINE$secondline" | fmt -w "$MAX_WIDTH" -t)
     fulloptionhelp="${optionhelp}$(repeatchar ' ' "$((OPTION_DESCRIPTION_GAP - 1))")${fmteddescription#*"$placeholder"}"
     echo "$fulloptionhelp"
   done
