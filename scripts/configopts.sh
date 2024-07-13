@@ -96,7 +96,11 @@ else
       gradual_char=${gradual_char}$c
       [ "$(printf %s "$gradual_char" | wc -m)" -gt 0 ] && break
     done
-    eval "$1='$gradual_char'"
+    if [ "$gradual_char" = "'" ]; then
+      eval "$1=\'"
+    else
+      eval "$1='$gradual_char'"
+    fi
   }
 fi
 readc() {
