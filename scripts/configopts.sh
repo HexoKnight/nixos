@@ -75,7 +75,7 @@ check_varname() {
 readc() {
   check_varname "$@" || return 1
   while [ "$#" -gt 0 ]; do
-    gradual_char=""
+    gradual_char=
     while true; do
       # read one byte, using a work around for the fact that command
       # substitution strips trailing newline characters.
@@ -86,7 +86,7 @@ readc() {
       [ -z "$c" ] && return 1
       # succeed if a full character has been accumulated in the output
       # variable (using "wc -m" to count the number of characters).
-      gradual_char="${gradual_char}$c"
+      gradual_char=${gradual_char}$c
       [ "$(printf %s "$gradual_char" | wc -m)" -gt 0 ] && break
     done
     eval "$1='$gradual_char'"
@@ -118,8 +118,8 @@ _displayoptionshelp() (
   OPTION_INDENT=2
   DESCRIPTION_INDENT=2
 
-  formattedoptions=""
-  requiredargexists=""
+  formattedoptions=
+  requiredargexists=
   while IFS=';' read -r short long requiredarg description; do
     case "$description" in "#"*)
       # hidden
@@ -130,24 +130,24 @@ _displayoptionshelp() (
       requiredargexists=1
     fi
 
-    comma="${short:+${long:+, }}"
-    comma="${comma:-${long:+  }}"
-    optionalarg="${requiredarg%"${requiredarg#"?"}"}"
-    requiredarg="${requiredarg#"$optionalarg"}"
+    comma=${short:+${long:+, }}
+    comma=${comma:-${long:+  }}
+    optionalarg=${requiredarg%"${requiredarg#"?"}"}
+    requiredarg=${requiredarg#"$optionalarg"}
     if [ -n "$short$long" ]; then
-      argseparator=""
+      argseparator=
       test -z "$optionalarg" && argseparator=" "
       test -n "$long" && argseparator="="
 
-      short="${short:+-$short}"
-      short="${short:-${long:+  }}"
-      long="${long:+--$long}"
-      requiredarg="${requiredarg:+${optionalarg:+[}${argseparator}${requiredarg}${optionalarg:+]}}"
+      short=${short:+-$short}
+      short=${short:-${long:+  }}
+      long=${long:+--$long}
+      requiredarg=${requiredarg:+${optionalarg:+[}${argseparator}${requiredarg}${optionalarg:+]}}
     else
-      requiredarg="${requiredarg%...}"
+      requiredarg=${requiredarg%...}
     fi
 
-    formattedoptions="${formattedoptions:+$formattedoptions$NEWLINE}$(repeatchar ' ' "$OPTION_INDENT")${short}${comma}${long}${requiredarg}$TAB${description}"
+    formattedoptions=${formattedoptions:+$formattedoptions$NEWLINE}$(repeatchar ' ' "$OPTION_INDENT")${short}${comma}${long}${requiredarg}$TAB${description}
   done
 
   test -n "$requiredargexists" && echo 'Mandatory arguments to long options are mandatory for short options too.'
@@ -165,12 +165,12 @@ _displayoptionshelp() (
   )"
 
   if [ "$MAX_OPTION_SPACE" -gt "$((max_option_length + OPTION_DESCRIPTION_GAP))" ]; then
-    MAX_OPTION_SPACE="$((max_option_length + OPTION_DESCRIPTION_GAP))"
+    MAX_OPTION_SPACE=$((max_option_length + OPTION_DESCRIPTION_GAP))
   fi
   MAX_OPTION_LENGTH=$((MAX_OPTION_SPACE - OPTION_DESCRIPTION_GAP))
 
   echo "$formattedoptions" |
-  while IFS="$TAB" read -r option description; do
+  while IFS=$TAB read -r option description; do
     if [ "${#option}" -gt "$MAX_MAX_OPTION_LENGTH" ]; then
       # start description on next line
       optionhelp=$option$NEWLINE$(repeatchar ' ' "$MAX_OPTION_LENGTH")
@@ -180,37 +180,37 @@ _displayoptionshelp() (
       option_length=${#optionhelp}
     fi
 
-    placeholder="$(repeatchar '@' "$((OPTION_DESCRIPTION_GAP + 1))")"
-    firstline="$(repeatchar ' ' "$((option_length - 2))")${placeholder}"
-    secondline="$(printf "%-$((MAX_OPTION_SPACE + DESCRIPTION_INDENT))s" '')$description"
+    placeholder=$(repeatchar '@' "$((OPTION_DESCRIPTION_GAP + 1))")
+    firstline=$(repeatchar ' ' "$((option_length - 2))")${placeholder}
+    secondline=$(printf "%-$((MAX_OPTION_SPACE + DESCRIPTION_INDENT))s" '')$description
 
     fmteddescription=$(echo "$firstline$NEWLINE$secondline" | fmt -w "$MAX_WIDTH" -t)
-    fulloptionhelp="${optionhelp}$(repeatchar ' ' "$((OPTION_DESCRIPTION_GAP - 1))")${fmteddescription#*"$placeholder"}"
+    fulloptionhelp=${optionhelp}$(repeatchar ' ' "$((OPTION_DESCRIPTION_GAP - 1))")${fmteddescription#*"$placeholder"}
     echo "$fulloptionhelp"
   done
 )
 
 _displayusagehelp() (
-  allusages="${customusages:+${customusages#"$NEWLINE"}}"
+  allusages=${customusages:+${customusages#"$NEWLINE"}}
   # an extra newline shows that a usage exists even if it is empty
-  usage_exists="${customusages:+${customusages%"$alluages"}}"
+  usage_exists=${customusages:+${customusages%"$alluages"}}
   if [ -z "${disabledefaultusage-}" ]; then
-    positional_args=""
+    positional_args=
     while IFS=';' read -r short long requiredarg description; do
       if [ -z "${short}${long}" ]; then
-        beforemulti="${requiredarg%...}"
-        multi="${requiredarg#"$beforemulti"}"
+        beforemulti=${requiredarg%...}
+        multi=${requiredarg#"$beforemulti"}
         case "$beforemulti" in "?"*)
-          beforemulti="[${beforemulti#"?"}]"
+          beforemulti=[${beforemulti#"?"}]
         esac
-        positional_args="${positional_args:+$positional_args }$beforemulti$multi"
+        positional_args=${positional_args:+$positional_args }$beforemulti$multi
       fi
     done
-    allusages="$positional_args${allusages:+$NEWLINE$allusages}"
+    allusages=$positional_args${allusages:+$NEWLINE$allusages}
     usage_exists=1
   fi
   if [ -n "$usage_exists$allusages" ]; then
-    first=""
+    first=
     printf '%s\n' "$allusages" |
     while read -r usage; do
       if [ -z "$first" ]; then
@@ -235,8 +235,8 @@ _displayposthelp() (
 )
 
 _displayhelp() (
-  printed=""
-  usages="$(echo "$alloptions" | _displayusagehelp)"
+  printed=
+  usages=$(echo "$alloptions" | _displayusagehelp)
   if [ -n "$usages" ]; then
     echo "$usages"
     printed=1
@@ -250,19 +250,19 @@ _displayhelp() (
 )
 
 _displayversion() {
-  printf '%s' "$versioninformation"
+  printf %s "$versioninformation"
 }
 
 ########### PROCESSING SPEC ###########
 
 _processoption() {
-  short=""
+  short=
   case "$1" in ?,*)
-    short="${1%,*}"
+    short=${1%,*}
   esac
-  rest="${1#"$short,"}"
-  long="${rest%%=*}"
-  requiredarg="${rest#"$long"}"
+  rest=${1#"$short,"}
+  long=${rest%%=*}
+  requiredarg=${rest#"$long"}
   case "$requiredarg" in
     =) requiredarg="ARG" ;;
     ="?") requiredarg="?ARG" ;;
@@ -271,10 +271,10 @@ _processoption() {
     =*) requiredarg="${requiredarg#=}" ;;
   esac
   shift
-  description="$*"
+  description=$*
 
-  optionalarg="${requiredarg%"${requiredarg#"?"}"}"
-  argrequirement="${requiredarg:+:}${optionalarg:+:}"
+  optionalarg=${requiredarg%"${requiredarg#"?"}"}
+  argrequirement=${requiredarg:+:}${optionalarg:+:}
   test -n "$short" && shortoptions="${shortoptions}${short}${argrequirement}"
   test -n "$long" && longoptions="${longoptions},${long}${argrequirement}"
 
@@ -282,45 +282,45 @@ _processoption() {
 }
 
 _processusage() {
-  customusages="${customusages-}$NEWLINE$1"
+  customusages=${customusages-}$NEWLINE$1
 }
 
 _processline() {
   case "$1" in
     "programname")
-      programname="$2"
+      programname=$2
     ;;
     "option")
       # shellcheck disable=SC2086
       _processoption $2
     ;;
     "disable-default-help")
-      disabledefaulthelp="true"
+      disabledefaulthelp=true
     ;;
     "usage")
       _processusage "$2"
     ;;
     "disable-default-usage")
-      disabledefaultusage="true"
+      disabledefaultusage=true
     ;;
     "description")
-      helpdescription="$2"
+      helpdescription=$2
     ;;
     "extrainfo")
-      helpextrainfo="$2"
+      helpextrainfo=$2
     ;;
     "footer")
-      helpfooter="$2"
+      helpfooter=$2
     ;;
     "version")
-      versioninformation="$2"
+      versioninformation=$2
     ;;
   esac
 }
 
 _processspec() {
-  currentcommand=""
-  currentargs=""
+  currentcommand=
+  currentargs=
   while readc firstchar; do
     # readc sets $firstchar
     # shellcheck disable=SC2154
@@ -330,9 +330,9 @@ _processspec() {
         read -r currentcommand currentargs
       ;;
       (*)
-        IFS="" read -r extraargs
-        [ "$firstchar" = "\\" ] && firstchar=""
-        currentargs="${currentargs:+$currentargs$NEWLINE}$firstchar$extraargs"
+        IFS= read -r extraargs
+        [ "$firstchar" = "\\" ] && firstchar=
+        currentargs=${currentargs:+$currentargs$NEWLINE}$firstchar$extraargs
       ;;
     esac
   done
@@ -356,7 +356,7 @@ getoptioninfo() {
 optionhasrequiredarg() (
   # won't work correctly if requiredarg is just newlines
   # as they'll be stripped but ????
-  optioninfo="$(getoptioninfo "$1")"
+  optioninfo=$(getoptioninfo "$1")
   test -n "${optioninfo#*;*;}"
   return
 )
@@ -364,9 +364,9 @@ optionhasrequiredarg() (
 parse_args() {
   ensure_getopt
 
-  shortoptions="h"
-  longoptions="help"
-  alloptions=""
+  shortoptions=h
+  longoptions=help
+  alloptions=
 
   _processspec </dev/stdin
 
@@ -391,12 +391,12 @@ parse_args() {
   }
   eval "set -- ${ARGS}"
 
-  named_args=""
-  positional_args=""
+  named_args=
+  positional_args=
 
   named_args_finished=false
   while true; do
-    option="${1-}"
+    option=${1-}
     shift || break
     if $named_args_finished; then
       positional_args="$positional_args $(escape_string "$option")"
@@ -418,10 +418,10 @@ parse_args() {
           esac
         fi
         if optionhasrequiredarg "$option"; then
-          optionarg="$1"
+          optionarg=$1
           shift
         else
-          optionarg=""
+          optionarg=
         fi
         named_args="$named_args $(escape_string "$option" "$optionarg")"
       ;;
@@ -495,9 +495,9 @@ readoption() {
 
   check_varname "$@"
   eval "$1=$(echo "$named_args" | _extractquotedarg)"
-  named_args="$(echo "$named_args" | _removequotedarg)"
+  named_args=$(echo "$named_args" | _removequotedarg)
   eval "$2=$(echo "$named_args" | _extractquotedarg)"
-  named_args="$(echo "$named_args" | _removequotedarg)"
+  named_args=$(echo "$named_args" | _removequotedarg)
 }
 readpositionalarg() {
   if [ "$#" -ne 1 ]; then
@@ -509,11 +509,11 @@ readpositionalarg() {
 
   check_varname "$@"
   eval "$1=$(echo "$positional_args" | _extractquotedarg)"
-  positional_args="$(echo "$positional_args" | _removequotedarg)"
+  positional_args=$(echo "$positional_args" | _removequotedarg)
 }
 
 readexactpositionalargs() {
-  tryhelpexit=""
+  tryhelpexit=
   while [ "$#" -gt 0 ]; do
     if ! readpositionalarg "$1"; then
       echoerr "missing $1 operand"
@@ -545,7 +545,7 @@ readremainingpositionalargs() {
 
   check_varname "$@"
   eval "$1=($positional_args)"
-  positional_args=""
+  positional_args=
 }
 
 ########## EXTRA PUBLIC UTILITIES ##########
@@ -557,19 +557,19 @@ readremainingpositionalargs() {
 
 # use a shorter $0 if possible
 get_better0() {
-  scriptname="$(basename "$0")"
-  scriptinPATH="$(command -v "$scriptname")"
+  scriptname=$(basename "$0")
+  scriptinPATH=$(command -v "$scriptname")
   if [ -n "$scriptinPATH" ] && [ "$(realpath "$scriptinPATH")" = "$(realpath "$0")" ]; then
     # scriptname is in PATH and it points to the same place as the
     # one that is currently running so it's fine to use it instead
-    printf '%s' "$scriptname"
+    printf %s "$scriptname"
   else
-    printf '%s' "$0"
+    printf %s "$0"
   fi
 }
 
 get_programname() {
-  printf '%s' "${programname-$(get_better0)}"
+  printf %s "${programname-$(get_better0)}"
 }
 
 echoerr() {
