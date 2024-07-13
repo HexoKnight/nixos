@@ -71,10 +71,17 @@ check_varname() {
     shift
   done
 }
-# see https://unix.stackexchange.com/a/464963
-readc() {
-  check_varname "$@" || return 1
-  while [ "$#" -gt 0 ]; do
+
+if is_bash; then
+  _read_single_char() {
+    # previously confirmed that the shell is bash
+    # shellcheck disable=SC3045
+    read -rN1 "$1"
+    # -N rather than -n is in order to read newline as well
+  }
+else
+  # see https://unix.stackexchange.com/a/464963
+  _read_single_char() {
     gradual_char=
     while true; do
       # read one byte, using a work around for the fact that command
@@ -90,6 +97,12 @@ readc() {
       [ "$(printf %s "$gradual_char" | wc -m)" -gt 0 ] && break
     done
     eval "$1='$gradual_char'"
+  }
+fi
+readc() {
+  check_varname "$@" || return 1
+  while [ "$#" -gt 0 ]; do
+    _read_single_char "$1" || return 1
     shift
   done
 }
