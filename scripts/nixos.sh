@@ -30,8 +30,9 @@ SUBCOMMANDS
 @option b,boot Install boot menu generation
 @option s,switch Switch to the new configuration
 
-@option f,flake=FLAKE Specify flake uri
-(defaults to \$NIXOS_BUILD_DIR if set or /etc/nixos)
+@option f,flake=FLAKE Specify flake uri(s),
+multiple can be delimited by newlines and the first valid one is used
+(defaults to \$NIXOS_BUILD_FLAKE if set or /etc/nixos)
 @option n,name=NAME Specify configuration name
 (defaults to \$NIXOS_BUILD_CONFIGURATION if set or the system hostname)
 @option p,profile=NAME Specify name of profile to be used.
@@ -59,7 +60,7 @@ EOF
 IN_NIXOS_BUILD_REEXEC=${IN_NIXOS_BUILD_REEXEC-}
 
 
-flake=${NIXOS_BUILD_DIR:-/etc/nixos}
+flakes=${NIXOS_BUILD_FLAKE:-/etc/nixos}
 
 actual_hostname=$(cat /proc/sys/kernel/hostname) ||
   actual_hostname=default
@@ -98,7 +99,7 @@ while readoption option arg; do
     (-b | --boot) boot=1 ;;
     (-s | --switch) switch=1 ;;
 
-    (-f | --flake) argrequired; flake=$arg ;;
+    (-f | --flake) argrequired; flakes=$arg ;;
     (-n | --name) configuration=$arg ;;
     (-p | --profile) argrequired; profile=$arg ;;
 
@@ -145,8 +146,6 @@ case "$SUBCOMMAND" in
     tryhelpexit
   ;;
 esac
-
-flake_config_attr=$flake'#nixosConfigurations."'$configuration'"'
 
 if [ "$profile" = "system" ]; then
   profile_path=/nix/var/nix/profiles/system
@@ -213,7 +212,22 @@ fi
 get_flake_metadata() {
   _nix flake metadata --json "$flake"
 }
-flake_metadata=$(get_flake_metadata) || exit 1
+
+rest_of_flakes=$flakes$'\n'
+while true; do
+  flake=${rest_of_flakes%%$'\n'*}
+  rest_of_flakes=${rest_of_flakes#"$flake"$'\n'}
+  if [ -n "$flake" ]; then
+    flake_metadata=$(get_flake_metadata) && break
+  elif [ -z "$rest_of_flakes" ]; then
+    echoerr "no flakes could be fetched"
+    exit 1
+  fi
+done
+
+echo "Using nixos from flake at '$flake'"
+
+flake_config_attr=$flake'#nixosConfigurations."'$configuration'"'
 
 ######### SETUP ##########
 

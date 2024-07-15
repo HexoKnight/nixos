@@ -115,6 +115,11 @@
     # so they'll just fail harmlessly when run if there's nothing there.
     # To be entirely honest I'd rather this just be impure but oh well...
     NIXOS_BUILD_DIR = "/home/${username}/.nixos";
+    NIXOS_BUILD_FLAKE = ''
+      git+file:///home/${username}/.nixos
+      github:HexoKnight/nixos
+      git+ssh://git@github.com/HexoKnight/nixos
+    '';
     NIXOS_BUILD_CONFIGURATION = config_name;
   };
   environment.etc = {
