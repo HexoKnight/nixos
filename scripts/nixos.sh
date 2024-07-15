@@ -4,7 +4,6 @@
 # incorporate nixrepl-system -> nixos repl
 # add list-generations support
 # add --no-sudo option
-# eval subcommand for dry-build
 
 # shellcheck source=configopts.sh
 source "${CONFIGOPTS_SCRIPT:-configopts.sh}" || {
@@ -24,6 +23,7 @@ Manage a nixos installation.
 
 SUBCOMMANDS
   build - build a nixos configuration
+  eval - evaluate a nixos configuration but don't build it
 \
 @option =SUBCOMMAND #
 
@@ -139,13 +139,22 @@ while readoption option arg; do
 done
 
 readexactpositionalargs SUBCOMMAND
+
+######### VALIDATE SUBCOMMANDS/FLAGS ##########
+
 case "$SUBCOMMAND" in
-  build) ;;
+  build|eval) ;;
   *)
     echoerr "'$SUBCOMMAND' is not a valid command"
     tryhelpexit
   ;;
 esac
+
+if [ "$SUBCOMMAND" != "build" ]; then
+  test -n "$switch" && echoerr "'-s/--switch' only valid for 'build' subcommand"
+  test -n "$boot" && echoerr "'-b/--boot' only valid for 'build' subcommand"
+  test -n "$install_bootloader" && echoerr "'--install-bootloader' only valid for 'build' subcommand"
+fi
 
 if [ "$profile" = "system" ]; then
   profile_path=/nix/var/nix/profiles/system
@@ -369,5 +378,9 @@ case "$SUBCOMMAND" in
       }
       echo "Successfully switched to the new configuration"
     fi
+  ;;
+  eval)
+    echo "Evaluating NixOS configuration: '$configuration'..."
+    _nix build --dry-run "$flake_config_attr.config.system.build.toplevel" || exit 1
   ;;
 esac
