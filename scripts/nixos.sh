@@ -27,14 +27,23 @@ SUBCOMMANDS
 \
 @option =SUBCOMMAND #
 
+### SUBCOMMAND OPTIONS
+
+# build
 @option b,boot Install boot menu generation
 @option s,switch Switch to the new configuration
+
+### NIXOS CONFIGURATION OPTIONS
 
 @option f,flake=FLAKE Specify flake uri(s),
 multiple can be delimited by newlines and the first valid one is used
 (defaults to \$NIXOS_BUILD_FLAKE if set or /etc/nixos)
+
 @option n,name=NAME Specify configuration name
 (defaults to \$NIXOS_BUILD_CONFIGURATION if set or the system hostname)
+
+### OTHER OPTIONS
+
 @option p,profile=NAME Specify name of profile to be used.
 Uses '/nix/var/nix/profiles/system' when NAME == 'system', otherwise
 uses '/nix/var/nix/profiles/system-profiles/NAME'
@@ -57,6 +66,7 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 @option ,timeout=TIME Timeout password reading after TIMEOUT seconds
 EOF
 
+# for `set -e`
 IN_NIXOS_BUILD_REEXEC=${IN_NIXOS_BUILD_REEXEC-}
 
 
