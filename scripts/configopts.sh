@@ -346,6 +346,7 @@ _processspec() {
         _processline "$currentcommand" "$currentargs"
         read -r currentcommand currentargs
       ;;
+      ("#") ;;
       ("$NEWLINE")
         currentargs=${currentargs:+$currentargs$NEWLINE}
       ;;
