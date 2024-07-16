@@ -318,6 +318,9 @@ in {
         realwhich() {
           realpath $(which "$@")
         }
+        batwhich() {
+          bat $(which "$@")
+        }
 
         rgdiff() {
           # these will break if '--' is passed
