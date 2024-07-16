@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # TODO:
-# incorporate nixrepl-system -> nixos repl
 # add list-generations support
 # add --no-sudo option
 
@@ -24,6 +23,7 @@ Manage a nixos installation.
 SUBCOMMANDS
   build - build a nixos configuration
   eval - evaluate a nixos configuration but don't build it
+  repl - open a nixos configuration in 'nix repl'
 \
 @option =SUBCOMMAND #
 
@@ -143,7 +143,7 @@ readexactpositionalargs SUBCOMMAND
 ######### VALIDATE SUBCOMMANDS/FLAGS ##########
 
 case "$SUBCOMMAND" in
-  build|eval) ;;
+  build|eval|repl) ;;
   *)
     echoerr "'$SUBCOMMAND' is not a valid command"
     tryhelpexit
@@ -236,7 +236,8 @@ done
 
 echo "Using nixos from flake at '$flake'"
 
-flake_config_attr=$flake'#nixosConfigurations."'$configuration'"'
+config_attr=nixosConfigurations.\"$configuration\"
+flake_config_attr=$flake#$config_attr
 
 ######### SETUP ##########
 
@@ -382,5 +383,25 @@ case "$SUBCOMMAND" in
   eval)
     echo "Evaluating NixOS configuration: '$configuration'..."
     _nix build --dry-run "$flake_config_attr.config.system.build.toplevel" || exit 1
+  ;;
+  repl)
+    echo "Entering repl with NixOS configuration: '$configuration'..."
+    _nix repl \
+      --override-flake flake "$flake" \
+      --expr '
+        let
+          nixosConfiguration = (__getFlake "flake").'"$config_attr"';
+        in
+        # pass inputs that would be available to a module
+        {
+          inherit nixosConfiguration;
+          inherit (nixosConfiguration) config options pkgs;
+          inherit (nixosConfiguration._module) specialArgs;
+        } // nixosConfiguration._module.specialArgs
+        # plus some home-manager stuff
+        // {
+          hmConfig = nixosConfiguration.config.home-manager.users."'"$USER"'";
+        }
+      '
   ;;
 esac
