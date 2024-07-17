@@ -26,7 +26,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dotfiles = {
-      url = "git+ssh://git@github.com/HexoKnight/dotfiles";
+      url = "github:HexoKnight/dotfiles";
       flake = false;
     };
     plasma-manager = {
