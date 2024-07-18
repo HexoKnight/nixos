@@ -67,6 +67,15 @@ rec {
     text = builtins.readFile ./nixos.sh;
   };
 
+  gen-sops-secrets = pkgs.writeShellApplication {
+    name = "gen-sops-secrets";
+    runtimeInputs = with pkgs; [
+      ssh-to-age age sops
+      jq
+    ];
+    text = builtins.readFile ./gen-sops-secrets.sh;
+  };
+
   linkSaveDirs = pkgs.writeShellApplication {
     name = "linkSaveDirs";
     text =

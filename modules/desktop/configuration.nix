@@ -17,7 +17,7 @@
 
   sops.gnupg.sshKeyPaths = [];
   sops.age.sshKeyPaths = [];
-  sops.age.keyFile = (if impermanence then "/persist" else "") + "/home/${username}/.config/sops/agekey";
+  sops.age.keyFile = (if impermanence then "/persist" else "") + "/home/${username}/.config/sops/age/keys.txt";
 
   sops.secrets.hashedPassword = {
     neededForUsers = true;
