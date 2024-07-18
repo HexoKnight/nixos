@@ -1,13 +1,13 @@
 { lib, options, config, inputs, local-pkgs, ... }:
 
 let
-  unstable-overlay = final: prev: {
+  unstable-overlay = final: _prev: {
     unstable = import inputs.nixpkgs-unstable {
-      inherit (prev) system config;
+      inherit (final) system config;
       overlays = [
-        (final-unstable: prev-unstable: {
+        (_final-unstable: _prev-unstable: {
           # TODO: move elsewhere
-          xwayland = prev.xwayland;
+          xwayland = final.xwayland;
         })
       ];
     };
