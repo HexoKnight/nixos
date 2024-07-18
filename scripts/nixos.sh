@@ -38,6 +38,8 @@ parse_whenoption() {
 }
 
 parse_args "$@" << EOF
+# due to re-execing, this gets messed up often
+@programname $(basename "$0")
 @description
 Manage a nixos installation.
 
