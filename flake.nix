@@ -58,7 +58,9 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
   let
-    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix inputs;
+    lib = nixpkgs.lib.extend (final: _prev: import ./lib final);
+
+    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix { inherit inputs lib; };
   in
   {
     nixosConfigurations = mkNixosConfigurations {
@@ -73,5 +75,7 @@
         # };
       }
     ];
+
+    lib = import ./lib lib;
   };
 }

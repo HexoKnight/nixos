@@ -405,7 +405,7 @@ case "$SUBCOMMAND" in
         # pass inputs that would be available to a module
         {
           inherit nixosConfiguration;
-          inherit (nixosConfiguration) config options pkgs;
+          inherit (nixosConfiguration) config options pkgs lib;
           inherit (nixosConfiguration._module) specialArgs;
         } // nixosConfiguration._module.specialArgs
         # plus some home-manager stuff
