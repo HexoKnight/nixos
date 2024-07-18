@@ -273,6 +273,8 @@ if ! sudo -vn &>/dev/null; then
   read_password
 fi
 
+######### PRE-REEXEC ACTIONS ##########
+
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$git_add" ]; then
   # test for a git repo
   if git rev-parse --git-dir >/dev/null 2>&1; then
@@ -314,7 +316,7 @@ if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$show_diff" ]; then
   diff -r /etc/nixos-current-system-source "$flake_store_path" --exclude=".git" --color || true
 fi
 
-######### BUILDING ##########
+######### REEXEC ##########
 
 # re-exec nixos if the configuration is going to be 'used'
 # after being built to, for example, prevent getting stuck
@@ -322,6 +324,8 @@ fi
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$boot$switch" ]; then
   IN_NIXOS_BUILD_REEXEC=1 NIX_EXEC=1 _nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
 fi
+
+######### POST-REEXEC ACTIONS ##########
 
 flake_secrets_json=$flake_store_path/secrets.json
   if [ -n "$do_sops_check" ] && [ -e "$flake_secrets_json" ]; then
@@ -333,6 +337,8 @@ flake_secrets_json=$flake_store_path/secrets.json
   }
 fi
 
+######### SETUP TMPDIR ##########
+
 tmpDir=$(mktemp -d rebuild-XXXXXX) || {
   echoerr "mktemp failed, cannot continue"
   exit 1
@@ -341,6 +347,8 @@ cleanup() {
   rm -rf "$tmpDir"
 }
 trap cleanup EXIT
+
+######### RUN SUBCOMMAND ##########
 
 case "$SUBCOMMAND" in
   build)
