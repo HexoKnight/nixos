@@ -275,45 +275,49 @@ fi
 
 ######### PRE-REEXEC ACTIONS ##########
 
-if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$git_add" ]; then
-  # test for a git repo
-  if git rev-parse --git-dir >/dev/null 2>&1; then
-    flake_metadata=$(get_flake_metadata) || exit 1
-    flake_src_dir=$(printf %s "$flake_metadata" | jq -r '
-      .resolved |
-      if .type == "git" and not has("ref") and not has("rev") then
-        .url
-      else
-        ""
-      end
-    ')
-    if [ -n "$flake_src_dir" ]; then
-      flake_src_dir=${flake_src_dir#file://}
-      flake_src_dir=${flake_src_dir#file:}
+if [ -z "$IN_NIXOS_BUILD_REEXEC" ]; then
 
-      # track all non-ignored files (-A) to ensure new (as yet uncommited) files
-      # are correctly copied to the store but don't actually stage them (-N)
-      ( cd "$flake_src_dir" && git add -AN ) || {
-        echoerr "failed to run 'git add -AN' but continuing..."
-      }
+  if [ -n "$git_add" ]; then
+    # test for a git repo
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+      flake_metadata=$(get_flake_metadata) || exit 1
+      flake_src_dir=$(printf %s "$flake_metadata" | jq -r '
+        .resolved |
+        if .type == "git" and not has("ref") and not has("rev") then
+          .url
+        else
+          ""
+        end
+      ')
+      if [ -n "$flake_src_dir" ]; then
+        flake_src_dir=${flake_src_dir#file://}
+        flake_src_dir=${flake_src_dir#file:}
+
+        # track all non-ignored files (-A) to ensure new (as yet uncommited) files
+        # are correctly copied to the store but don't actually stage them (-N)
+        ( cd "$flake_src_dir" && git add -AN ) || {
+          echoerr "failed to run 'git add -AN' but continuing..."
+        }
+      fi
+    else
+      echoerr "flake isn't a git repo, ignoring '--git-add'..."
     fi
-  else
-    echoerr "flake isn't a git repo, ignoring '--git-add'..."
   fi
-fi
 
-if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ "${#update_flakes[@]}" -gt 0 ]; then
-  echo "Updating Flakes..."
-  case "${update_flakes[*]}" in "all")
-    update_flakes=()
-  esac
-  _nix flake update "${update_flakes[@]}" || exit 1
-fi
+  if [ "${#update_flakes[@]}" -gt 0 ]; then
+    echo "Updating Flakes..."
+    case "${update_flakes[*]}" in "all")
+      update_flakes=()
+    esac
+    _nix flake update "${update_flakes[@]}" || exit 1
+  fi
 
-if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$show_diff" ]; then
-  # refetch flake even if git add already did so (just in case??)...
-  flake_store_path=$(get_flake_store_path) || exit 1
-  diff -r /etc/nixos-current-system-source "$flake_store_path" --exclude=".git" --color || true
+  if [ -n "$show_diff" ]; then
+    # refetch flake even if git add already did so (just in case??)...
+    flake_store_path=$(get_flake_store_path) || exit 1
+    diff -r /etc/nixos-current-system-source "$flake_store_path" --exclude=".git" --color || true
+  fi
+
 fi
 
 ######### REEXEC ##########
