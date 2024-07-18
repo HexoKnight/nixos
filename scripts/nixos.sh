@@ -16,6 +16,27 @@ EOF
   exit 1
 }
 
+whenoption() {
+  cat << EOF
+@option ,$1=?WHEN Specify when to $2: auto, never, always.
+(defaults to auto without this flag, defaults to always when just --$1 is given)
+@option ,no-$1 Alias of --$1=never
+EOF
+}
+parse_whenoption() {
+  check_varname "$1"
+  case "$option" in --no-*)
+    eval "$1=never"
+    return 0
+  esac
+  case "$arg" in auto|never|always|"")
+    eval "$1=\${arg:-always}"
+    return 0
+  esac
+  echoerr "invalid value '$arg' for $option"
+  tryhelpexit
+}
+
 parse_args "$@" << EOF
 @description
 Manage a nixos installation.
@@ -51,14 +72,10 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 
 @option ,install-bootloader (re)install the bootloader as specified by the configuration
 
-@option ,link=?WHEN Specify when to produce result symlinks: auto, never, always.
-(defaults to auto without this flag, defaults to always when just --link is given)
-@option ,no-link Alias of --link=never
+$(whenoption "link" "produce result symlinks")
 @option o,out-link=PATH Specify prefix for result symlinks (defaults to 'result')
 
-@option ,diff=?WHEN Specify when to display a diff: auto, never, always.
-(defaults to auto without this flag, defaults to always when just --diff is given)
-@option ,no-diff Alias of --diff=never
+$(whenoption "diff" "display a diff")
 
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
 
@@ -115,28 +132,10 @@ while readoption option arg; do
 
     (--install-bootloader) install_bootloader=1 ;;
 
-    (--link)
-      case "$arg" in
-        (auto|never|always|"") link=${arg:-always} ;;
-        (*)
-          echoerr "invalid value '$arg' for $option"
-          tryhelpexit
-        ;;
-      esac
-    ;;
-    (--no-link) link=never ;;
+    (--link | --no-link) parse_whenoption link ;;
     (-o | --out-link) out_link=$arg ;;
 
-    (--diff)
-      case "$arg" in
-        (auto|never|always|"") diff=${arg:-always} ;;
-        (*)
-          echoerr "invalid value '$arg' for $option"
-          tryhelpexit
-        ;;
-      esac
-    ;;
-    (--no-diff) diff=never ;;
+    (--diff | --no-diff) parse_whenoption diff ;;
 
     (--git-add) git_add=1 ;;
 
