@@ -1,4 +1,4 @@
-{ lib, options, config, inputs, ... }:
+{ lib, options, config, inputs, local-pkgs, ... }:
 
 let
   unstable-overlay = final: prev: {
@@ -12,17 +12,8 @@ let
       ];
     };
   };
-  local-overlay = final: prev: {
-    local =
-      import "${inputs.self}/packages" {
-        inherit (prev) system;
-        inherit lib;
-        pkgs = prev;
-      } //
-      import "${inputs.self}/scripts" {
-        inherit lib;
-        pkgs = prev;
-      };
+  local-overlay = final: _prev: {
+    local = local-pkgs final;
   };
 in
 {

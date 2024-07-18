@@ -1,4 +1,4 @@
-{ lib, inputs }:
+{ lib, inputs, local-pkgs }:
 
 configurations:
 extraModules:
@@ -6,7 +6,7 @@ extraModules:
 lib.mapAttrs (config_name: extraOptions: lib.nixosSystem (
   {
     specialArgs = {
-      inherit inputs config_name;
+      inherit inputs local-pkgs config_name;
     };
     modules = [
       ../configurations/${config_name}/configuration.nix

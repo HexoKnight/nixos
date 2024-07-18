@@ -59,8 +59,13 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
   let
     lib = nixpkgs.lib.extend (final: _prev: import ./lib final);
+    local-pkgs = pkgs:
+      let args = { inherit lib pkgs; }; in
+      import ./packages args //
+      import ./scripts args;
 
-    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix { inherit inputs lib; };
+    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix { inherit inputs lib local-pkgs; };
+    forAllSystems = lib.genAttrs lib.systems.flakeExposed;
   in
   {
     nixosConfigurations = mkNixosConfigurations {
@@ -77,5 +82,12 @@
     ];
 
     lib = import ./lib lib;
+
+    packages = forAllSystems (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      local-pkgs pkgs
+    );
   };
 }

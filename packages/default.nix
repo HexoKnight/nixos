@@ -1,4 +1,4 @@
-{ lib, system, pkgs }:
+{ lib, pkgs }:
 
 let
   overrides = {
@@ -17,6 +17,6 @@ lib.pipe ./. [
     package
   ))
   (lib.filterAttrs (name: package:
-    lib.elem system (package.meta.platforms or lib.platforms.all)
+    lib.elem pkgs.system (package.meta.platforms or lib.platforms.all)
   ))
 ]
