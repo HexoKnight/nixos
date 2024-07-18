@@ -77,6 +77,8 @@ $(whenoption "link" "produce result symlinks")
 
 $(whenoption "diff" "display a diff")
 
+$(whenoption "sops-check" "check secrets.json with sops")
+
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
 
 @option u,update=FLAKE Update FLAKE (or all flakes if FLAKE=all) before building
@@ -104,6 +106,7 @@ install_bootloader=
 link=auto
 out_link=result
 diff=auto
+sops_check=auto
 
 git_add=
 
@@ -136,6 +139,8 @@ while readoption option arg; do
     (-o | --out-link) out_link=$arg ;;
 
     (--diff | --no-diff) parse_whenoption diff ;;
+
+    (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
 
     (--git-add) git_add=1 ;;
 
@@ -179,6 +184,11 @@ esac
 show_diff=
 case "$diff:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   show_diff=1
+esac
+
+do_sops_check=
+case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
+  do_sops_check=1
 esac
 
 nix_options=(--option warn-dirty false)
@@ -261,13 +271,6 @@ if ! sudo -vn &>/dev/null; then
   read_password
 fi
 
-if [ ! -f ~/.config/sops/agekey ]; then
-  echo 'age key not found, generating from ssh...'
-  mkdir -p ~/.config/sops/
-  read_password
-  SSH_TO_AGE_PASSPHRASE=$(get_password) ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o ~/.config/sops/agekey
-fi
-
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$git_add" ]; then
   # test for a git repo
   if git rev-parse --git-dir >/dev/null 2>&1; then
@@ -316,6 +319,16 @@ fi
 # (if only temporarily) in a system with a broken nixos command
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$boot$switch" ]; then
   IN_NIXOS_BUILD_REEXEC=1 NIX_EXEC=1 _nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
+fi
+
+flake_secrets_json=$flake_store_path/secrets.json
+  if [ -n "$do_sops_check" ] && [ -e "$flake_secrets_json" ]; then
+  SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt sops --decrypt "$flake_secrets_json" >/dev/null || {
+    echoerr "failed to decrypt secrets.json using sops"
+    echoerr "use '--no-sops-check' if you know what you are doing"
+    echoerr "otherwise use 'gen-sops-secrets' to properly generate an age key and/or secrets.json file"
+    tryhelpexit
+  }
 fi
 
 tmpDir=$(mktemp -d rebuild-XXXXXX) || {

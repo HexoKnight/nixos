@@ -60,7 +60,7 @@ rec {
     runtimeInputs = [
       configopts evalvar
       pkgs.jq
-      pkgs.ssh-to-age
+      pkgs.sops
       pkgs.nixVersions.nix_2_19
     ];
     extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
