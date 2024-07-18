@@ -228,6 +228,12 @@ if ! ssh-add -L; then
 fi
 
 ### ENSURE VALID FLAKE
+get_flake_store_path() {
+  _nix flake prefetch --json "$flake" |
+  jq -r '.storePath'
+}
+
+flake_metadata=
 get_flake_metadata() {
   _nix flake metadata --json "$flake"
 }
@@ -237,7 +243,7 @@ while true; do
   flake=${rest_of_flakes%%$'\n'*}
   rest_of_flakes=${rest_of_flakes#"$flake"$'\n'}
   if [ -n "$flake" ]; then
-    flake_metadata=$(get_flake_metadata) && break
+    flake_store_path=$(get_flake_store_path) && break
   elif [ -z "$rest_of_flakes" ]; then
     echoerr "no flakes could be fetched"
     exit 1
@@ -263,10 +269,10 @@ if [ ! -f ~/.config/sops/agekey ]; then
   SSH_TO_AGE_PASSPHRASE=$(get_password) ssh-to-age -- -private-key -i ~/.ssh/id_ed25519 -o ~/.config/sops/agekey
 fi
 
-git_add_success=
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$git_add" ]; then
   # test for a git repo
   if git rev-parse --git-dir >/dev/null 2>&1; then
+    flake_metadata=$(get_flake_metadata) || exit 1
     flake_src_dir=$(printf %s "$flake_metadata" | jq -r '
       .resolved |
       if .type == "git" and not has("ref") and not has("rev") then
@@ -281,10 +287,7 @@ if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$git_add" ]; then
 
       # track all non-ignored files (-A) to ensure new (as yet uncommited) files
       # are correctly copied to the store but don't actually stage them (-N)
-      {
-        ( cd "$flake_src_dir" && git add -AN ) &&
-        git_add_success=1
-      } || {
+      ( cd "$flake_src_dir" && git add -AN ) || {
         echoerr "failed to run 'git add -AN' but continuing..."
       }
     fi
@@ -302,11 +305,9 @@ if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ "${#update_flakes[@]}" -gt 0 ]; then
 fi
 
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$show_diff" ]; then
-  # reevaluate flake after git add (just in case??)...
-  test -n "$git_add_success" && { flake_metadata=$(get_flake_metadata) || exit 1; }
-
-  flake_store_src=$(printf %s "$flake_metadata" | jq -r '.path')
-  diff -r /etc/nixos-current-system-source "$flake_store_src" --exclude=".git" --color || true
+  # refetch flake even if git add already did so (just in case??)...
+  flake_store_path=$(get_flake_store_path) || exit 1
+  diff -r /etc/nixos-current-system-source "$flake_store_path" --exclude=".git" --color || true
 fi
 
 ######### BUILDING ##########
