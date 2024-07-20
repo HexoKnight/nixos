@@ -11,20 +11,20 @@ Lots of these could be switched out with relative ease, some... not so much :/
 
 ### Essentially embedded
 
-- Distro: 🤔...
-- Window Manager: Hyprland
+- Distro: [🤔...](https://nixos.org)
+- Window Manager: [Hyprland](https://hyprland.org)
 
 ### Quite configured but could be switched out easily
 
-- Bar: eww (very eh atm)
-- Launcher: rofi
-- Editor: Neovim
+- Bar: [eww](https://github.com/elkowar/eww) (very eh atm)
+- Launcher: [rofi](https://github.com/davatorium/rofi)
+- Editor: [Neovim](https://neovim.io)
 
 ### minimal to no configuration and could/should be switched out at a moment's notice
 
-- Terminal: kitty
-- Display Manager: sddm (very minimal)
-- Notification Daemon: mako
+- Terminal: [kitty](https://sw.kovidgoyal.net/kitty)
+- Display Manager: [sddm](https://github.com/sddm/sddm) (very [minimal](https://github.com/stepanzubkov/where-is-my-sddm-theme))
+- Notification Daemon: [mako](https://github.com/emersion/mako)
 
 ## Other things of note
 
