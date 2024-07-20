@@ -144,13 +144,19 @@ rec {
       # some bat manpage parsing is reimplemented here... :/
       # really it shouldn't be hard for bat itself to take ansi codes into account when highlighting but eh
     in /* bash */ ''
+      # for the NOTANOPTION example
+      # shellcheck disable=SC2016
       ${sedBin} -Ee '
         # escape <ANSI>man-page<ANSI>(7) -> xxESCAPESTARTxx<ANSI>xxESCAPEENDxxman-pagexxESCAPESTARTxx<ANSI>xxESCAPEENDxx(7)
-        s/((\x1B\[[;0-9]+m)*)([-A-Za-z0-9]+)((\x1B\[[;0-9]+m)*)(\([0-9]+\))/xxESCAPESTARTxx\1xxESCAPEENDxx\3xxESCAPESTARTxx\4xxESCAPEENDxx\6/g
+        s/((\x1B\[[;0-9]+m)*)([-._A-Za-z0-9]+)((\x1B\[[;0-9]+m)*)(\([0-9]+\))/xxESCAPESTARTxx\1xxESCAPEENDxx\3xxESCAPESTARTxx\4xxESCAPEENDxx\6/g
 
         # escape word(just stuff in brackets) -> word xxESCAPESPACExx (just stuff in brackets)
         s/([^([:space:]]+)\(/\1 xxESCAPESPACExx (/g
         s/(xxESCAPEENDxx|-|=) xxESCAPESPACExx \(/\1(/g
+
+        # bat thinks that anything starting with a dash and indented with 7 spaces
+        # is an option, even "       - $NOTANOPTION"
+        s/(^[ ]{7})(-+\s)/\1 xxESCAPESPACExx \2/
 
         # remove empty escapes
         s/xxESCAPESTARTxxxxESCAPEENDxx//g
@@ -168,7 +174,7 @@ rec {
       ${batBin} -pp --language=man --color=always |
       ${sedBin} -Ee '
         # unescape word xxESCAPESPACExx (just stuff in brackets) -> word(just stuff in brackets)
-        s/ xxESCAPESPACExx //g
+        s/ ((\x1B\[[0-9;]+m)*)xxESCAPESPACExx((\x1B\[[0-9;]+m)*) /\1\3/g
 
         # unescape in xx..xx 1-2-3-4- -> 1;2;3;4;
         : unescape_delim
@@ -177,6 +183,15 @@ rec {
 
         # unescape xxESCAPESTARTxx1;2;3;4;xxESCAPEENDxx -> \e[1;2;3;4m
         s/xxESCAPESTARTxx([;0-9]+);xxESCAPEENDxx/\x1B[\1m/g
+
+        # \e\e[1m[2;3m -> \e[\e[1m2;3m
+        s/\x1B((\x1B\[[0-9;]+m)+)\[/\1\x1B[/g
+        # \e[\e[1m2;3m -> \e[2;3\e[1mm
+        : move_inner
+        s/\x1B\[([0-9;]*)((\x1B\[[0-9;]+m)+)([0-9;]+)/\2\x1B[\1\4/g
+        t move_inner
+        # \e[2;3\e[1mm -> \e[2;3m\e[1m
+        s/\x1B\[([0-9;]+)((\x1B\[[0-9;]+m)+)m/\2\x1B[\1m/g
       ' |
       ${batBin} --style=plain --paging=always "$@"
     '';
