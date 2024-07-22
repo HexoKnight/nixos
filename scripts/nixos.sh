@@ -47,6 +47,7 @@ SUBCOMMANDS
   build - build a nixos configuration
   eval - evaluate a nixos configuration but don't build it
   repl - open a nixos configuration in 'nix repl'
+  run - run an program from the flake of a nixos configuration
 \
 @option =SUBCOMMAND #
 
@@ -78,6 +79,7 @@ $(whenoption "link" "produce result symlinks")
 @option o,out-link=PATH Specify prefix for result symlinks (defaults to 'result')
 
 $(whenoption "diff" "display a diff")
+$(whenoption "print-info" "display info about what is happenning")
 
 $(whenoption "ssh-add" "run ssh-add before fetching flakes")
 $(whenoption "sops-check" "check secrets.json with sops")
@@ -109,6 +111,7 @@ install_bootloader=
 link=auto
 out_link=result
 diff=auto
+print_info=auto
 ssh_add=auto
 sops_check=auto
 
@@ -143,6 +146,7 @@ while readoption option arg; do
     (-o | --out-link) out_link=$arg ;;
 
     (--diff | --no-diff) parse_whenoption diff ;;
+    (--print-info | --no-print-info) parse_whenoption print_info ;;
 
     (--ssh-add | --no-ssh-add) parse_whenoption ssh_add ;;
     (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
@@ -157,12 +161,21 @@ while readoption option arg; do
   esac
 done
 
-readexactpositionalargs SUBCOMMAND
+readpositionalarg SUBCOMMAND
 
 ######### VALIDATE SUBCOMMANDS/FLAGS ##########
 
+runAttr=
+runArgs=
 case "$SUBCOMMAND" in
-  build|eval|repl) ;;
+  build|eval|repl)
+    # shellcheck disable=SC2119
+    readexactpositionalargs
+  ;;
+  run)
+    readpositionalarg runAttr
+    readremainingpositionalargs runArgs
+  ;;
   *)
     echoerr "'$SUBCOMMAND' is not a valid command"
     tryhelpexit
@@ -190,6 +203,10 @@ show_diff=
 case "$diff:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   show_diff=1
 esac
+show_info=1
+case "$print_info:$SUBCOMMAND" in never:*|auto:run)
+  show_info=
+esac
 
 do_ssh_add=1
 case "$ssh_add:$SUBCOMMAND" in never:*|auto:run)
@@ -201,6 +218,12 @@ case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
 esac
 
 nix_options=(--option warn-dirty false)
+
+echoinfo() {
+  if [ -n "$show_info" ]; then
+    echo "$@"
+  fi
+}
 
 NIX_EXEC=
 _nix() {
@@ -217,7 +240,7 @@ read_password() {
       >&2 echo
       sudo -k
       if ! echo "$passkey" | sudo -Sv 2>/dev/null; then
-        >&2 echo 'Password incorrect, try again'
+        >/dev/tty echo 'Password incorrect, try again'
         unset passkey
       fi
     else
@@ -270,7 +293,7 @@ while true; do
   fi
 done
 
-echo "Using nixos from flake at '$flake'"
+echoinfo "Using nixos from flake at '$flake'"
 
 config_attr=nixosConfigurations.\"$configuration\"
 flake_config_attr=$flake#$config_attr
@@ -278,7 +301,7 @@ flake_config_attr=$flake#$config_attr
 ######### SETUP ##########
 
 if ! sudo -vn &>/dev/null; then
-  echo 'sudo password required...'
+  >/dev/tty echo 'sudo password required...'
   read_password
 fi
 
@@ -449,5 +472,8 @@ case "$SUBCOMMAND" in
           hmConfig = nixosConfiguration.config.home-manager.users."'"$USER"'";
         }
       '
+  ;;
+  run)
+    NIX_EXEC=1 _nix run "$flake#$runAttr" -- "${runArgs[@]}"
   ;;
 esac
