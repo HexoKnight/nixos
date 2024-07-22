@@ -316,6 +316,10 @@ in {
             '
         )
 
+        line() {
+          sed -En "''${1}p"
+        }
+
         realwhich() {
           realpath $(which "$@")
         }
