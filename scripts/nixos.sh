@@ -79,6 +79,7 @@ $(whenoption "link" "produce result symlinks")
 
 $(whenoption "diff" "display a diff")
 
+$(whenoption "ssh-add" "run ssh-add before fetching flakes")
 $(whenoption "sops-check" "check secrets.json with sops")
 
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
@@ -108,6 +109,7 @@ install_bootloader=
 link=auto
 out_link=result
 diff=auto
+ssh_add=auto
 sops_check=auto
 
 git_add=
@@ -142,6 +144,7 @@ while readoption option arg; do
 
     (--diff | --no-diff) parse_whenoption diff ;;
 
+    (--ssh-add | --no-ssh-add) parse_whenoption ssh_add ;;
     (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
 
     (--git-add) git_add=1 ;;
@@ -188,6 +191,10 @@ case "$diff:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   show_diff=1
 esac
 
+do_ssh_add=1
+case "$ssh_add:$SUBCOMMAND" in never:*|auto:run)
+  do_ssh_add=
+esac
 do_sops_check=
 case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   do_sops_check=1
@@ -225,17 +232,19 @@ get_password() {
 }
 
 ### ENSURE SSH ACCESS
-if [ ! -v SSH_AUTH_SOCK ]; then
-  echoerr 'ssh-agent not running cannot continue'
-  exit 1
-fi
+if [ -n "$do_ssh_add" ]; then
+  if [ ! -v SSH_AUTH_SOCK ]; then
+    echoerr 'ssh-agent not running cannot continue'
+    exit 1
+  fi
 
-if ! ssh-add -L; then
-  read_password
-  EVALVAR="cat "<(get_password) SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=evalvar ssh-add || {
-    echoerr "ssh password doesn't match sudo password..."
-    ssh-add
-  }
+  if ! ssh-add -L; then
+    read_password
+    EVALVAR="cat "<(get_password) SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=evalvar ssh-add || {
+      echoerr "ssh password doesn't match sudo password..."
+      ssh-add
+    }
+  fi
 fi
 
 ### ENSURE VALID FLAKE
