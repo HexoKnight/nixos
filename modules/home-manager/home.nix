@@ -59,6 +59,7 @@ in {
       jq
       neovim-remote
       local.batman
+      local.nixos
 
       nixVersions.nix_2_19
 
