@@ -2,7 +2,6 @@
 
 # TODO:
 # add list-generations support
-# add --no-sudo option
 
 # shellcheck source=configopts.sh
 source "${CONFIGOPTS_SCRIPT:-configopts.sh}" || {
@@ -75,6 +74,9 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 
 @option ,install-bootloader (re)install the bootloader as specified by the configuration
 
+@option ,no-interactive Don't prompt for anything.
+@option ,no-sudo Don't use sudo.
+
 $(whenoption "link" "produce result symlinks")
 @option o,out-link=PATH Specify prefix for result symlinks (defaults to 'result')
 
@@ -107,6 +109,9 @@ switch=
 profile=system
 
 install_bootloader=
+
+interactive=1
+sudo=1
 
 link=auto
 out_link=result
@@ -141,6 +146,9 @@ while readoption option arg; do
     (-p | --profile) argrequired; profile=$arg ;;
 
     (--install-bootloader) install_bootloader=1 ;;
+
+    (--no-interactive) interactive= ;;
+    (--no-sudo) sudo= ;;
 
     (--link | --no-link) parse_whenoption link ;;
     (-o | --out-link) out_link=$arg ;;
@@ -234,25 +242,52 @@ _nix() {
   fi
 }
 
-read_password() {
-  while [ ! -v passkey ]; do
-    if read ${timeout:+-t "$timeout"} -rsp "Password: " passkey; then
-      >&2 echo
-      sudo -k
-      if ! echo "$passkey" | sudo -Sv 2>/dev/null; then
-        >/dev/tty echo 'Password incorrect, try again'
-        unset passkey
+unset sudo_passkey
+_sudo() {
+  if [ -n "$sudo" ]; then
+    if [ -n "$interactive" ]; then
+      if
+        ! sudo -vn && {
+          [ -z "${sudo_passkey+x}" ] ||
+          ! echo "$sudo_passkey" | sudo -Sv 2>/dev/null
+        }
+      then ensure_sudo
       fi
+      sudo "$@"
     else
-      >&2 echo
-      echoerr "timed out after '$timeout' seconds"
-      exit 1
+      echoinfo 'sudo required...'
+      sudo -n "$@"
     fi
-  done
+  else
+    echoinfo "sudo required but disabled by '--no-sudo' so trying without..."
+    "$@"
+  fi
 }
-get_password() {
-  printf %s "${passkey-}"
+
+ensure_sudo() {
+  if ! sudo -vn 2>/dev/null; then
+    >/dev/tty echo 'sudo password required...'
+    while true; do
+      if read ${timeout:+-t "$timeout"} -rsp "Password: " sudo_passkey; then
+        >/dev/tty echo
+        if echo "$sudo_passkey" | sudo -Sv 2>/dev/null; then
+          break
+        else
+          >/dev/tty echo 'Password incorrect, try again'
+        fi
+      else
+        >/dev/tty echo
+        echoerr "timed out after '$timeout' seconds"
+        exit 1
+      fi
+    done
+  fi
 }
+
+if [ -n "$sudo" ] && [ -n "$interactive" ] && [ -n "$boot$switch" ]; then
+  >/dev/tty echoinfo 'sudo will be required...'
+  ensure_sudo
+fi
 
 ### ENSURE SSH ACCESS
 if [ -n "$do_ssh_add" ]; then
@@ -262,11 +297,15 @@ if [ -n "$do_ssh_add" ]; then
   fi
 
   if ! ssh-add -L; then
-    read_password
-    EVALVAR="cat "<(get_password) SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=evalvar ssh-add || {
-      echoerr "ssh password doesn't match sudo password..."
-      ssh-add
-    }
+    (
+      if [ -z "$interactive" ]; then
+        export SSH_ASKPASS_REQUIRE=force
+        export SSH_ASKPASS=false
+      fi
+      ssh-add || {
+        echoinfo "ssh-add failed, continuing..."
+      }
+    )
   fi
 fi
 
@@ -297,13 +336,6 @@ echoinfo "Using nixos from flake at '$flake'"
 
 config_attr=nixosConfigurations.\"$configuration\"
 flake_config_attr=$flake#$config_attr
-
-######### SETUP ##########
-
-if ! sudo -vn &>/dev/null; then
-  >/dev/tty echo 'sudo password required...'
-  read_password
-fi
 
 ######### PRE-REEXEC ACTIONS ##########
 
@@ -399,9 +431,9 @@ case "$SUBCOMMAND" in
     configuration_path=$(readlink -f "$result_path") || exit 1
 
     if [ -n "$boot" ]; then
-      sudo mkdir -p -m 0755 "$(dirname "$profile_path")" || exit 1
+      _sudo mkdir -p -m 0755 "$(dirname "$profile_path")" || exit 1
       # TODO: figure out how to do the same with 'nix profile'
-      sudo nix-env -p "$profile_path" --set "$configuration_path" || exit 1
+      _sudo nix-env -p "$profile_path" --set "$configuration_path" || exit 1
       echo "Successfully made the new configuration the boot default"
     fi
 
@@ -411,7 +443,7 @@ case "$SUBCOMMAND" in
 
       # see nixos-rebuild source
       run_in_env=(
-        sudo
+        _sudo
         systemd-run
         -E LOCALE_ARCHIVE
         -E NIXOS_INSTALL_BOOTLOADER="$install_bootloader"
@@ -428,7 +460,7 @@ case "$SUBCOMMAND" in
       if ! "${run_in_env[@]}" true; then
         1>&2 echo "systemd-run failed, falling back to env..."
         run_in_env=(
-          sudo
+          _sudo
           env
           --ignore-environment
           LOCALE_ARCHIVE="$LOCALE_ARCHIVE"
