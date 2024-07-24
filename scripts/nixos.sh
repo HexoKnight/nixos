@@ -169,7 +169,10 @@ while readoption option arg; do
   esac
 done
 
-readpositionalarg SUBCOMMAND
+readpositionalarg SUBCOMMAND || {
+  echoerr "subcommand required"
+  tryhelpexit
+}
 
 ######### VALIDATE SUBCOMMANDS/FLAGS ##########
 
