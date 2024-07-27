@@ -7,6 +7,10 @@
     package = pkgs.unstable.neovim-unwrapped;
     extraLuaConfig = /* lua */ ''
     '';
+    extraPackages = with pkgs; [
+      rust-analyzer
+      nil
+    ];
   };
 
   home.sessionVariables = {

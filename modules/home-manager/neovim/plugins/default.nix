@@ -156,6 +156,13 @@
     '';
     # configured in main config because it needs to be done before other stuff
     neovim-ayu = {};
+
+    nvim-lspconfig = /* lua */ ''
+      --lua
+      local lspconfig = require('lspconfig')
+      lspconfig.rust_analyzer.setup({ })
+      lspconfig.nil_ls.setup({ })
+    '';
   })
 
   ++ (with pkgs.vimPlugins; [

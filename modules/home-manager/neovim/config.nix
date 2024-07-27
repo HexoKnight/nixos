@@ -44,6 +44,25 @@
 
     nnoremap <silent> # <Cmd>noh<CR>
 
+    " ########## LSP STUFF #########
+
+    " to-be defaults
+    map grn <Cmd>lua vim.lsp.buf.rename()<CR>
+    map gra <Cmd>lua vim.lsp.buf.code_action()<CR>
+    map grr <Cmd>lua vim.lsp.buf.references()<CR>
+    imap <C-S> <Cmd>lua vim.lsp.buf.signature_help()<CR>
+
+    imap <S-Tab> <C-X><C-O>
+
+    map grd <Cmd>lua vim.lsp.buf.definition()<CR>
+
+    augroup lsp_stuff
+      au!
+      au CursorHold  * lua vim.lsp.buf.document_highlight()
+      au CursorHoldI * lua vim.lsp.buf.document_highlight()
+      au CursorMoved * lua vim.lsp.buf.clear_references()
+    augroup END
+
     " ########## BUFFER/WINDOW MOVEMENT/MANIPULATION #########
 
     augroup save_load_mode
