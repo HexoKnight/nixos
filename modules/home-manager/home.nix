@@ -61,6 +61,8 @@ in {
       local.batman
       local.nixos
 
+      # build tools
+      rustc cargo rust-analyzer rustfmt clippy
       nixVersions.nix_2_19
 
       (vim-full.customize {
