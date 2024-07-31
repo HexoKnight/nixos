@@ -81,6 +81,7 @@ in
     persist-system = {
       directories = [
         "/etc/NetworkManager/system-connections"
+        "/var/lib/systemd/backlight"
         "/var/lib/systemd/timers"
       ];
       files = [
