@@ -52,7 +52,15 @@
     map grr <Cmd>lua vim.lsp.buf.references()<CR>
     imap <C-S> <Cmd>lua vim.lsp.buf.signature_help()<CR>
 
-    imap <S-Tab> <C-X><C-O>
+    inoremap <expr> <Tab> SmartTab()
+
+    function! SmartTab()
+      if match(strpart(getline('.'), 0, col('.') - 1), "^\\s*$") == -1
+        return "\<C-X>\<C-O>"
+      else
+        return "\<Tab>"
+      endif
+    endfunction
 
     map grd <Cmd>lua vim.lsp.buf.definition()<CR>
 
