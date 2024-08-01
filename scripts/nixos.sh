@@ -75,6 +75,7 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 @option ,install-bootloader (re)install the bootloader as specified by the configuration
 
 @option ,no-interactive Don't prompt for anything.
+@option ,sudo-quick Prompt for the sudo password as soon as possible.
 @option ,no-sudo Don't use sudo.
 
 $(whenoption "link" "produce result symlinks")
@@ -110,6 +111,7 @@ profile=system
 install_bootloader=
 
 interactive=1
+sudo_quick=
 sudo=1
 
 link=auto
@@ -146,6 +148,7 @@ while readoption option arg; do
     (--install-bootloader) install_bootloader=1 ;;
 
     (--no-interactive) interactive= ;;
+    (--sudo-quick) sudo_quick=1 ;;
     (--no-sudo) sudo= ;;
 
     (--link | --no-link) parse_whenoption link ;;
@@ -283,10 +286,14 @@ ensure_sudo() {
   fi >/dev/tty
 }
 
-if [ -n "$sudo" ] && [ -n "$boot$switch" ]; then
-  echoinfo 'sudo will be required...'
-  test -n "$interactive" && ensure_sudo
-fi
+check_sudo_required() {
+  if [ -n "$sudo" ] && [ -n "$boot$switch" ]; then
+    echoinfo 'sudo will be required...'
+    test -n "$interactive" && ensure_sudo
+  fi
+}
+
+test -n "$sudo_quick" && check_sudo_required
 
 ### ENSURE VALID FLAKE
 get_flake_store_path() {
@@ -383,6 +390,8 @@ flake_secrets_json=$flake_store_path/secrets.json
     tryhelpexit
   }
 fi
+
+test -z "$sudo_quick" && check_sudo_required
 
 ######### SETUP TMPDIR ##########
 
