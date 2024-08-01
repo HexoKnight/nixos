@@ -83,7 +83,6 @@ $(whenoption "link" "produce result symlinks")
 $(whenoption "diff" "display a diff")
 $(whenoption "print-info" "display info about what is happenning")
 
-$(whenoption "ssh-add" "run ssh-add before fetching flakes")
 $(whenoption "sops-check" "check secrets.json with sops")
 
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
@@ -117,7 +116,6 @@ link=auto
 out_link=result
 diff=auto
 print_info=auto
-ssh_add=auto
 sops_check=auto
 
 git_add=
@@ -156,7 +154,6 @@ while readoption option arg; do
     (--diff | --no-diff) parse_whenoption diff ;;
     (--print-info | --no-print-info) parse_whenoption print_info ;;
 
-    (--ssh-add | --no-ssh-add) parse_whenoption ssh_add ;;
     (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
 
     (--git-add) git_add=1 ;;
@@ -219,10 +216,6 @@ case "$print_info:$SUBCOMMAND" in never:*|auto:run)
   show_info=
 esac
 
-do_ssh_add=1
-case "$ssh_add:$SUBCOMMAND" in never:*|auto:run)
-  do_ssh_add=
-esac
 do_sops_check=
 case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   do_sops_check=1
@@ -290,26 +283,6 @@ ensure_sudo() {
 if [ -n "$sudo" ] && [ -n "$interactive" ] && [ -n "$boot$switch" ]; then
   >/dev/tty echoinfo 'sudo will be required...'
   ensure_sudo
-fi
-
-### ENSURE SSH ACCESS
-if [ -n "$do_ssh_add" ]; then
-  if [ ! -v SSH_AUTH_SOCK ]; then
-    echoerr 'ssh-agent not running cannot continue'
-    exit 1
-  fi
-
-  if ! ssh-add -L; then
-    (
-      if [ -z "$interactive" ]; then
-        export SSH_ASKPASS_REQUIRE=force
-        export SSH_ASKPASS=false
-      fi
-      ssh-add || {
-        echoinfo "ssh-add failed, continuing..."
-      }
-    )
-  fi
 fi
 
 ### ENSURE VALID FLAKE
