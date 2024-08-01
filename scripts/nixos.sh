@@ -283,9 +283,9 @@ ensure_sudo() {
   fi >/dev/tty
 }
 
-if [ -n "$sudo" ] && [ -n "$interactive" ] && [ -n "$boot$switch" ]; then
-  >/dev/tty echoinfo 'sudo will be required...'
-  ensure_sudo
+if [ -n "$sudo" ] && [ -n "$boot$switch" ]; then
+  echoinfo 'sudo will be required...'
+  test -n "$interactive" && ensure_sudo
 fi
 
 ### ENSURE VALID FLAKE
