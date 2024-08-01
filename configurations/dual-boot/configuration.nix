@@ -53,6 +53,14 @@ in
     };
   };
 
+  services.tlp = {
+    enable = true;
+    settings = {
+      START_CHARGE_THRESH_BAT0 = 50;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+    };
+  };
+
   hardware.nvidia = {
     # Modesetting is required.
     modesetting.enable = true;

@@ -262,22 +262,25 @@ _sudo() {
 
 ensure_sudo() {
   if ! sudo -vn 2>/dev/null; then
-    >/dev/tty echo 'sudo password required...'
+    echo 'sudo password required...'
     while true; do
-      if read ${timeout:+-t "$timeout"} -rsp "Password: " sudo_passkey; then
-        >/dev/tty echo
-        if echo "$sudo_passkey" | sudo -Sv 2>/dev/null; then
+      if {
+        printf %s "Password: "
+        3</dev/tty read ${timeout:+-t "$timeout"} -u 3 -rs sudo_passkey
+      }; then
+        printf '\n'
+        if printf %s "$sudo_passkey" | sudo -Sv 2>/dev/null; then
           break
         else
-          >/dev/tty echo 'Password incorrect, try again'
+          echo 'Password incorrect, try again'
         fi
       else
-        >/dev/tty echo
+        printf '\n'
         echoerr "timed out after '$timeout' seconds"
         exit 1
       fi
     done
-  fi
+  fi >/dev/tty
 }
 
 if [ -n "$sudo" ] && [ -n "$interactive" ] && [ -n "$boot$switch" ]; then
