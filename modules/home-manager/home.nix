@@ -196,10 +196,10 @@ in {
       ":q" = "exit";
     }
     // (optionalAttrs hasRebuildCommand {
-      rebuild-reboot = "rebuild -t boot && reboot";
-      rebuild-test = "rebuild -t test";
-      rebuild-poweroff = "rebuild -t boot --timeout 10 ; poweroff";
-      rebuild-gc-poweroff = "rebuild -t boot --timeout 10 && nix-collect-garbage --delete-older-than 14d ; poweroff";
+      rebuild-reboot = "nixos build --boot && reboot";
+      rebuild-test = "nixos build --switch";
+      rebuild-poweroff = "nixos build --boot --sudo-quick --timeout 10 ; poweroff";
+      rebuild-gc-poweroff = "nixos build --boot --sudo-quick --timeout 10 && nix-collect-garbage --delete-older-than 14d ; poweroff";
     });
     programs.bash = {
       enable = true;
