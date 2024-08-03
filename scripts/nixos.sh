@@ -477,6 +477,7 @@ case "$SUBCOMMAND" in
   eval)
     echo "Evaluating NixOS configuration: '$configuration'..."
     _nix build --dry-run "$flake_config_attr.config.system.build.toplevel" || exit 1
+    echo "Successfully evaluated the configuration"
   ;;
   repl)
     echo "Entering repl with NixOS configuration: '$configuration'..."
