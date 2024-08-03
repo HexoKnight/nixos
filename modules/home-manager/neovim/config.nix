@@ -1,5 +1,5 @@
 {
-  programs.neovim.extraConfig = /* vim */ ''
+  neovim.vimlConfig = /* vim */ ''
     " ########## GENERAL SETTINGS ##########
     set number
     set relativenumber
