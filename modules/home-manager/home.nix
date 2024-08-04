@@ -330,6 +330,10 @@ in {
           bat $(which "$@")
         }
 
+        getmountof() {
+          df --output=target "$1" | sed 1d | xargs -L1 findmnt
+        }
+
         rgdiff() {
           # these will break if '--' is passed
           # but swapping the order will break them if '-C3', etc. are passed
