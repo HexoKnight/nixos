@@ -17,6 +17,9 @@
       nil_ls = {
         extraPackages = with pkgs; [ nil ];
       };
+      vimls = {
+        extraPackages = with pkgs; [ vim-language-server ];
+      };
     };
   };
 
