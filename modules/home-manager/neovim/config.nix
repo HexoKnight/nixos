@@ -344,25 +344,6 @@
       hi YankRegion guibg=yellow4
     endfunction
 
-    lua << EOF
-      local colors = require('ayu.colors')
-      colors.generate()
-
-      require("ayu").setup({
-        terminal = false,
-        overrides = {
-          Normal = { bg = colors.black },
-          LineNr = { fg = colors.comment },
-          FoldColumn = { bg = colors.black },
-          -- QuickScopePrimary = { bg = colors.selection_inactive },
-        },
-      })
-    EOF
-
-    " rewrite
-    " colorscheme actually set by neovim-ayu config
-    " so that it's config can be set before it is activated
-
     colorscheme ayu-dark
     " colorscheme github_dark_dimmed
     " colorscheme monokai-nightasty

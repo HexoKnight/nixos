@@ -155,7 +155,21 @@
       }
     '';
     # configured in main config because it needs to be done before other stuff
-    neovim-ayu = {};
+    neovim-ayu = /* lua */ ''
+      --lua
+      local colors = require('ayu.colors')
+      colors.generate()
+
+      require("ayu").setup({
+        terminal = false,
+        overrides = {
+          Normal = { bg = colors.black },
+          LineNr = { fg = colors.comment },
+          FoldColumn = { bg = colors.black },
+          -- QuickScopePrimary = { bg = colors.selection_inactive },
+        },
+      })
+    '';
   })
 
   ++ (with pkgs.vimPlugins; [
