@@ -46,15 +46,18 @@ SUBCOMMANDS
   build - build a nixos configuration
   eval - evaluate a nixos configuration but don't build it
   repl - open a nixos configuration in 'nix repl'
-  run - run an program from the flake of a nixos configuration
+  run PROGRAM - run PROGRAM from the flake of a nixos configuration
 \
 @option =SUBCOMMAND #
 
 ### SUBCOMMAND OPTIONS
 
 # build
-@option b,boot Install boot menu generation
-@option s,switch Switch to the new configuration
+@option b,boot Install boot menu generation. Valid only for boot subcommand.
+@option s,switch Switch to the new configuration. Valid only for boot subcommand.
+
+# run
+@option e,expr PROGRAM is a nix expression in the repl context (ie. access to pkgs, hmConfig, etc.). Valid only for run subcommand.
 
 ### NIXOS CONFIGURATION OPTIONS
 
@@ -106,6 +109,9 @@ configuration=${NIXOS_BUILD_CONFIGURATION-$actual_hostname}
 
 boot=
 switch=
+
+expr=
+
 profile=system
 
 install_bootloader=
@@ -140,6 +146,8 @@ while readoption option arg; do
   case "$option" in
     (-b | --boot) boot=1 ;;
     (-s | --switch) switch=1 ;;
+
+    (-e | --expr) expr=1 ;;
 
     (-f | --flake) argrequired; flakes=$arg ;;
     (-n | --name) configuration=$arg ;;
@@ -225,6 +233,23 @@ case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
 esac
 
 nix_options=(--option warn-dirty false)
+
+config_attr=nixosConfigurations.\"$configuration\"
+nix_repl_attrset='
+  let
+    nixosConfiguration = (__getFlake "flake").'"$config_attr"';
+  in
+  # pass inputs that would be available to a module
+  {
+    inherit nixosConfiguration;
+    inherit (nixosConfiguration) config options pkgs lib;
+    inherit (nixosConfiguration._module) specialArgs;
+  } // nixosConfiguration._module.specialArgs
+  # plus some home-manager stuff
+  // {
+    hmConfig = nixosConfiguration.config.home-manager.users."'"$USER"'";
+  }
+'
 
 echoinfo() {
   if [ -n "$show_info" ]; then
@@ -320,7 +345,6 @@ done
 
 echoinfo "Using nixos from flake at '$flake'"
 
-config_attr=nixosConfigurations.\"$configuration\"
 flake_config_attr=$flake#$config_attr
 
 ######### PRE-REEXEC ACTIONS ##########
@@ -483,23 +507,18 @@ case "$SUBCOMMAND" in
     echo "Entering repl with NixOS configuration: '$configuration'..."
     _nix repl \
       --override-flake flake "$flake" \
-      --expr '
-        let
-          nixosConfiguration = (__getFlake "flake").'"$config_attr"';
-        in
-        # pass inputs that would be available to a module
-        {
-          inherit nixosConfiguration;
-          inherit (nixosConfiguration) config options pkgs lib;
-          inherit (nixosConfiguration._module) specialArgs;
-        } // nixosConfiguration._module.specialArgs
-        # plus some home-manager stuff
-        // {
-          hmConfig = nixosConfiguration.config.home-manager.users."'"$USER"'";
-        }
-      '
+      --expr "$nix_repl_attrset"
   ;;
   run)
-    NIX_EXEC=1 _nix run "$flake#$runAttr" -- "${runArgs[@]}"
+    if [ -n "$expr" ]; then
+      args=(
+        --override-flake flake "$flake"
+        --impure
+        --expr "with $nix_repl_attrset ; $runAttr"
+      )
+    else
+      args=( "$flake#$runAttr" )
+    fi
+    NIX_EXEC=1 _nix run "${args[@]}" -- "${runArgs[@]}"
   ;;
 esac
