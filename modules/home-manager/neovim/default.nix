@@ -5,7 +5,7 @@
     # define neovim options
     ./package.nix ./plugins.nix ./lspconfig.nix
     # configure neovim using said options
-    ./config.nix ./plugins
+    ./config ./plugins
   ];
 
   neovim = {
