@@ -74,20 +74,33 @@ augroup END
 augroup save_load_mode
   au!
   au BufLeave * call s:SaveMode()
-  au BufEnter * call s:LoadMode()
+  au BufEnter * call s:LoadMode(&buftype)
+  au TermOpen * call s:LoadMode('terminal')
+
+  au SessionLoadPost * call s:LoadMode(&buftype, v:true)
 augroup END
 
 function! s:SaveMode()
+  if exists('g:SessionLoad') && g:SessionLoad == 1
+    return
+  endif
+
   if exists('b:ignore_next_mode') && b:ignore_next_mode
     let b:ignore_next_mode = v:false
     return
   endif
+  let b:terminal_checked = v:true
   let b:buffer_mode = mode()
 endfunction
-function! s:LoadMode()
-  if !exists('b:buffer_mode')
-    if &buftype == "terminal"
+function! s:LoadMode(loadtype = '', ignoreSessionLoad = v:false)
+  if !a:ignoreSessionLoad && exists('g:SessionLoad') && g:SessionLoad == 1
+    return
+  endif
+
+  if !exists('b:buffer_mode') || !exists('b:terminal_checked')
+    if a:loadtype == 'terminal'
       let b:buffer_mode = "t"
+      let b:terminal_checked = v:true
     else
       let b:buffer_mode = "n"
     endif
