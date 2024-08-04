@@ -10,7 +10,7 @@ set updatetime=1000
 
 set splitbelow
 
-"set completeopt=longest,menuone
+set completeopt=longest,menuone,preview
 set wildmode=longest,full
 
 set undofile
