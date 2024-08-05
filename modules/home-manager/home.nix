@@ -452,6 +452,9 @@ in {
 
     home.sessionVariables = {
       MANPAGER = "batman";
+      # fixes git paging:
+      # stackoverflow.com/a/74047582
+      LESS = "";
     };
 
     # Let Home Manager install and manage itself.
