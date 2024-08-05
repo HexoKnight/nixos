@@ -81,6 +81,8 @@ augroup save_load_mode
 augroup END
 
 function! s:SaveMode()
+  " if a session is loading, don't save the mode
+  " (bc every buffer is being opened at once)
   if exists('g:SessionLoad') && g:SessionLoad == 1
     return
   endif
@@ -89,14 +91,31 @@ function! s:SaveMode()
     let b:ignore_next_mode = v:false
     return
   endif
+
   let b:terminal_checked = v:true
   let b:buffer_mode = mode()
 endfunction
-function! s:LoadMode(loadtype = '', ignoreSessionLoad = v:false)
-  if !a:ignoreSessionLoad && exists('g:SessionLoad') && g:SessionLoad == 1
+function! s:LoadMode(loadtype = '', isSessionLoadPost = v:false)
+  " if a session is loading, don't load the mode unless the
+  " session loading has finished and then only if it is the
+  " last buffer being being called with the autocmd
+  " (and thus it is the current buffer)
+  if a:isSessionLoadPost
+    if !exists('g:SessionLoadBufNum')
+      let g:SessionLoadBufNum = 0
+    endif
+    let g:SessionLoadBufNum += 1
+    if g:SessionLoadBufNum < len(getbufinfo({ 'bufloaded':1 }))
+      return
+    endif
+    unlet g:SessionLoadBufNum
+  elseif exists('g:SessionLoad') && g:SessionLoad == 1
     return
   endif
 
+  " we don't know if an empty buffer is from :enew or :term
+  " during the BufEnter autocmd, so we allow the default to
+  " be set until we can confirm one way or the other
   if !exists('b:buffer_mode') || !exists('b:terminal_checked')
     if a:loadtype == 'terminal'
       let b:buffer_mode = "t"
