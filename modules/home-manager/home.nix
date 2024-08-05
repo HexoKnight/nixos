@@ -7,8 +7,8 @@ let
   homeDirectory = "/home/" + username;
 in {
   imports = [
-    inputs.impermanence.nixosModules.home-manager.impermanence
     inputs.nix-index-database.hmModules.nix-index
+    ./impermanence.nix
     ./neovim
     ./fzf.nix
   ] ++ lists.optionals desktop [
@@ -33,6 +33,25 @@ in {
     ] || builtins.elem pkg.meta.license.shortName [
       "CUDA EULA"
     ];
+
+    persist-home = {
+      directories = [
+        "Documents"
+        ".nixos"
+        ".ssh"
+        "dotfiles"
+        ".vim"
+        # stores transient state that could be removed without
+        # too much issue (undos, swaps, shada, etc.)
+        ".local/state/nvim"
+        # stores more permanent state that should not be
+        # removed so easily (sessions, etc.)
+        ".local/share/nvim"
+        ".config/sops"
+        ".config/syncthing"
+        ".local/state/lazygit"
+      ];
+    };
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -439,47 +458,15 @@ in {
     programs.home-manager.enable = true;
   }
 
-  (attrsets.optionalAttrs persistence {
-    home.persistence."/persist/home/${username}" = {
-      allowOther = true;
+  (attrsets.optionalAttrs desktop {
+    persist-home = {
       directories = [
-        "Documents"
-        ".nixos"
-        ".ssh"
-        "dotfiles"
-        ".vim"
-        # stores transient state that could be removed without
-        # too much issue (undos, swaps, shada, etc.)
-        ".local/state/nvim"
-        # stores more permanent state that should not be
-        # removed so easily (sessions, etc.)
-        ".local/share/nvim"
-        ".config/sops"
-        ".config/syncthing"
-        ".local/state/lazygit"
-      ] ++ lists.optionals desktop [
         ".config/GitHub Desktop"
         ".config/Code"
         ".vscode"
-      ] ++ lists.optionals personal-gaming [
-        "Pictures"
-        "Videos"
-        "Music"
-        "Downloads"
-        "Saves"
-        "Torrents"
-        ".config/vesktop"
-        ".config/google-chrome"
-        # cache for logged in accounts and stuff
-        ".cache/google-chrome"
-        ".local/share/Steam"
-        ".config/termusic"
-        ".config/qBittorrent"
       ];
     };
-  })
 
-  (attrsets.optionalAttrs desktop {
     home.packages = with pkgs; [
       (google-chrome.override {
         commandLineArgs = [
@@ -540,6 +527,24 @@ in {
   })
 
   (attrsets.optionalAttrs personal-gaming {
+    persist-home = {
+      directories = [
+        "Pictures"
+        "Videos"
+        "Music"
+        "Downloads"
+        "Saves"
+        "Torrents"
+        ".config/vesktop"
+        ".config/google-chrome"
+        # cache for logged in accounts and stuff
+        ".cache/google-chrome"
+        ".local/share/Steam"
+        ".config/termusic"
+        ".config/qBittorrent"
+      ];
+    };
+
     home.packages = with pkgs; [
       vesktop
       termusic
