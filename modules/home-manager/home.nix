@@ -453,8 +453,6 @@ in {
   (attrsets.optionalAttrs desktop {
     persist-home = {
       directories = [
-        ".config/Code"
-        ".vscode"
       ];
     };
 
@@ -502,11 +500,6 @@ in {
         dynamic_background_opacity = true;
         allow_remote_control = true;
       };
-    };
-
-    programs.vscode = {
-      enable = true;
-      package = pkgs.unstable.vscodium.fhs;
     };
 
     home.pointerCursor = {
