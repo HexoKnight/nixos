@@ -23,6 +23,17 @@
     };
   };
 
+  persist-home = {
+    directories = [
+      # stores transient state that could be removed without
+      # too much issue (undos, swaps, shada, etc.)
+      ".local/state/nvim"
+      # stores more permanent state that should not be
+      # removed so easily (sessions, etc.)
+      ".local/share/nvim"
+    ];
+  };
+
   home.packages = [ config.neovim.finalPackage ];
 
   home.sessionVariables = {

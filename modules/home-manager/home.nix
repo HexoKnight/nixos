@@ -41,12 +41,6 @@ in {
         ".ssh"
         "dotfiles"
         ".vim"
-        # stores transient state that could be removed without
-        # too much issue (undos, swaps, shada, etc.)
-        ".local/state/nvim"
-        # stores more permanent state that should not be
-        # removed so easily (sessions, etc.)
-        ".local/share/nvim"
         ".config/sops"
         ".config/syncthing"
         ".local/state/lazygit"
