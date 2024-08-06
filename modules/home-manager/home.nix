@@ -151,11 +151,6 @@ in {
         contents = {
           core.autocrlf = false;
           init.defaultbranch = "main";
-          # for github desktop
-          filter.lfs.required = "true";
-          filter.lfs.clean = "git-lfs clean -- %f";
-          filter.lfs.smudge = "git-lfs smudge -- %f";
-          filter.lfs.process = "git-lfs filter-process";
         };
       };
 
@@ -458,7 +453,6 @@ in {
   (attrsets.optionalAttrs desktop {
     persist-home = {
       directories = [
-        ".config/GitHub Desktop"
         ".config/Code"
         ".vscode"
       ];
@@ -482,7 +476,6 @@ in {
           "--enable-unsafe-webgpu"
         ];
       })
-      github-desktop
       nvtopPackages.full
       mpv
       unstable.neovide

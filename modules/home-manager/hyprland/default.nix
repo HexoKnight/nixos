@@ -75,7 +75,6 @@ in {
         "workspace name:__steam silent, initialclass:(steam)"
 
         "workspace name:__gvim, initialclass:(Gvim)"
-        "workspace name:__github-desktop, initialclass:(GitHub Desktop)"
       ];
 
       env = (attrsets.mapAttrsToList (
