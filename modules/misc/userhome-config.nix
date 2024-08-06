@@ -28,11 +28,6 @@ in {
           description = "whether the user can use sudo";
         };
         persistence = mkEnableOption "whether to enable persistence";
-        hasRebuildCommand = mkOption {
-          default = true;
-          type = types.bool;
-          description = "whether the user gets a nice rebuild command";
-        };
         hasPersistCommand = mkOption {
           default = true;
           type = types.bool;
@@ -61,7 +56,6 @@ in {
       name = username;
       extraGroups = lists.optional value.cansudo "wheel";
       packages = with pkgs;
-        lists.optional value.hasRebuildCommand local.rebuild ++
         lists.optional value.hasPersistCommand local.persist;
     } value.extraOptions]) users;
 

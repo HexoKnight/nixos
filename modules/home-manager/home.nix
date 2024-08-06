@@ -1,4 +1,4 @@
-{ username, persistence, desktop, personal-gaming, disable-touchpad, hasRebuildCommand, ... }@home-inputs:
+{ username, persistence, desktop, personal-gaming, disable-touchpad, ... }@home-inputs:
 
 { config, lib, pkgs, inputs, nixosConfig, ... }:
 
@@ -203,13 +203,11 @@ in {
     home.shellAliases = {
       "info" = "info --vi-keys";
       ":q" = "exit";
-    }
-    // (optionalAttrs hasRebuildCommand {
       rebuild-reboot = "nixos build --boot && reboot";
       rebuild-test = "nixos build --switch";
       rebuild-poweroff = "nixos build --boot --sudo-quick --timeout 10 ; poweroff";
       rebuild-gc-poweroff = "nixos build --boot --sudo-quick --timeout 10 && nix-collect-garbage --delete-older-than 14d ; poweroff";
-    });
+    };
     programs.bash = {
       enable = true;
       historyControl = [ "ignorespace" "erasedups" ];
@@ -307,25 +305,6 @@ in {
           nix shell "$pkgexpr" -c env MANPATH="$manpath/share/man" man "$1"
         )
         nixman-u() { u nixman "$@"; }
-
-        nixrepl-system() (
-          nix repl \
-            --override-flake flake "''${1-$NIXOS_BUILD_DIR}" \
-            --expr '
-              let
-                hostconfig = (__getFlake "flake").nixosConfigurations."'"$NIXOS_BUILD_CONFIGURATION"'";
-              in
-              # pass inputs that would be available to a module
-              {
-                inherit (hostconfig) config options pkgs;
-                inherit (hostconfig._module) specialArgs;
-              } // hostconfig._module.specialArgs
-              # plus some home-manager stuff
-              // {
-                hmConfig = hostconfig.config.home-manager.users."'"$USER"'";
-              }
-            '
-        )
 
         line() {
           sed -En "''${1}p"

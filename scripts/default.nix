@@ -48,6 +48,7 @@ rec {
   };
 
   evalvar = pkgs.writeShellScriptBin "evalvar" ''eval "$EVALVAR"'';
+  # deprecated
   rebuild = pkgs.writeShellApplication {
     name = "rebuild";
     runtimeInputs = [ configopts pkgs.ssh-to-age evalvar pkgs.nixVersions.nix_2_19 ];

@@ -111,10 +111,6 @@
   ];
 
   environment.variables = {
-    # This is not very pure but only nixos-rebuild scripts depend on it
-    # so they'll just fail harmlessly when run if there's nothing there.
-    # To be entirely honest I'd rather this just be impure but oh well...
-    NIXOS_BUILD_DIR = "/home/${username}/.nixos";
     NIXOS_BUILD_FLAKE = ''
       git+file:///home/${username}/.nixos
       github:HexoKnight/nixos
