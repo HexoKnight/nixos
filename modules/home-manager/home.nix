@@ -11,6 +11,7 @@ in {
     ./impermanence.nix
     ./neovim
     ./fzf.nix
+    ./trash.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland
