@@ -142,6 +142,7 @@ in
           ctrl-d = "preview-half-page-down";
           tab = "down";
           shift-tab = "up";
+          ctrl-space = "select";
         };
         no-mouse = true;
         reverse = true;
