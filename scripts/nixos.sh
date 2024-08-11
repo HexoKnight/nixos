@@ -514,7 +514,8 @@ case "$SUBCOMMAND" in
       args=(
         --override-flake flake "$flake"
         --impure
-        --expr "with $nix_repl_attrset ; $runAttr"
+        --expr "$nix_repl_attrset"
+        "$runAttr"
       )
     else
       args=( "$flake#$runAttr" )
