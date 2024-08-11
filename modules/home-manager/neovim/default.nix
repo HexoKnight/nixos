@@ -38,7 +38,7 @@
 
   home.sessionVariables = {
     EDITOR = lib.getExe (pkgs.writeShellScriptBin "remote-nvim-edit" ''
-      exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait "$@"
+      exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait -- "$@"
     '');
   };
 }
