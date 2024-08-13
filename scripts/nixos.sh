@@ -78,7 +78,7 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 @option ,install-bootloader (re)install the bootloader as specified by the configuration
 
 @option ,no-interactive Don't prompt for anything.
-@option ,sudo-quick Prompt for the sudo password as soon as possible.
+@option ,sudo-late Only prompt for the sudo password at the moment it is required.
 @option ,no-sudo Don't use sudo.
 
 $(whenoption "link" "produce result symlinks")
@@ -117,7 +117,7 @@ profile=system
 install_bootloader=
 
 interactive=1
-sudo_quick=
+sudo_late=
 sudo=1
 
 link=auto
@@ -156,7 +156,7 @@ while readoption option arg; do
     (--install-bootloader) install_bootloader=1 ;;
 
     (--no-interactive) interactive= ;;
-    (--sudo-quick) sudo_quick=1 ;;
+    (--sudo-late) sudo_late=1 ;;
     (--no-sudo) sudo= ;;
 
     (--link | --no-link) parse_whenoption link ;;
@@ -271,7 +271,7 @@ _sudo() {
   if [ -n "$sudo" ]; then
     if [ -n "$interactive" ]; then
       if
-        ! sudo -vn && {
+        ! sudo -vn 2>/dev/null && {
           [ -z "${sudo_passkey+x}" ] ||
           ! echo "$sudo_passkey" | sudo -Sv 2>/dev/null
         }
@@ -318,7 +318,7 @@ check_sudo_required() {
   fi
 }
 
-test -n "$sudo_quick" && check_sudo_required
+test -z "$sudo_late" && check_sudo_required
 
 ### ENSURE VALID FLAKE
 get_flake_store_path() {
@@ -419,8 +419,6 @@ flake_secrets_json=$flake_store_path/secrets.json
     tryhelpexit
   }
 fi
-
-test -z "$sudo_quick" && check_sudo_required
 
 ######### SETUP TMPDIR ##########
 
