@@ -32,7 +32,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf (config.lspServers != {}) {
     pluginsWithConfig = [{
       plugin = pkgs.vimPlugins.nvim-lspconfig;
       type = "lua";
