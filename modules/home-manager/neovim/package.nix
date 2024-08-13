@@ -1,55 +1,69 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (lib) mkOption types;
 
-  cfg = config.neovim;
+  neovimPackageModule = {config, ...}: {
+    options = {
+      vimlConfig = mkOption {
+        description = "Main viml config (loaded after lua config).";
+        type = types.lines;
+        default = "";
+      };
+      luaConfig = mkOption {
+        description = "Main lua config (loaded before vim config).";
+        type = types.lines;
+        default = "";
+      };
+      pluginPackages = mkOption {
+        description = "Plugin packages.";
+        type = types.listOf types.package;
+        default = [];
+      };
+      extraPackages = mkOption {
+        description = "Extra packages made available to neovim.";
+        type = types.listOf types.package;
+        default = [];
+      };
 
-  neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
-    customRC = cfg.vimlConfig;
-    plugins = cfg.pluginPackages;
+      package = mkOption {
+        description = "The package to use for the neovim binary.";
+        type = types.package;
+        default = pkgs.neovim-unwrapped;
+      };
+      finalPackage = mkOption {
+        description = "Resulting configured neovim package.";
+        type = types.package;
+        readOnly = true;
+      };
+    };
+    config =
+    let
+      neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
+        customRC = config.vimlConfig;
+        plugins = config.pluginPackages;
+      };
+      neovimPackage = pkgs.wrapNeovimUnstable config.package (neovimConfig // {
+        luaRcContent = config.luaConfig;
+        wrapperArgs = ''--prefix PATH : "${lib.makeBinPath config.extraPackages}"'';
+      });
+    in
+    {
+      finalPackage = neovimPackage;
+    };
   };
-  neovimPackage = pkgs.wrapNeovimUnstable cfg.package (neovimConfig // {
-    luaRcContent = cfg.luaConfig;
-    wrapperArgs = ''--prefix PATH : "${lib.makeBinPath cfg.extraPackages}"'';
-  });
 in
 {
-  options.neovim = {
-    vimlConfig = mkOption {
-      description = "Main viml config (loaded after lua config).";
-      type = types.lines;
-      default = "";
-    };
-    luaConfig = mkOption {
-      description = "Main lua config (loaded before vim config).";
-      type = types.lines;
-      default = "";
-    };
-    pluginPackages = mkOption {
-      description = "Plugin packages.";
-      type = types.listOf types.package;
-      default = [];
-    };
-    extraPackages = mkOption {
-      description = "Extra packages made available to neovim.";
-      type = types.listOf types.package;
-      default = [];
-    };
-
-    package = mkOption {
-      description = "The package to use for the neovim binary.";
-      type = types.package;
-      default = pkgs.neovim-unwrapped;
-    };
-    finalPackage = mkOption {
-      description = "Resulting configured neovim package.";
-      type = types.package;
-      readOnly = true;
-    };
-  };
-
-  config.neovim = {
-    finalPackage = neovimPackage;
+  options.neovim = mkOption {
+    description = "Main Neovim package configuration";
+    type = types.submodule [
+      neovimPackageModule
+      {
+        options.otherNeovims = mkOption {
+          description = "Other Neovim package configurations";
+          type = types.attrsOf (types.submodule neovimPackageModule);
+        };
+      }
+    ];
   };
 }
