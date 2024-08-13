@@ -65,6 +65,11 @@ SUBCOMMANDS
 multiple can be delimited by newlines and the first valid one is used
 (defaults to \$NIXOS_BUILD_FLAKE if set or /etc/nixos)
 
+@option ,refattr=ATTR Adds flake reference attribute, ATTR, to the flake uri.
+Should be of the form 'name=value' and percent encoded
+@option ,ref=REF Alias of --refattr=ref=REF
+@option ,rev=REV Alias of --refattr=rev=REV
+
 @option n,name=NAME Specify configuration name
 (defaults to \$NIXOS_BUILD_CONFIGURATION if set or the system hostname)
 
@@ -112,6 +117,8 @@ switch=
 
 expr=
 
+refattrs=
+
 profile=system
 
 install_bootloader=
@@ -143,6 +150,12 @@ while readoption option arg; do
     }
   }
 
+  addrefattr() {
+    argrequired
+    test -n "$refattrs" && refattrs=$refattrs'&'
+    refattrs=$refattrs$1
+  }
+
   case "$option" in
     (-b | --boot) boot=1 ;;
     (-s | --switch) switch=1 ;;
@@ -150,6 +163,11 @@ while readoption option arg; do
     (-e | --expr) expr=1 ;;
 
     (-f | --flake) argrequired; flakes=$arg ;;
+
+    (--refattr) addrefattr "$arg" ;;
+    (--ref) addrefattr "ref=$arg" ;;
+    (--rev) addrefattr "rev=$arg" ;;
+
     (-n | --name) configuration=$arg ;;
     (-p | --profile) argrequired; profile=$arg ;;
 
@@ -336,6 +354,12 @@ while true; do
   flake=${rest_of_flakes%%$'\n'*}
   rest_of_flakes=${rest_of_flakes#"$flake"$'\n'}
   if [ -n "$flake" ]; then
+    if [ -n "$refattrs" ]; then
+      case "$flake" in
+        *'?'*) flake=$flake"&"$refattrs;;
+        *) flake=$flake"?"$refattrs;;
+      esac
+    fi
     flake_store_path=$(get_flake_store_path) && break
   elif [ -z "$rest_of_flakes" ]; then
     echoerr "no flakes could be fetched"
