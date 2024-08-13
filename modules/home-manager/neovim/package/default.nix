@@ -1,9 +1,13 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, ... }@inputs:
 
 let
   inherit (lib) mkOption types;
 
   neovimPackageModule = {config, ...}: {
+    imports = [
+      (import ./lspconfig.nix inputs)
+      (import ./plugins.nix inputs)
+    ];
     options = {
       vimlConfig = mkOption {
         description = "Main viml config (loaded after lua config).";

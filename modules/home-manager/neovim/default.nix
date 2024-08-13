@@ -3,7 +3,7 @@
 {
   imports = [
     # define neovim options
-    ./package.nix ./plugins.nix ./lspconfig.nix
+    ./package
     # configure neovim using said options
     ./config ./plugins
   ];

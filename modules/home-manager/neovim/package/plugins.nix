@@ -1,9 +1,9 @@
-{ lib, config, ... }:
+{ lib, ... }:
+
+{ config, ... }:
 
 let
   inherit (lib) mkOption types;
-
-  cfg = config.neovim;
 
   pluginConfigs = lib.foldl (acc: plugin:
     if plugin.config == "" then acc else
@@ -13,12 +13,12 @@ let
   ) {
     viml = "";
     lua = "";
-  } cfg.pluginsWithConfig;
+  } config.pluginsWithConfig;
 
-  pluginPackages = map (p: p.plugin) cfg.pluginsWithConfig;
+  pluginPackages = map (p: p.plugin) config.pluginsWithConfig;
 in
 {
-  options.neovim = {
+  options = {
     pluginsWithConfig = mkOption {
       description = "Plugins with associated config.";
       type = types.listOf (types.submodule {
@@ -44,7 +44,7 @@ in
     };
   };
 
-  config.neovim = {
+  config = {
     vimlConfig = lib.mkBefore pluginConfigs.viml;
     luaConfig = lib.mkBefore pluginConfigs.lua;
     inherit pluginPackages;
