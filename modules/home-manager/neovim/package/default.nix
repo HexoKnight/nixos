@@ -59,15 +59,7 @@ let
 in
 {
   options.neovim = mkOption {
-    description = "Main Neovim package configuration";
-    type = types.submodule [
-      neovimPackageModule
-      {
-        options.otherNeovims = mkOption {
-          description = "Other Neovim package configurations";
-          type = types.attrsOf (types.submodule neovimPackageModule);
-        };
-      }
-    ];
+    description = "Neovim package configurations.";
+    type = types.attrsOf (types.submodule neovimPackageModule);
   };
 }

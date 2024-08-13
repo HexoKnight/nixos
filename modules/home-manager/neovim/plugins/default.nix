@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-  neovim.pluginsWithConfig =
+  neovim.main.pluginsWithConfig =
   let
     pluginAttrsToList = lib.mapAttrsToList (name: value:
       let

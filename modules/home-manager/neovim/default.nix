@@ -8,7 +8,7 @@
     ./config ./plugins
   ];
 
-  neovim = {
+  neovim.main = {
     package = pkgs.unstable.neovim-unwrapped;
     lspServers = {
       rust_analyzer = {
@@ -34,7 +34,7 @@
     ];
   };
 
-  home.packages = [ config.neovim.finalPackage ];
+  home.packages = [ config.neovim.main.finalPackage ];
 
   home.sessionVariables = {
     EDITOR = lib.getExe (pkgs.writeShellScriptBin "remote-nvim-edit" ''
