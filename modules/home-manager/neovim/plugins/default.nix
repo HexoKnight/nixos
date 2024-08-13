@@ -1,47 +1,42 @@
 { lib, pkgs, ... }:
 
-{
-  neovim.main.pluginsWithConfig =
-  let
-    pluginAttrsToList = lib.mapAttrsToList (name: value:
+let
+  pluginAttrsToList = vimPlugins: lib.mapAttrsToList (name: value:
+    let
+      plugin = vimPlugins.${name};
+    in
+    if builtins.isString value then
       let
-        plugin = pkgs.vimPlugins.${name};
-      in
-      if ! builtins.isAttrs value then
-        let
-          luaOptions = builtins.match "(--lua([[:blank:]]+setup([[:blank:]]+([^[:space:]]+))?)?)?.*" value;
-          isLua = builtins.elemAt luaOptions 0 != null;
-          doLuaSetup = builtins.elemAt luaOptions 1 != null;
-          customLuaSetupName = builtins.elemAt luaOptions 3;
-          luaSetupName =
-            if customLuaSetupName != null
-            then customLuaSetupName
-            else name;
+        luaOptions = builtins.match "(--lua([[:blank:]]+setup([[:blank:]]+([^[:space:]]+))?)?)?.*" value;
+        isLua = builtins.elemAt luaOptions 0 != null;
+        doLuaSetup = builtins.elemAt luaOptions 1 != null;
+        customLuaSetupName = builtins.elemAt luaOptions 3;
+        luaSetupName =
+          if customLuaSetupName != null
+          then customLuaSetupName
+          else name;
 
-          type = if isLua then "lua" else "viml";
-          config = if !isLua then value else
-            if !doLuaSetup then value else ''
-              require('${luaSetupName}').setup(${value})
-            '';
-        in
-        {
-          inherit plugin type config;
-        }
-      else if value ? gui-config then
-        {
-          inherit plugin;
-          config = ''
-            ${value.config or ""}
-            if has("gui_running")
-              ${value.gui-config}
-            endif
+        type = if isLua then "lua" else "viml";
+        config = if !isLua then value else
+          if !doLuaSetup then value else ''
+            require('${luaSetupName}').setup(${value})
           '';
-        } // builtins.removeAttrs value [ "config" "gui-config" ]
-      else
-        { inherit plugin; } // value
-    );
-  in
-  pluginAttrsToList (
+      in
+      {
+        inherit plugin type config;
+      }
+    else if builtins.isAttrs value then
+      { inherit plugin; } // value
+    else throw "plugin attr '${name}' must be a string or attrset"
+  );
+in
+{
+  lib.neovim = {
+    inherit pluginAttrsToList;
+  };
+
+  neovim.main.pluginsWithConfig =
+  pluginAttrsToList pkgs.vimPlugins (
     lib.concatMapAttrs (filename: filetype:
       let
         toBeImported = filename != "default.nix" && (isDir || options ? ${extension});
