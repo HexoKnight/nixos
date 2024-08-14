@@ -3,7 +3,7 @@
 let
   pluginAttrsToList = vimPlugins: lib.mapAttrsToList (name: value:
     let
-      plugin = vimPlugins.${name};
+      pkgPlugin = vimPlugins.${name};
     in
     if builtins.isString value then
       let
@@ -19,14 +19,26 @@ let
         type = if isLua then "lua" else "viml";
         config = if !isLua then value else
           if !doLuaSetup then value else ''
-            require('${luaSetupName}').setup(${value})
+            require('${luaSetupName}').setup(${value}
+            )
           '';
       in
       {
-        inherit plugin type config;
+        plugin = pkgPlugin;
+        inherit type config;
       }
     else if builtins.isAttrs value then
-      { inherit plugin; } // value
+      let
+        plugin = lib.pipe (value.plugin or pkgPlugin) (
+          lib.optional (value ? override)
+            (p: p.overrideAttrs value.override)
+          ++ lib.optional (value ? postPatch)
+            (p: p.overrideAttrs (final: prev: {
+              postPatch = prev.postPatch or "" + value.postPatch;
+            }))
+        );
+      in
+      builtins.removeAttrs value [ "override" "postPatch" ] // { inherit plugin; }
     else throw "plugin attr '${name}' must be a string or attrset"
   );
 in
