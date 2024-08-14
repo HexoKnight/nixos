@@ -124,9 +124,21 @@ in
       }
     '';
 
-    # or presence-nvim
-    vimsence = /* vim */ ''
-    '';
+    neocord = {
+      postPatch = ''
+        substituteInPlace lua/neocord/filetypes/dashboards.lua \
+          --replace-fail \
+          'return {' \
+          'return { ["startify"] = "Startify",'
+      '';
+      type = "lua";
+      config = /* lua */ ''
+        require'neocord'.setup{
+          global_timer = true,
+          logo = 'https://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/nvim-icon.png',
+        }
+      '';
+    };
     nvim-web-devicons = /* lua */ ''
       --lua
       require('nvim-web-devicons').setup({})
