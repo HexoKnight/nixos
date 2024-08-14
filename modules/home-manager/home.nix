@@ -45,6 +45,7 @@ in {
         ".config/sops"
         ".config/syncthing"
         ".local/state/lazygit"
+        ".local/bin"
       ];
     };
 
@@ -425,6 +426,9 @@ in {
       # stackoverflow.com/a/74047582
       LESS = "";
     };
+    home.sessionPath = [
+      "$HOME/.local/bin"
+    ];
 
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
