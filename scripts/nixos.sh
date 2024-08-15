@@ -46,6 +46,7 @@ SUBCOMMANDS
   build - build a nixos configuration
   dry-build - evaluate a nixos configuration but don't build it
   repl - open a nixos configuration in 'nix repl'
+  eval ATTR - evaluate ATTR from the flake of a nixos configuration
   run PROGRAM [ARGS]... - run PROGRAM from the flake of a nixos configuration
 \
 @option =SUBCOMMAND #
@@ -57,7 +58,11 @@ SUBCOMMANDS
 @option s,switch Switch to the new configuration. Valid only for boot subcommand.
 
 # run
-@option e,expr PROGRAM is a nix expression in the repl context (ie. access to pkgs, hmConfig, etc.). Valid only for run subcommand.
+@option e,expr ATTR/PROGRAM is a nix expression in the repl context (ie. access to pkgs, hmConfig, etc.). Valid only for eval and run subcommands.
+
+# eval
+@option ,raw Output a string result without any quoting. Valid only for eval subcommand.
+@option ,json Output a result (containign no functions) as json. Valid only for eval subcommand.
 
 ### NIXOS CONFIGURATION OPTIONS
 
@@ -117,6 +122,9 @@ switch=
 
 expr=
 
+raw=
+json=
+
 refattrs=
 
 profile=system
@@ -162,6 +170,9 @@ while readoption option arg; do
 
     (-e | --expr) expr=1 ;;
 
+    (--raw) raw=1 ;;
+    (--json) json=1 ;;
+
     (-f | --flake) argrequired; flakes=$arg ;;
 
     (--refattr) addrefattr "$arg" ;;
@@ -199,12 +210,17 @@ readrequiredpositionalarg SUBCOMMAND
 
 ######### VALIDATE SUBCOMMANDS/FLAGS ##########
 
+evalAttr=
 runAttr=
 runArgs=
 case "$SUBCOMMAND" in
   build|dry-build|repl)
     # shellcheck disable=SC2119
     readexactpositionalargs
+  ;;
+  eval)
+    readexactpositionalargs ATTR
+    evalAttr=$ATTR
   ;;
   run)
     readrequiredpositionalarg PROGRAM
@@ -222,9 +238,17 @@ if [ "$SUBCOMMAND" != "build" ]; then
   test -n "$boot" && echoerr "'-b/--boot' only valid for the 'build' subcommand"
 fi
 
-if [ "$SUBCOMMAND" != "run" ]; then
-  test -n "$expr" && echoerr "'-e/--expr' only valid for the 'run' subcommand"
+if [ "$SUBCOMMAND" != "eval" ] && [ "$SUBCOMMAND" != "run" ]; then
+  test -n "$expr" && echoerr "'-e/--expr' only valid for the 'eval' and 'run' subcommands"
 fi
+
+if [ "$SUBCOMMAND" != "eval" ]; then
+  test -n "$raw" && echoerr "'--raw' only valid for the 'eval' subcommand"
+  test -n "$json" && echoerr "'--json' only valid for the 'eval' subcommand"
+fi
+
+test -n "$raw" && test -n "$json" &&
+  echoerr "'--raw' and '--json' are mutually exclusive"
 
 test -z "$boot" && test -n "$install_bootloader" &&
   echoerr "'--install-bootloader' only valid for the '-b/--boot' option"
@@ -245,7 +269,7 @@ case "$diff:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
   show_diff=1
 esac
 show_info=1
-case "$print_info:$SUBCOMMAND" in never:*|auto:run)
+case "$print_info:$SUBCOMMAND" in never:*|auto:run|auto:eval)
   show_info=
 esac
 
@@ -534,6 +558,20 @@ case "$SUBCOMMAND" in
     _nix repl \
       --override-flake flake "$flake" \
       --expr "$nix_repl_attrset"
+  ;;
+  eval)
+    if [ -n "$expr" ]; then
+      args=(
+        --override-flake flake "$flake"
+        --impure
+        --expr "with $nix_repl_attrset; $evalAttr" .
+      )
+    else
+      args=( "$flake#$evalAttr" )
+    fi
+    test -n "$raw" && args+=( --raw )
+    test -n "$json" && args+=( --json )
+    NIX_EXEC=1 _nix eval "${args[@]}"
   ;;
   run)
     if [ -n "$expr" ]; then
