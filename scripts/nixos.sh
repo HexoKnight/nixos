@@ -44,7 +44,7 @@ Manage a nixos installation.
 
 SUBCOMMANDS
   build - build a nixos configuration
-  eval - evaluate a nixos configuration but don't build it
+  dry-build - evaluate a nixos configuration but don't build it
   repl - open a nixos configuration in 'nix repl'
   run PROGRAM - run PROGRAM from the flake of a nixos configuration
 \
@@ -205,7 +205,7 @@ readpositionalarg SUBCOMMAND || {
 runAttr=
 runArgs=
 case "$SUBCOMMAND" in
-  build|eval|repl)
+  build|dry-build|repl)
     # shellcheck disable=SC2119
     readexactpositionalargs
   ;;
@@ -526,7 +526,7 @@ case "$SUBCOMMAND" in
       echo "Successfully switched to the new configuration"
     fi
   ;;
-  eval)
+  dry-build)
     echo "Evaluating NixOS configuration: '$configuration'..."
     _nix build --dry-run "$flake_config_attr.config.system.build.toplevel" || exit 1
     echo "Successfully evaluated the configuration"
