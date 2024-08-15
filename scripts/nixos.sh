@@ -220,10 +220,16 @@ case "$SUBCOMMAND" in
 esac
 
 if [ "$SUBCOMMAND" != "build" ]; then
-  test -n "$switch" && echoerr "'-s/--switch' only valid for 'build' subcommand"
-  test -n "$boot" && echoerr "'-b/--boot' only valid for 'build' subcommand"
-  test -n "$install_bootloader" && echoerr "'--install-bootloader' only valid for 'build' subcommand"
+  test -n "$switch" && echoerr "'-s/--switch' only valid for the 'build' subcommand"
+  test -n "$boot" && echoerr "'-b/--boot' only valid for the 'build' subcommand"
 fi
+
+if [ "$SUBCOMMAND" != "run" ]; then
+  test -n "$expr" && echoerr "'-e/--expr' only valid for the 'run' subcommand"
+fi
+
+test -z "$boot" && test -n "$install_bootloader" &&
+  echoerr "'--install-bootloader' only valid for the '-b/--boot' option"
 
 if [ "$profile" = "system" ]; then
   profile_path=/nix/var/nix/profiles/system
