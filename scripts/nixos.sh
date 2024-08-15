@@ -46,7 +46,7 @@ SUBCOMMANDS
   build - build a nixos configuration
   dry-build - evaluate a nixos configuration but don't build it
   repl - open a nixos configuration in 'nix repl'
-  run PROGRAM - run PROGRAM from the flake of a nixos configuration
+  run PROGRAM [ARGS]... - run PROGRAM from the flake of a nixos configuration
 \
 @option =SUBCOMMAND #
 
@@ -195,10 +195,7 @@ while readoption option arg; do
   esac
 done
 
-readpositionalarg SUBCOMMAND || {
-  echoerr "subcommand required"
-  tryhelpexit
-}
+readrequiredpositionalarg SUBCOMMAND
 
 ######### VALIDATE SUBCOMMANDS/FLAGS ##########
 
@@ -210,7 +207,7 @@ case "$SUBCOMMAND" in
     readexactpositionalargs
   ;;
   run)
-    readpositionalarg runAttr
+    readrequiredpositionalarg runAttr
     readremainingpositionalargs runArgs
   ;;
   *)

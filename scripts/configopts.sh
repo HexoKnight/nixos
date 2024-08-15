@@ -514,7 +514,7 @@ readoption() {
     1>&2 echo "readoption: exactly 2 args required but $# were supplied"
     return 1
   fi
-  # no trailing whitespace
+  # no trailing whitespace so if it's empty it's empty
   test -z "$named_args" && return 1
 
   check_varname "$@"
@@ -528,7 +528,7 @@ readpositionalarg() {
     1>&2 echo "readpositionalarg: exactly 1 arg required but $# were supplied"
     return 1
   fi
-  # no trailing whitespace so it it's empty it's empty
+  # no trailing whitespace so if it's empty it's empty
   test -z "$positional_args" && return 1
 
   check_varname "$@"
@@ -536,6 +536,17 @@ readpositionalarg() {
   positional_args=$(echo "$positional_args" | _removequotedarg)
 }
 
+readrequiredpositionalarg() {
+  if [ "$#" -ne 1 ]; then
+    1>&2 echo "readrequiredpositionalarg: exactly 1 arg required but $# were supplied"
+    return 1
+  fi
+
+  if ! readpositionalarg "$1"; then
+    echoerr "missing $1 operand"
+    tryhelpexit
+  fi
+}
 readexactpositionalargs() {
   tryhelpexit=
   while [ "$#" -gt 0 ]; do
