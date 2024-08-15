@@ -207,7 +207,8 @@ case "$SUBCOMMAND" in
     readexactpositionalargs
   ;;
   run)
-    readrequiredpositionalarg runAttr
+    readrequiredpositionalarg PROGRAM
+    runAttr=$PROGRAM
     readremainingpositionalargs runArgs
   ;;
   *)
