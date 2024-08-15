@@ -474,14 +474,25 @@ fi
 
 ######### SETUP TMPDIR ##########
 
-tmpDir=$(mktemp -d rebuild-XXXXXX) || {
-  echoerr "mktemp failed, cannot continue"
-  exit 1
+tmp_dir=
+ensure_tmp_dir() {
+  test -n "$tmp_dir" && return 0
+
+  tmp_dir=$(mktemp --tmpdir -d rebuild-XXXXXX) || {
+    echoerr "mktemp failed, cannot continue"
+    exit 1
+  }
+  cleanup() {
+    rm -rf "$tmp_dir"
+  }
+  trap cleanup EXIT
+
+  # EXIT trap is not triggered on exec
+  exec() {
+    cleanup
+    builtin exec "$@"
+  }
 }
-cleanup() {
-  rm -rf "$tmpDir"
-}
-trap cleanup EXIT
 
 ######### RUN SUBCOMMAND ##########
 
@@ -491,7 +502,8 @@ case "$SUBCOMMAND" in
     if [ -n "$do_link" ]; then
       result_path=$out_link
     else
-      result_path=$tmpDir/result
+      ensure_tmp_dir
+      result_path=$tmp_dir/result
     fi
     _nix build --out-link "$result_path" "$flake_config_attr.config.system.build.toplevel" || exit 1
     echo "Successfully built the configuration"
