@@ -303,13 +303,11 @@ echoinfo() {
   fi
 }
 
-NIX_EXEC=
 _nix() {
-  if [ -n "$NIX_EXEC" ]; then
-    exec nix "${nix_options[@]}" "$@"
-  else
-    nix "${nix_options[@]}" "$@"
-  fi
+  nix "${nix_options[@]}" "$@"
+}
+exec_nix() {
+  exec nix "${nix_options[@]}" "$@"
 }
 
 unset sudo_passkey
@@ -457,7 +455,7 @@ fi
 # after being built to, for example, prevent getting stuck
 # (if only temporarily) in a system with a broken nixos command
 if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$boot$switch" ]; then
-  IN_NIXOS_BUILD_REEXEC=1 NIX_EXEC=1 _nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
+  IN_NIXOS_BUILD_REEXEC=1 exec_nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
 fi
 
 ######### POST-REEXEC ACTIONS ##########
@@ -583,7 +581,7 @@ case "$SUBCOMMAND" in
     fi
     test -n "$raw" && args+=( --raw )
     test -n "$json" && args+=( --json )
-    NIX_EXEC=1 _nix eval "${args[@]}"
+    exec_nix eval "${args[@]}"
   ;;
   run)
     if [ -n "$expr" ]; then
@@ -595,6 +593,6 @@ case "$SUBCOMMAND" in
     else
       args=( "$flake#$runAttr" )
     fi
-    NIX_EXEC=1 _nix run "${args[@]}" -- "${runArgs[@]}"
+    exec_nix run "${args[@]}" -- "${runArgs[@]}"
   ;;
 esac
