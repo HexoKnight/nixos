@@ -3,8 +3,13 @@
 # TODO:
 # add list-generations support
 
+jq=jq
+sops=sops
+nix=nix
+configopts=${CONFIGOPTS_SCRIPT:-configopts.sh}
+
 # shellcheck source=configopts.sh
-source "${CONFIGOPTS_SCRIPT:-configopts.sh}" || {
+source "$configopts" || {
   cat << 'EOF'
 failed to source configopts!
 to fix:
@@ -311,10 +316,10 @@ echoinfo() {
 }
 
 _nix() {
-  nix "${nix_options[@]}" "$@"
+  $nix "${nix_options[@]}" "$@"
 }
 exec_nix() {
-  exec nix "${nix_options[@]}" "$@"
+  exec $nix "${nix_options[@]}" "$@"
 }
 
 unset sudo_passkey
@@ -374,7 +379,7 @@ test -z "$sudo_late" && check_sudo_required
 ### ENSURE VALID FLAKE
 get_flake_store_path() {
   _nix flake prefetch --json "$flake" |
-  jq -r '.storePath'
+  $jq -r '.storePath'
 }
 
 flake_metadata=
@@ -410,7 +415,7 @@ if [ -z "$IN_NIXOS_BUILD_REEXEC" ]; then
 
   if [ -n "$git_add" ]; then
     flake_metadata=$(get_flake_metadata) || exit 1
-    flake_src_dir=$(printf %s "$flake_metadata" | jq -r '
+    flake_src_dir=$(printf %s "$flake_metadata" | $jq -r '
       .resolved |
       if .type == "git" and (has("ref") or has("rev") | not) then
         .url
@@ -471,7 +476,7 @@ fi
 
 flake_secrets_json=$flake_store_path/secrets.json
   if [ -n "$do_sops_check" ] && [ -e "$flake_secrets_json" ]; then
-  SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt sops --decrypt "$flake_secrets_json" >/dev/null || {
+  SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt $sops --decrypt "$flake_secrets_json" >/dev/null || {
     echoerr "failed to decrypt secrets.json using sops"
     echoerr "use '--no-sops-check' if you know what you are doing"
     echoerr "otherwise use 'gen-sops-secrets' to properly generate an age key and/or secrets.json file"

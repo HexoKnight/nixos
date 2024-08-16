@@ -1,9 +1,10 @@
 { lib, pkgs }:
 
 rec {
-  configopts = pkgs.writeTextFile {
+  configopts = pkgs.writeTextFile rec {
     name = "configopts";
-    destination = "/bin/configopts.sh";
+    meta.mainProgram = "configopts.sh";
+    destination = "/bin/${meta.mainProgram}";
     text = ''
       #!/usr/bin/env sh
 
@@ -58,14 +59,23 @@ rec {
 
   nixos = pkgs.writeShellApplication {
     name = "nixos";
-    runtimeInputs = [
-      configopts evalvar
-      pkgs.jq
-      pkgs.sops
-      pkgs.nixVersions.nix_2_19
-    ];
     extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
     text = builtins.readFile ./nixos.sh;
+
+    derivationArgs.preCheck =
+    let
+      inherit (lib) getExe;
+      sedScript = lib.concatLines (lib.mapAttrsToList (name: bin:
+        "0,\\|^${name}=.*$|s||${name}=${bin}|"
+      ) {
+        jq = getExe pkgs.jq;
+        sops = getExe pkgs.sops;
+        nix = getExe pkgs.nixVersions.nix_2_19;
+        configopts = getExe configopts;
+      });
+    in ''
+      sed -iEe ${lib.escapeShellArg sedScript} $target
+    '';
   };
 
   gen-sops-secrets = pkgs.writeShellApplication {
