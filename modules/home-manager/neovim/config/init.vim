@@ -326,19 +326,17 @@ function s:DetectNixShebang()
     return
   endif
 
-  let fullshebang = (interpreter->match('/') == -1 ? '#!/bin/env ' : '#!') . interpreter
-  " would prefer to be able to directly call
-  " dist#script#DetectFromHashBang(fullshebang)
-  " to avoid all this malarky but oh well
-  let currentbuffer = bufnr('%')
-  exec "e" tempname()
-  let tempbuffer = bufnr('%')
-  call append(0, fullshebang)
-  call dist#script#DetectFiletype()
-  let acfiletype = &ft
-  exec "buffer!" currentbuffer
-  exec "bwipeout!" tempbuffer
-  let &ft = acfiletype
+  let b:fullshebang = '#!' . interpreter
+  lua <<EOF
+    vim.print(vim.b.fullshebang)
+    local ft, on_detect = vim.filetype.match({ contents = { vim.b.fullshebang } })
+    if not ft then
+      ft, on_detect = vim.filetype.match({ filename = vim.api.nvim_buf_get_name(0) })
+    end
+
+    if ft then vim.bo.ft = ft end
+    if on_detect then on_detect(0) end
+EOF
 endfunction
 
 augroup nixshebangfiletype
