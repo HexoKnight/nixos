@@ -93,6 +93,7 @@ uses '/nix/var/nix/profiles/system-profiles/NAME'
 
 $(whenoption "link" "produce result symlinks")
 @option o,out-link=PATH Specify prefix for result symlinks (defaults to 'result')
+$(whenoption "re-exec" "re-exec this nixos program from the nixos flake")
 
 $(whenoption "diff" "display a diff")
 $(whenoption "print-info" "display info about what is happenning")
@@ -137,6 +138,7 @@ sudo=1
 
 link=auto
 out_link=result
+reexec=auto
 diff=auto
 print_info=auto
 sops_check=auto
@@ -190,6 +192,7 @@ while readoption option arg; do
 
     (--link | --no-link) parse_whenoption link ;;
     (-o | --out-link) out_link=$arg ;;
+    (--re-exec | --no-re-exec) parse_whenoption reexec ;;
 
     (--diff | --no-diff) parse_whenoption diff ;;
     (--print-info | --no-print-info) parse_whenoption print_info ;;
@@ -263,9 +266,13 @@ do_link=
 case "$link:$SUBCOMMAND$boot$switch" in always:*|auto:build)
   do_link=1
 esac
+do_reexec=
+case "$reexec:$boot$switch" in always:*|auto:1*)
+  do_reexec=1
+esac
 
 show_diff=
-case "$diff:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
+case "$diff:$boot$switch" in always:*|auto:1*)
   show_diff=1
 esac
 show_info=1
@@ -274,7 +281,7 @@ case "$print_info:$SUBCOMMAND" in never:*|auto:run|auto:eval)
 esac
 
 do_sops_check=
-case "$sops_check:$SUBCOMMAND$boot$switch" in always:*|auto:build1*)
+case "$sops_check:$boot$switch" in always:*|auto:1*)
   do_sops_check=1
 esac
 
@@ -451,10 +458,12 @@ fi
 
 ######### REEXEC ##########
 
-# re-exec nixos if the configuration is going to be 'used'
-# after being built to, for example, prevent getting stuck
-# (if only temporarily) in a system with a broken nixos command
-if [ -z "$IN_NIXOS_BUILD_REEXEC" ] && [ -n "$boot$switch" ]; then
+if [ -n "$IN_NIXOS_BUILD_REEXEC" ]; then
+  unset IN_NIXOS_BUILD_REEXEC
+elif [ -n "$do_reexec" ]; then
+  # re-exec nixos if the configuration is going to be 'used'
+  # after being built to, for example, prevent getting stuck
+  # (if only temporarily) in a system with a broken nixos command
   IN_NIXOS_BUILD_REEXEC=1 exec_nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
 fi
 
