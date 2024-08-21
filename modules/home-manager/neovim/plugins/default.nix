@@ -139,6 +139,9 @@ in
         }
       '';
     };
+    git-conflict-nvim = /* lua */ ''
+      --lua setup git-conflict
+    '';
     nvim-web-devicons = /* lua */ ''
       --lua
       require('nvim-web-devicons').setup({})
