@@ -153,6 +153,10 @@ in {
         contents = {
           core.autocrlf = false;
           init.defaultbranch = "main";
+
+          commit.gpgSign = true;
+          gpg.format = "ssh";
+          user.signingKey = "~/.ssh/id_ed25519.pub";
         };
       };
 
