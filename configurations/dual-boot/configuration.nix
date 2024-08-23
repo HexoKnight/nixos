@@ -18,11 +18,14 @@ in
 
   host-config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
 
-  fileSystems."/c:" = {
+  fileSystems."/c_drive" = {
     device = "/dev/nvme0n1p3";
     fsType = "ntfs3";
     options = [
-      # "nofail"
+      # in case it's confusing this actually means
+      # the filesystem failing to mount won't cause
+      # the boot to fail
+      "nofail"
       "uid=1000"
       "gid=100"
     ];
