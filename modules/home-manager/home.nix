@@ -12,6 +12,7 @@ in {
     ./neovim
     ./fzf.nix
     ./trash.nix
+    ./steam-presence.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland
@@ -527,6 +528,8 @@ in {
       local.linkSaveDirs
       local.addLinkedSave
     ];
+
+    steam-presence.enable = true;
 
     home.activation.linkSaves = lib.hm.dag.entryAfter ["writeBoundary"] ''
       $DRY_RUN_CMD ${lib.getExe pkgs.local.linkSaveDirs}
