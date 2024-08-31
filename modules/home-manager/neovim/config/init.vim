@@ -22,8 +22,8 @@ set shiftwidth=0 " use tabstop value
 
 augroup insert_mode_relativenumber
   au!
-  au InsertEnter * set norelativenumber
-  au InsertLeave * set relativenumber
+  au InsertEnter * if &buftype == "" | set norelativenumber | endif
+  au InsertLeave * if &buftype == "" | set relativenumber | endif
 augroup END
 
 " ########## MAPPINGS ##########
