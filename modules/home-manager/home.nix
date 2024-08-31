@@ -140,8 +140,10 @@ in {
         gui = {
           nerdFontsVersion = "3";
         };
-        git.paging = {
-          pager = "delta --paging=never";
+        git = {
+          # can apparently cause issues but seems fine
+          overrideGpg = true;
+          paging.pager = "delta --paging=never";
         };
       };
     };
