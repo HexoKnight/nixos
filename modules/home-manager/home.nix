@@ -488,6 +488,7 @@ in {
       settings = {
         dynamic_background_opacity = true;
         allow_remote_control = true;
+        scrollback_fill_enlarged_window = true;
       };
     };
 
