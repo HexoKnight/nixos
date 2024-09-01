@@ -42,6 +42,11 @@ imap <C-l> <Right>
 
 nnoremap <silent> # <Cmd>noh<CR>
 
+noremap <expr> <C-\><C-V> nr2char(getchar())
+" insert mode already has <C-V> but for symmetry :)
+inoremap <expr> <C-\><C-V> nr2char(getchar())
+tnoremap <expr> <C-\><C-V> nr2char(getchar())
+
 " ########## LSP STUFF #########
 
 " to-be defaults
