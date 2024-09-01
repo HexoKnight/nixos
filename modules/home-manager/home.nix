@@ -517,6 +517,7 @@ in {
         ".local/share/Steam"
         ".config/termusic"
         ".config/qBittorrent"
+        ".local/share/qBittorrent"
       ];
     };
 
