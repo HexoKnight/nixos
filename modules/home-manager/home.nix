@@ -248,6 +248,9 @@ in {
         ezap() {
           eza --colour=always --icons=always "$@" | batpage --pager="less -r"
         }
+        eztat() {
+          eza --long --tree --level=0 --sort=none "$@"
+        }
 
         u() { NIXPKGS_FLAKE=nixpkgs-unstable "$@"; }
 
