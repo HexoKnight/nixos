@@ -13,6 +13,7 @@ in {
     ./fzf.nix
     ./trash.nix
     ./steam-presence.nix
+    ./flatpak.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland

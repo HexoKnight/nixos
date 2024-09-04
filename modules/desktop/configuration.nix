@@ -162,6 +162,8 @@
     })
   ];
 
+  services.flatpak.enable = true;
+
   programs.steam = {
     enable = true;
     extraPackages = with pkgs; [
