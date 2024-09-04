@@ -130,6 +130,7 @@ in {
           };
         };
         os = {
+          open = "nvr -s -c 'set readonly' --remote {{filename}}";
           edit = "nvr -s --remote {{filename}}";
           editAtLine = "nvr -s --remote +{{line}} {{filename}}";
           editAtLineAndWait = "nvr -s --remote-wait +{{line}} {{filename}}";
