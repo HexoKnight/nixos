@@ -109,8 +109,6 @@ in {
 
     programs.bat = {
       enable = true;
-      extraPackages = with pkgs.bat-extras; [
-      ];
     };
 
     programs.eza = {
@@ -176,7 +174,7 @@ in {
 
       delta = {
         enable = true;
-        options = rec {
+        options = {
           features = "default";
           default = {
             file-decoration-style = "";
