@@ -10,7 +10,8 @@
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
-  ] ++ (lib.lists.optional impermanence (import ../impermanence { inherit device; }));
+  # TODO: always import and make into option
+  ] ++ (lib.lists.optional impermanence (import "${inputs.self}/modules/nixos/impermanence" { inherit device; }));
 
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
   sops.defaultSopsFormat = "json";

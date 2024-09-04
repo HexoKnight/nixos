@@ -69,7 +69,7 @@
       import ./packages args //
       import ./scripts args;
 
-    mkNixosConfigurations = import ./modules/mkNixosConfigurations.nix { inherit inputs lib local-pkgs; };
+    mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix { inherit inputs lib local-pkgs; };
     forAllSystems = lib.genAttrs lib.systems.flakeExposed;
   in
   {

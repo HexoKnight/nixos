@@ -6,7 +6,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    (import ../../modules/desktop/configuration.nix {
+    (import ../generic/desktop {
       inherit username;
       hostName = "HARVEY-nixos";
       device = "/dev/sda";

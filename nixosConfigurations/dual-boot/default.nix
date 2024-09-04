@@ -7,7 +7,7 @@ in
   imports = [
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
-    (import ../../modules/desktop/configuration.nix {
+    (import ../generic/desktop {
       inherit username;
       hostName = "HARVEY";
       device = "/dev/nvme0n1";

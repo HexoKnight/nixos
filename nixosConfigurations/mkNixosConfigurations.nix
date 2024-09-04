@@ -9,8 +9,8 @@ lib.mapAttrs (config_name: extraOptions: lib.nixosSystem (
       inherit inputs local-pkgs config_name;
     };
     modules = [
-      ../configurations/${config_name}/configuration.nix
-      ./misc
+      ./${config_name}
+      ../modules/nixos
     ] ++ extraModules;
   }
   // extraOptions
