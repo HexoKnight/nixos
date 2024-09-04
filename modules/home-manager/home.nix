@@ -146,6 +146,16 @@ in {
           overrideGpg = true;
           paging.pager = "delta --paging=never";
         };
+        customCommands = [
+          {
+            key = "<c-a>";
+            context = "commits";
+            description = "git rebase --committer-date-is-author-date ...";
+            # extra options mostly from lazygit's own rebase commands
+            command = "git rebase --autostash --keep-empty --no-autosquash --rebase-merges --committer-date-is-author-date {{.SelectedLocalCommit.Hash}}^";
+            showOutput = true;
+          }
+        ];
       };
     };
 
