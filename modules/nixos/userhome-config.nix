@@ -49,9 +49,6 @@ in {
   };
 
   config = mkIf (users != {}) {
-    # required for persistence
-    programs.fuse.userAllowOther = true;
-
     users.users = attrsets.mapAttrs (_: {username, ...}@value: mkMerge [{
       name = username;
       extraGroups = lists.optional value.cansudo "wheel";

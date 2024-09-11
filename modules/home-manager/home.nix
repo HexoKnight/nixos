@@ -38,6 +38,7 @@ in {
     ];
 
     persist-home = {
+      enable = persistence;
       directories = [
         "Documents"
         ".nixos"

@@ -7,5 +7,6 @@
     ./overlays.nix
     ./nix-settings.nix
     ./syncthing.nix
+    ./impermanence
   ];
 }

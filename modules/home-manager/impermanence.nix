@@ -1,28 +1,36 @@
-{ lib, pkgs, config, inputs, ... }:
+{ lib, config, inputs, ... }:
 
 let
-  home-persist-root = "/persist/home/${config.home-inputs.username}";
   cfg = config.persist-home;
+
+  inherit (lib) mkEnableOption mkOption types;
+
+  persistence-options = (import "${inputs.self}/modules/lib/impermanence.nix" { inherit lib; }).override (final: prev: {
+    # TODO: add extensions
+  });
 in
 {
-  imports = [
-    inputs.impermanence.nixosModules.home-manager.impermanence
-  ];
+  options.persist-home = {
+    enable = mkEnableOption "home persistence (requires the OS, ie. cannot be used in standalone home-manager)";
 
-  options.persist-home =
-  let
-    impermanence-module = import "${inputs.impermanence}/home-manager.nix" { inherit pkgs config lib; };
-    persistence-submodule = lib.head impermanence-module.options.home.persistence.type.nestedTypes.elemType.getSubModules {
-      name = home-persist-root;
+    inherit (persistence-options) directories files;
+
+    usedByOS = mkOption {
+      type = types.bool;
+      default = false;
+      internal = true;
     };
-  in
-  {
-    inherit (persistence-submodule.options) directories files;
   };
 
-  config = lib.mkIf config.home-inputs.persistence {
-    home.persistence.${home-persist-root} = {
-      allowOther = true;
-    } // cfg;
+  config = {
+    assertions = lib.singleton {
+      assertion = cfg.enable -> cfg.usedByOS;
+      message = ''
+        Home persistence (persist-home) is enabled but the OS is not using it.
+        This could be due to home-manager being used outside of NixOS
+        or the NixOS setup not enabling the 'persist' module.
+        Either disable home persistence or fix the OS configuration.
+      '';
+    };
   };
 }

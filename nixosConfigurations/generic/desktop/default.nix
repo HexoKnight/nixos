@@ -10,8 +10,7 @@
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
-  # TODO: always import and make into option
-  ] ++ (lib.lists.optional impermanence (import "${inputs.self}/modules/nixos/impermanence" { inherit device; }));
+  ];
 
   sops.defaultSopsFile = "${inputs.self}/secrets.json";
   sops.defaultSopsFormat = "json";
@@ -34,6 +33,24 @@
 
     grub.timestampFormat = "%F %H:%M";
     grub.default = "saved";
+  };
+
+  persist = {
+    enable = true;
+    defaultSetup = {
+      enable = true;
+      inherit device;
+    };
+    system = {
+      directories = [
+        "/etc/NetworkManager/system-connections"
+        "/var/lib/systemd/backlight"
+        "/var/lib/systemd/timers"
+      ];
+      files = [
+        "/etc/machine-id"
+      ];
+    };
   };
 
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
