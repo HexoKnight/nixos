@@ -16,6 +16,20 @@
       };
       nil_ls = {
         extraPackages = with pkgs; [ nil ];
+        config = /* lua */ ''
+          {
+            settings = {
+              ['nil'] = {
+                nix = {
+                  flake = {
+                    autoArchive = true,
+                    autoEvalInputs = false,
+                  },
+                },
+              },
+            },
+          }
+        '';
       };
       vimls = {
         extraPackages = with pkgs; [ vim-language-server ];
