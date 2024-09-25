@@ -129,7 +129,7 @@ in
         # until https://github.com/IogaMaster/neocord/pull/27 is merged
         patches = prev.patches or [] ++ lib.singleton (pkgs.fetchpatch {
           url = "https://github.com/IogaMaster/neocord/commit/aac04403d84554ac42b547ddcc77f45935aabd70.patch";
-          hash = "sha256-kThn+R2XlpHC8EnM8jDnEkezpGw6LbTOMimbzproGRg=";
+          hash = "sha256-nTYkoXBS4CyqNX9uuDZHbpGUkdXhxDZ8PvseD1/BIzw=";
         });
       };
       postPatch = ''
