@@ -36,7 +36,7 @@
   };
 
   persist = {
-    enable = true;
+    enable = impermanence;
     defaultSetup = {
       enable = true;
       inherit device;
@@ -115,8 +115,8 @@
   };
   userhome-config.${username} = {
     cansudo = true;
-    persistence = true;
     personal-gaming = true;
+    persistence = impermanence;
     extraOptions = {
       isNormalUser = true;
       description = "Harvey Gream";
