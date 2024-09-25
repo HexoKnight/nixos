@@ -16,12 +16,19 @@ in
       description = "The disk used by disko.";
       type = inputs.disko.lib.optionTypes.absolute-pathname;
     };
+    swapSize = mkOption {
+      description = "The amount of swap allocated by disko.";
+      type = lib.types.str;
+      default = "16G";
+    };
   };
 
   config = lib.mkIf (config.persist.enable && cfg.enable) {
     persist.root = "/persist";
 
-    disko = (import ./disko.nix { inherit (cfg) device; }).disko;
+    disko = (import ./disko.nix {
+      inherit (cfg) device swapSize;
+    }).disko;
 
     fileSystems."/persist".neededForBoot = true;
 

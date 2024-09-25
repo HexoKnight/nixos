@@ -1,5 +1,6 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
+  swapSize ? "16G",
 }: {
   disko.devices = {
     disk.main = {
@@ -23,13 +24,6 @@
               mountpoint = "/boot";
             };
           };
-          swap = {
-            size = "16G";
-            content = {
-              type = "swap";
-              resumeDevice = true;
-            };
-          };
           root = {
             name = "root";
             size = "100%";
@@ -45,6 +39,13 @@
       root_vg = {
         type = "lvm_vg";
         lvs = {
+          ${if swapSize == null then null else "swap"} = {
+            size = swapSize;
+            content = {
+              type = "swap";
+              resumeDevice = true;
+            };
+          };
           root = {
             size = "100%FREE";
             content = {
