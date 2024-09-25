@@ -76,6 +76,7 @@
     nixosConfigurations = mkNixosConfigurations {
       desktop = {};
       dual-boot = {};
+      mobile-dual-boot = {};
       wsl = {};
     } [
       {
