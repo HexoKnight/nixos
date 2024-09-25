@@ -3,6 +3,7 @@
   device,
   dual-boot ? false,
   impermanence ? false,
+  personal-gaming ? false,
 }:
 
 { config, lib, pkgs, inputs, config_name, ... }:
@@ -115,8 +116,8 @@
   };
   userhome-config.${username} = {
     cansudo = true;
-    personal-gaming = true;
     persistence = impermanence;
+    inherit personal-gaming;
     extraOptions = {
       isNormalUser = true;
       description = "Harvey Gream";
@@ -182,7 +183,7 @@
 
   services.flatpak.enable = true;
 
-  programs.steam = {
+  programs.steam = lib.mkIf personal-gaming {
     enable = true;
     extraPackages = with pkgs; [
       # cs2

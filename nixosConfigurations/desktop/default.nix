@@ -11,6 +11,7 @@ in
       hostName = "HARVEY-nixos";
       device = "/dev/sda";
       impermanence = true;
+      personal-gaming = true;
     })
   ];
 

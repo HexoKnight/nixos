@@ -13,6 +13,7 @@ in
       device = "/dev/nvme0n1";
       dual-boot = true;
       impermanence = true;
+      personal-gaming = true;
     })
   ];
 
