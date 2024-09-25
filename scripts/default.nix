@@ -87,6 +87,15 @@ rec {
     text = builtins.readFile ./gen-sops-secrets.sh;
   };
 
+  nixos-disko-install = pkgs.writeShellApplication {
+    name = "nixos-disko-install";
+    runtimeInputs = with pkgs; [
+      disko
+      nixos-install-tools
+    ];
+    text = builtins.readFile ./nixos-disko-install.sh;
+  };
+
   linkSaveDirs = pkgs.writeShellApplication {
     name = "linkSaveDirs";
     text =
