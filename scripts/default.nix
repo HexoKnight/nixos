@@ -216,4 +216,17 @@ rec {
       ${batBin} --style=plain --paging=always "$@"
     '';
   };
+
+  eduroam-cat = pkgs.writeShellApplication {
+    name = "eduroam-cat";
+    runtimeInputs = with pkgs; [
+      curl
+      jq
+      fzf
+      (python3.withPackages (p: with p; [
+        dbus-python
+      ]))
+    ];
+    text = builtins.readFile ./eduroam-cat.sh;
+  };
 }
