@@ -15,5 +15,9 @@ in
     })
   ];
 
+  services.tlp = {
+    enable = true;
+  };
+
   persist.defaultSetup.swapSize = "4G";
 }
