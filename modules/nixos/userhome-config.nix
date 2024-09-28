@@ -39,6 +39,11 @@ in {
           type = types.bool;
           apply = val: assert (val -> host-config.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
         };
+        extraHmModules = mkOption {
+          description = "extra home manager modules";
+          type = types.listOf types.deferredModule;
+          default = [];
+        };
         extraOptions = mkOption {
           type = types.attrs;
           default = {};
@@ -59,7 +64,11 @@ in {
     home-manager.extraSpecialArgs = { inherit inputs; };
     home-manager.users = attrsets.mapAttrs' (_: {username, ...}@value: {
       name = username;
-      value = import "${inputs.self}/modules/home-manager/home.nix" ({ inherit username; } // config.host-config // value);
+      value = {
+        imports = [
+          (import "${inputs.self}/modules/home-manager/home.nix" ({ inherit username; } // config.host-config // value))
+        ] ++ value.extraHmModules;
+      };
     }) users;
   };
 }
