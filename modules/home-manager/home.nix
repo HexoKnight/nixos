@@ -167,6 +167,7 @@ in {
         contents = {
           core.autocrlf = false;
           init.defaultbranch = "main";
+          fetch.prune = true;
 
           commit.gpgSign = true;
           gpg.format = "ssh";
