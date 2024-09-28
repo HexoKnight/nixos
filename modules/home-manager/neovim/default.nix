@@ -9,6 +9,7 @@
   ];
 
   neovim.main = {
+    name = "nvim";
     package = pkgs.unstable.neovim-unwrapped;
     lspServers = {
       rust_analyzer = {
