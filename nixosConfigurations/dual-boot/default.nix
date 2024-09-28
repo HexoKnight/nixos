@@ -63,9 +63,27 @@ in
   services.tlp = {
     enable = true;
     settings = {
+      # pretty sure this doesn't work on asus
       START_CHARGE_THRESH_BAT0 = 50;
+      # but this is supposed to :/
       STOP_CHARGE_THRESH_BAT0 = 80;
     };
+  };
+
+  services.supergfxd = {
+    enable = true;
+    settings = {};
+  };
+
+  services.asusd = {
+    enable = true;
+    enableUserService = true;
+    asusdConfig = ''
+      (
+        charge_control_end_threshold: 80,
+        panel_od: true,
+      )
+    '';
   };
 
   hardware.nvidia = {
