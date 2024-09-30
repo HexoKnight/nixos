@@ -59,12 +59,12 @@
                 "/old_roots" = {};
 
                 "/persist" = {
-                  mountOptions = ["subvol=persist" "noatime"];
+                  mountOptions = [ "noatime" ];
                   mountpoint = "/persist";
                 };
 
                 "/nix" = {
-                  mountOptions = ["subvol=nix" "noatime"];
+                  mountOptions = [ "noatime" ];
                   mountpoint = "/nix";
                 };
               };
