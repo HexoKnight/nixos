@@ -44,6 +44,7 @@ in {
       enable = persistence;
       directories = [
         "Documents"
+        "Downloads"
         ".nixos"
         ".ssh"
         "dotfiles"
@@ -525,7 +526,6 @@ in {
         "Pictures"
         "Videos"
         "Music"
-        "Downloads"
         "Saves"
         "Torrents"
         ".config/vesktop"
