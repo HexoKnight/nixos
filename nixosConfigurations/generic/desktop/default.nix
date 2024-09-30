@@ -158,7 +158,7 @@
     (nerdfonts.override { fonts = [ "RobotoMono" ]; })
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+  nixpkgs.allowUnfreePkgs = [
     "nvidia-x11" "nvidia-settings"
     "steam" "steam-original" "steam-run"
   ];

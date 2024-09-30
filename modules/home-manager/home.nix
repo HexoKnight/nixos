@@ -8,6 +8,8 @@ let
 in {
   imports = [
     inputs.nix-index-database.hmModules.nix-index
+    ../generic
+
     ./impermanence.nix
     ./neovim
     ./fzf.nix
@@ -31,10 +33,11 @@ in {
     home = { inherit username homeDirectory; };
 
     nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (getName pkg) [
+    nixpkgs.allowUnfreePkgs = [
       "google-chrome"
-    ] || builtins.elem pkg.meta.license.shortName [
-      "CUDA EULA"
+      (pkg: builtins.elem pkg.meta.license.shortName [
+        "CUDA EULA"
+      ])
     ];
 
     persist-home = {
