@@ -463,6 +463,9 @@ in {
   (attrsets.optionalAttrs desktop {
     persist-home = {
       directories = [
+        ".config/google-chrome"
+        # cache for logged in accounts and stuff
+        ".cache/google-chrome"
       ];
     };
 
@@ -529,9 +532,6 @@ in {
         "Saves"
         "Torrents"
         ".config/vesktop"
-        ".config/google-chrome"
-        # cache for logged in accounts and stuff
-        ".cache/google-chrome"
         ".local/share/Steam"
         ".config/termusic"
         ".config/qBittorrent"
