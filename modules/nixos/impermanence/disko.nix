@@ -1,7 +1,11 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
   swapSize ? "16G",
-}: {
+}:
+let
+  btrfsCompMntOpts = [ "compress-force=zstd:3" ];
+in
+{
   disko.devices = {
     disk.main = {
       inherit device;
@@ -54,17 +58,18 @@
 
               subvolumes = {
                 "/root" = {
+                  mountOptions = btrfsCompMntOpts ++ [ "noatime" ];
                   mountpoint = "/";
                 };
                 "/old_roots" = {};
 
                 "/persist" = {
-                  mountOptions = [ "noatime" ];
+                  mountOptions = btrfsCompMntOpts ++ [ "noatime" ];
                   mountpoint = "/persist";
                 };
 
                 "/nix" = {
-                  mountOptions = [ "noatime" ];
+                  mountOptions = btrfsCompMntOpts ++ [ "noatime" ];
                   mountpoint = "/nix";
                 };
               };
