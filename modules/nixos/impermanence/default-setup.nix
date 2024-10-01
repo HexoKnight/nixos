@@ -4,6 +4,21 @@ let
   inherit (lib) mkEnableOption mkOption;
 
   cfg = config.persist.defaultSetup;
+
+  # https://btrfs.readthedocs.io/en/latest/Compression.html
+  # purposefully forces specification of compression level
+  btrfsCompressionTypes = lib.concatLists (
+    lib.mapAttrsToList (name: levels:
+      if levels == null then
+        [ name ]
+      else
+        lib.genList (i: "${name}:${toString (i + 1)}") levels
+    ) {
+      zlib = 9;
+      lzo = null;
+      zstd = 15;
+    }
+  );
 in
 {
   imports = [
@@ -21,13 +36,18 @@ in
       type = lib.types.str;
       default = "16G";
     };
+    btrfsCompression = mkOption {
+      description = "The type of compresion to use on the main btrfs filesystem.";
+      type = lib.types.nullOr (lib.types.enum btrfsCompressionTypes);
+      default = "zstd:3";
+    };
   };
 
   config = lib.mkIf (config.persist.enable && cfg.enable) {
     persist.root = "/persist";
 
     disko = (import ./disko.nix {
-      inherit (cfg) device swapSize;
+      inherit (cfg) device swapSize btrfsCompression;
     }).disko;
 
     fileSystems."/persist".neededForBoot = true;

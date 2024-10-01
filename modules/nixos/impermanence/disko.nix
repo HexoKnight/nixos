@@ -1,9 +1,12 @@
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
   swapSize ? "16G",
+  btrfsCompression ? "zstd:3",
 }:
 let
-  btrfsCompMntOpts = [ "compress-force=zstd:3" ];
+  btrfsCompMntOpts =
+    if btrfsCompression == null then []
+    else [ "compress-force=${btrfsCompression}" ];
 in
 {
   disko.devices = {

@@ -48,5 +48,9 @@ in
     }
   );
 
-  persist.defaultSetup.swapSize = "4G";
+  persist.defaultSetup = {
+    swapSize = "4G";
+    # prefer battery life over disk space
+    btrfsCompression = null;
+  };
 }
