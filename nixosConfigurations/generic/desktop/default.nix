@@ -185,10 +185,6 @@
 
   programs.steam = lib.mkIf personal-gaming {
     enable = true;
-    extraPackages = with pkgs; [
-      # cs2
-      curl
-    ];
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
   };
