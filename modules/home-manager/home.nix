@@ -16,6 +16,7 @@ in {
     ./trash.nix
     ./steam-presence.nix
     ./flatpak.nix
+    ./rclone.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland
