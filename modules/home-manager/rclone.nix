@@ -15,6 +15,10 @@ in
       pkgs.rclone
     ];
 
+    persist-home = {
+      directories = [ ".cache/rclone" ];
+    };
+
     xdg.configFile."rclone/rclone.conf".text =
       lib.optionalString cfg.bruhpi.enable /* ini */ ''
         [bruhpi]
