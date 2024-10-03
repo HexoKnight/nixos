@@ -4,6 +4,8 @@
 
 let
   inherit (lib) mkOption types;
+
+  enabledLspServers = lib.filterAttrs (_name: server: server.enable) config.lspServers;
 in
 {
   options = {
@@ -11,6 +13,7 @@ in
       description = "Lsp servers to install (and configure) from nvim-lspconfig.";
       type = types.attrsOf (types.submodule ({name, ...}: {
         options = {
+          enable = lib.mkEnableOption "this lsp server config" // { default = true; };
           serverName = mkOption {
             description = "Name of the lsp server (according to lspconfig).";
             type = types.str;
@@ -41,9 +44,9 @@ in
       [ "local lspconfig = require('lspconfig')" ]
       ++ lib.mapAttrsToList (_name: { serverName, config, ... }:
         "lspconfig[ [[${serverName}]] ].setup(${config})"
-      ) config.lspServers);
+      ) enabledLspServers);
     }];
     extraPackages = builtins.concatLists
-      (lib.mapAttrsToList (_name: value: value.extraPackages) config.lspServers);
+      (lib.mapAttrsToList (_name: value: value.extraPackages) enabledLspServers);
   };
 }
