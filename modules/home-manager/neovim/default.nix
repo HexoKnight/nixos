@@ -12,9 +12,6 @@
     name = "nvim";
     package = pkgs.unstable.neovim-unwrapped;
     lspServers = {
-      rust_analyzer = {
-        extraPackages = with pkgs; [ rust-analyzer ];
-      };
       nil_ls = {
         extraPackages = with pkgs; [ nil ];
         config = /* lua */ ''

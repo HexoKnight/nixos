@@ -17,6 +17,7 @@ in {
     ./steam-presence.nix
     ./flatpak.nix
     ./rclone.nix
+    ./rust.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland
@@ -85,7 +86,6 @@ in {
       local.nixos
 
       # build tools
-      rustc cargo rust-analyzer rustfmt clippy
       nixVersions.nix_2_19
 
       (vim-full.customize {
@@ -113,6 +113,8 @@ in {
 
     programs.man.generateCaches = true;
     programs.info.enable = true;
+
+    rust.enable = true;
 
     programs.bat = {
       enable = true;
