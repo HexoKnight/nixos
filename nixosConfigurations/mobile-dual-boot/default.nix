@@ -22,6 +22,10 @@ in
   userhome-config.${username}.extraHmModules = lib.singleton (
     { pkgs, ... }:
     {
+      nixpkgs.allowUnfreePkgs = [
+        "idea-ultimate"
+      ];
+
       home.packages = [
         pkgs.mysql-workbench
         pkgs.jetbrains.idea-ultimate
@@ -42,9 +46,7 @@ in
         ];
       };
 
-      nixpkgs.allowUnfreePkgs = [
-        "idea-ultimate"
-      ];
+      rust.enable = lib.mkForce false;
     }
   );
 
