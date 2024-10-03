@@ -32,6 +32,13 @@ in
     ];
   };
 
+  userhome-config.${username}.extraHmModules = lib.singleton (
+    { pkgs, ... }:
+    {
+      rust.enable = true;
+    }
+  );
+
   syncthing = {
     enable = true;
     inherit username;

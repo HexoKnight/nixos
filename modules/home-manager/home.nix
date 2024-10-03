@@ -114,8 +114,6 @@ in {
     programs.man.generateCaches = true;
     programs.info.enable = true;
 
-    rust.enable = true;
-
     programs.bat = {
       enable = true;
     };
