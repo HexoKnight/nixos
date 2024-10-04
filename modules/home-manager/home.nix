@@ -490,7 +490,6 @@ in {
       })
       nvtopPackages.full
       mpv
-      unstable.neovide
     ];
 
     services.wlsunset = {
