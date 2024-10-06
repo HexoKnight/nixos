@@ -19,6 +19,7 @@ in {
     ./rclone.nix
     ./rust.nix
     ./btop.nix
+    ./jupyter
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland

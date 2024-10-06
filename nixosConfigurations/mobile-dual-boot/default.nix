@@ -45,6 +45,8 @@ in
           ".java"
         ];
       };
+
+      jupyter.enable = true;
     }
   );
 

@@ -36,6 +36,7 @@ in
     { pkgs, ... }:
     {
       rust.enable = true;
+      jupyter.enable = true;
     }
   );
 
