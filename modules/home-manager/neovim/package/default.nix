@@ -15,6 +15,18 @@ let
         default = config._module.args.name or "nvim";
       };
 
+      env = mkOption {
+        description = "Extra environment variables to set in the neovim wrapper.";
+        type = types.attrsOf types.str;
+        default = {};
+      };
+
+      extraWrapperArgs = mkOption {
+        description = "Extra `makeWrapper` args.";
+        type = types.listOf types.str;
+        default = [];
+      };
+
       vimlConfig = mkOption {
         description = "Main viml config (loaded after lua config).";
         type = types.lines;
@@ -25,6 +37,7 @@ let
         type = types.lines;
         default = "";
       };
+
       pluginPackages = mkOption {
         description = "Plugin packages.";
         type = types.listOf types.package;
@@ -34,6 +47,11 @@ let
         description = "Extra packages made available to neovim.";
         type = types.listOf types.package;
         default = [];
+      };
+      extraPython3Packages = mkOption {
+        description = "Extra packages provided to neovim's python3.";
+        type = types.functionTo (types.listOf types.package);
+        default = _: [];
       };
 
       package = mkOption {
@@ -54,11 +72,17 @@ let
       neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
         customRC = config.vimlConfig;
         plugins = config.pluginPackages;
+        inherit (config) extraPython3Packages;
       };
       neovimPackage = pkgs.wrapNeovimUnstable config.package (neovimConfig // {
         extraName = "-wrapped-" + config.name;
         luaRcContent = config.luaConfig;
-        wrapperArgs = ''--prefix PATH : "${lib.makeBinPath config.extraPackages}"'';
+        wrapperArgs = lib.concatLists ([
+          neovimConfig.wrapperArgs
+          [ "--prefix" "PATH" ":" (lib.makeBinPath config.extraPackages) ]
+        ] ++ lib.mapAttrsToList (name: value: [ "--set" name value ] ) config.env ++ [
+          config.extraWrapperArgs
+        ]);
       });
 
       finalNeovimPackage = neovimPackage.overrideAttrs (final: prev: {

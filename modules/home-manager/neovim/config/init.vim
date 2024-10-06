@@ -55,7 +55,7 @@ map gra <Cmd>lua vim.lsp.buf.code_action()<CR>
 map grr <Cmd>lua vim.lsp.buf.references()<CR>
 imap <C-S> <Cmd>lua vim.lsp.buf.signature_help()<CR>
 
-inoremap <expr> <Tab> SmartTab()
+" inoremap <expr> <Tab> SmartTab()
 
 function! SmartTab()
   if match(strpart(getline('.'), 0, col('.') - 1), "^\\s*$") == -1
@@ -67,12 +67,25 @@ endfunction
 
 map grd <Cmd>lua vim.lsp.buf.definition()<CR>
 
-augroup lsp_stuff
-  au!
-  au CursorHold  * lua vim.lsp.buf.document_highlight()
-  au CursorHoldI * lua vim.lsp.buf.document_highlight()
-  au CursorMoved * lua vim.lsp.buf.clear_references()
-augroup END
+lua <<EOF
+  vim.api.nvim_create_augroup('lsp_stuff', { clear = true })
+  vim.api.nvim_create_autocmd('LspAttach', {
+    group = 'lsp_stuff',
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      if client.supports_method('textDocument/documentHighlight') then
+        vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+          buffer = args.buf,
+          callback = vim.lsp.buf.document_highlight,
+        })
+        vim.api.nvim_create_autocmd('CursorMoved', {
+          buffer = args.buf,
+          callback = vim.lsp.buf.clear_references,
+        })
+      end
+    end,
+  })
+EOF
 
 " ########## BUFFER/WINDOW MOVEMENT/MANIPULATION #########
 
