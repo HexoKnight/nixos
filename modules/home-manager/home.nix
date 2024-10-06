@@ -75,6 +75,7 @@ in {
       pciutils
       psmisc
       ethtool
+      acpi
       ssh-to-age
 
       # programs
