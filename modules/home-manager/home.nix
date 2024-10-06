@@ -18,6 +18,7 @@ in {
     ./flatpak.nix
     ./rclone.nix
     ./rust.nix
+    ./btop.nix
   ] ++ lists.optionals desktop [
     # ./plasma.nix
     ./hyprland
@@ -122,6 +123,8 @@ in {
       enable = true;
       icons = true;
     };
+
+    btop.enable = true;
 
     programs.lazygit = {
       enable = true;
