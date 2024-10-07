@@ -41,6 +41,24 @@ parse_whenoption() {
   tryhelpexit
 }
 
+nixoption() {
+  cat << EOF
+@option ,$1${2:+=$2} pass '--$1${2:+ $2}' to any nix command that can take it.
+EOF
+}
+parse_nixoption() {
+  check_varname "$@"
+  for command in "$@"; do
+    eval "nix_${command}_options"'+=( "$option" )'
+  done
+}
+parse_nixoption_arg() {
+  check_varname "$@"
+  for command in "$@"; do
+    eval "nix_${command}_options"'+=( "$option" "$arg" )'
+  done
+}
+
 parse_args "$@" << EOF
 # due to re-execing, this gets messed up often
 @programname $(basename "$0")
@@ -109,6 +127,8 @@ $(whenoption "sops-check" "check secrets.json with sops")
 
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
 
+$(nixoption "impure")
+
 @option u,update=FLAKE Update FLAKE (or all flakes if FLAKE=all) before building
 @option ,timeout=TIME Timeout password reading after TIMEOUT seconds
 EOF
@@ -134,6 +154,14 @@ raw=
 json=
 
 nix_options=(--option warn-dirty false)
+# shellcheck disable=SC2034
+nix_flake_options=()
+# shellcheck disable=SC2034
+nix_build_options=()
+# shellcheck disable=SC2034
+nix_run_options=()
+# shellcheck disable=SC2034
+nix_repl_options=()
 
 refattrs=
 
@@ -211,6 +239,8 @@ while readoption option arg; do
     (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
 
     (--git-add) git_add=1 ;;
+
+    (--impure) parse_nixoption build run repl ;;
 
     (-u | --update) update_flakes+=("$arg") ;;
 
@@ -319,11 +349,19 @@ echoinfo() {
   fi
 }
 
+nix_command_options=()
+get_nix_command_options() {
+  eval 'nix_command_options=( '"'$1'"' "${nix_'"$1"'_options[@]}" )'
+}
 _nix() {
-  $nix "${nix_options[@]}" "$@"
+  get_nix_command_options "$1"
+  shift 1
+  $nix "${nix_options[@]}" "${nix_command_options[@]}" "$@"
 }
 exec_nix() {
-  exec $nix "${nix_options[@]}" "$@"
+  get_nix_command_options "$1"
+  shift 1
+  exec $nix "${nix_options[@]}" "${nix_command_options[@]}" "$@"
 }
 
 unset sudo_passkey
