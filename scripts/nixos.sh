@@ -75,6 +75,8 @@ SUBCOMMANDS
 multiple can be delimited by newlines and the first valid one is used
 (defaults to \$NIXOS_BUILD_FLAKE if set or /etc/nixos)
 
+@option x,=NIXARG Pass NIXARG to all nix invocations
+
 @option ,refattr=ATTR Adds flake reference attribute, ATTR, to the flake uri.
 Should be of the form 'name=value' and percent encoded
 @option ,ref=REF Alias of --refattr=ref=REF
@@ -131,6 +133,8 @@ expr=
 raw=
 json=
 
+nix_options=(--option warn-dirty false)
+
 refattrs=
 
 profile=system
@@ -181,6 +185,8 @@ while readoption option arg; do
     (--json) json=1 ;;
 
     (-f | --flake) argrequired; flakes=$arg ;;
+
+    (-x) nix_options+=("$arg") ;;
 
     (--refattr) addrefattr "$arg" ;;
     (--ref) addrefattr "ref=$arg" ;;
@@ -289,8 +295,6 @@ do_sops_check=
 case "$sops_check:$boot$switch" in always:*|auto:1*)
   do_sops_check=1
 esac
-
-nix_options=(--option warn-dirty false)
 
 config_attr=nixosConfigurations.\"$configuration\"
 nix_repl_attrset='
