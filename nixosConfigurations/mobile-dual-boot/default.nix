@@ -23,17 +23,17 @@ in
     { pkgs, ... }:
     {
       nixpkgs.allowUnfreePkgs = [
+        "visual-paradigm"
         "idea-ultimate"
       ];
 
       home.packages = [
-        pkgs.mysql-workbench
+        pkgs.local.visual-paradigm
         pkgs.jetbrains.idea-ultimate
       ];
       persist-home = {
         directories = [
-          # mysql-workbench
-          ".mysql"
+          ".config/VisualParadigm"
 
           # jetbrains.idea-ultimate
           ".cache/JetBrains"
