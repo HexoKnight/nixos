@@ -51,7 +51,6 @@ in {
         "Downloads"
         ".nixos"
         ".ssh"
-        "dotfiles"
         ".vim"
         ".config/sops"
         ".config/syncthing"
