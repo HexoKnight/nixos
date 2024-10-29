@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 let
   username = "nixos";
@@ -17,6 +17,10 @@ in
     impermanence = true;
     minimal = true;
   };
+
+  environment.systemPackages = [
+    pkgs.kitty.terminfo
+  ];
 
   security.sudo.wheelNeedsPassword = false;
 
