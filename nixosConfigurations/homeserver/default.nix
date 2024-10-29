@@ -18,6 +18,8 @@ in
     minimal = true;
   };
 
+  security.sudo.wheelNeedsPassword = false;
+
   persist.system = {
     directories = [
       "/etc/ssh"
@@ -26,6 +28,10 @@ in
 
   services.openssh = {
     enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
   };
 
   users.users.${username}.openssh = {
