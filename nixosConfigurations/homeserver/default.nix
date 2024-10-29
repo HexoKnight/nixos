@@ -16,6 +16,7 @@ in
     };
     impermanence = true;
     minimal = true;
+    sops = false;
   };
 
   environment.systemPackages = [
