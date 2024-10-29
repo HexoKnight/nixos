@@ -4,7 +4,6 @@
 # add list-generations support
 
 jq=jq
-sops=sops
 nix=nix
 configopts=${CONFIGOPTS_SCRIPT:-configopts.sh}
 
@@ -123,8 +122,6 @@ $(whenoption "re-exec" "re-exec this nixos program from the nixos flake")
 $(whenoption "diff" "display a diff")
 $(whenoption "print-info" "display info about what is happenning")
 
-$(whenoption "sops-check" "check secrets.json with sops")
-
 @option ,git-add run 'git add -AN' in flake src dir when appropriate
 
 $(nixoption "impure")
@@ -178,7 +175,6 @@ out_link=result
 reexec=auto
 diff=auto
 print_info=auto
-sops_check=auto
 
 git_add=
 
@@ -235,8 +231,6 @@ while readoption option arg; do
 
     (--diff | --no-diff) parse_whenoption diff ;;
     (--print-info | --no-print-info) parse_whenoption print_info ;;
-
-    (--sops-check | --no-sops-check) parse_whenoption sops_check ;;
 
     (--git-add) git_add=1 ;;
 
@@ -319,11 +313,6 @@ esac
 show_info=1
 case "$print_info:$SUBCOMMAND" in never:*|auto:run|auto:eval)
   show_info=
-esac
-
-do_sops_check=
-case "$sops_check:$boot$switch" in always:*|auto:1*)
-  do_sops_check=1
 esac
 
 config_attr=nixosConfigurations.\"$configuration\"
@@ -512,18 +501,6 @@ elif [ -n "$do_reexec" ]; then
   # after being built to, for example, prevent getting stuck
   # (if only temporarily) in a system with a broken nixos command
   IN_NIXOS_BUILD_REEXEC=1 exec_nix run "$flake_config_attr.pkgs.local.nixos" -- "$@"
-fi
-
-######### POST-REEXEC ACTIONS ##########
-
-flake_secrets_json=$flake_store_path/secrets.json
-  if [ -n "$do_sops_check" ] && [ -e "$flake_secrets_json" ]; then
-  SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt $sops --decrypt "$flake_secrets_json" >/dev/null || {
-    echoerr "failed to decrypt secrets.json using sops"
-    echoerr "use '--no-sops-check' if you know what you are doing"
-    echoerr "otherwise use 'gen-sops-secrets' to properly generate an age key and/or secrets.json file"
-    tryhelpexit
-  }
 fi
 
 ######### SETUP TMPDIR ##########
