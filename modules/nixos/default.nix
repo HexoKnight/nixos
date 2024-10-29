@@ -10,5 +10,6 @@
     ./nix-settings.nix
     ./syncthing.nix
     ./impermanence
+    ./setups
   ];
 }

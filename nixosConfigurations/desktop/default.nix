@@ -6,14 +6,20 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    (import ../generic/desktop {
-      inherit username;
-      hostName = "HARVEY-nixos";
-      device = "/dev/sda";
-      impermanence = true;
-      personal-gaming = true;
-    })
   ];
+
+  setups = {
+    config = {
+      inherit username;
+      hostname = "HARVEY-nixos";
+      device = "/dev/sda";
+      extraUserOptions = {
+        description = "Harvey Gream";
+      };
+    };
+    impermanence = true;
+    personal-gaming = true;
+  };
 
   networking.interfaces.eno1.wakeOnLan = {
     enable = true;

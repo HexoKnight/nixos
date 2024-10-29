@@ -7,15 +7,23 @@ in
   imports = [
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
-    (import ../generic/desktop {
-      inherit username;
-      hostName = "HARVEY";
-      device = "/dev/nvme0n1";
-      dual-boot = true;
-      impermanence = true;
-      personal-gaming = true;
-    })
   ];
+
+  setups = {
+    config = {
+      inherit username;
+      hostname = "HARVEY";
+      device = "/dev/nvme0n1";
+      extraUserOptions = {
+        description = "Harvey Gream";
+      };
+    };
+    impermanence = true;
+    personal-gaming = true;
+    printing = true;
+    adb = true;
+    flatpak = true;
+  };
 
   host-config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
 
@@ -93,6 +101,10 @@ in
       )
     '';
   };
+
+  nixpkgs.allowUnfreePkgs = [
+    "nvidia-x11" "nvidia-settings"
+  ];
 
   hardware.nvidia = {
     # Modesetting is required.

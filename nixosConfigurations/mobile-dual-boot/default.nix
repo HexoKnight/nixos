@@ -6,14 +6,20 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    (import ../generic/desktop {
-      inherit username;
-      hostName = "IDEAPAD";
-      device = "/dev/sda";
-      dual-boot = true;
-      impermanence = true;
-    })
   ];
+
+  setups = {
+    config = {
+      inherit username;
+      hostname = "IDEAPAD";
+      device = "/dev/sda";
+      extraUserOptions = {
+        description = "Harvey Gream";
+      };
+    };
+    impermanence = true;
+    desktop = true;
+  };
 
   services.tlp = {
     enable = true;
