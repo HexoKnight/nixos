@@ -20,22 +20,6 @@
         "type": "github"
       }
     },
-    "dotfiles": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1721220841,
-        "narHash": "sha256-JKJacYjU5Ih+ameoqD2tRHOkgwgEaa73nRh9WS4D1es=",
-        "owner": "HexoKnight",
-        "repo": "dotfiles",
-        "rev": "3c1edad619a2037346a187c3f605b9774dc09840",
-        "type": "github"
-      },
-      "original": {
-        "owner": "HexoKnight",
-        "repo": "dotfiles",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -238,7 +222,6 @@
     "root": {
       "inputs": {
         "disko": "disko",
-        "dotfiles": "dotfiles",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "nix-index-database": "nix-index-database",

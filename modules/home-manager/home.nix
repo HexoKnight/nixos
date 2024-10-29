@@ -51,7 +51,6 @@ in {
         "Downloads"
         ".nixos"
         ".ssh"
-        ".vim"
         ".config/sops"
         ".config/syncthing"
         ".local/state/lazygit"
@@ -89,25 +88,6 @@ in {
 
       # build tools
       nixVersions.nix_2_19
-
-      (vim-full.customize {
-        name = "vim";
-        # vimrcFile = inputs.dotfiles + "/vimrc";
-        gvimrcFile = inputs.dotfiles + "/gvimrc";
-        vimrcConfig = {
-          customRC = (builtins.readFile (inputs.dotfiles + "/vimrc"));
-          plug.plugins = [];
-        };
-      })
-      (vim-full.customize {
-        name = "vim-local";
-        # executableName = "$exe-local";
-        gvimrcFile = (config.lib.file.mkOutOfStoreSymlink "${homeDirectory}/dotfiles/gvimrc");
-        vimrcConfig = {
-          customRC = "source ${homeDirectory}/dotfiles/vimrc";
-          plug.plugins = [];
-        };
-      })
     ];
 
     programs.nix-index-database.comma.enable = true;
