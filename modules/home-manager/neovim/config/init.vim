@@ -16,6 +16,11 @@ set wildmode=longest,full
 set undofile
 set backupdir-=.
 
+augroup noundo
+  au!
+  au BufWritePre /tmp/* setlocal noundofile
+augroup END
+
 set expandtab
 set tabstop=4
 set shiftwidth=0 " use tabstop value
