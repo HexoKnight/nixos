@@ -72,8 +72,8 @@
     nixosConfigurations = mkNixosConfigurations {
       desktop = {};
       homeserver = {};
-      dual-boot = {};
-      mobile-dual-boot = {};
+      main-machine = {};
+      weak-machine = {};
       wsl = {};
     } [
       {
