@@ -15,6 +15,7 @@ in {
     ./fzf.nix
     ./trash.nix
     ./steam-presence.nix
+    ./google-chrome.nix
     ./flatpak.nix
     ./rclone.nix
     ./rust.nix
@@ -446,35 +447,12 @@ in {
   }
 
   (attrsets.optionalAttrs desktop {
-    persist-home = {
-      directories = [
-        ".config/google-chrome"
-        # cache for logged in accounts and stuff
-        ".cache/google-chrome"
-      ];
-    };
-
     home.packages = with pkgs; [
-      (google-chrome.override {
-        commandLineArgs = [
-          "--incognito"
-          "--enable-blink-features=MiddleClickAutoscroll"
-
-          # can't get hardware acceleration to work :/
-          # https://wiki.archlinux.org/title/Chromium#Hardware_video_acceleration
-          # "--enable-features=VaapiVideoDecodeLinuxGL"
-          # "--ignore-gpu-blocklist"
-          # "--enable-zero-copy"
-
-          # so forcing xwayland
-          "--ozone-platform=x11"
-          # dunno if webgpu is really necessary
-          "--enable-unsafe-webgpu"
-        ];
-      })
       nvtopPackages.full
       mpv
     ];
+
+    google-chrome.enable = true;
 
     services.wlsunset = {
       enable = true;

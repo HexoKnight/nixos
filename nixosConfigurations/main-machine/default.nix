@@ -43,6 +43,8 @@ in
   userhome-config.${username}.extraHmModules = lib.singleton (
     { pkgs, ... }:
     {
+      google-chrome.xwayland = true;
+
       rust.enable = true;
       jupyter.enable = true;
     }
