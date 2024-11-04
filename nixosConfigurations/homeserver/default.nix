@@ -6,6 +6,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ./qbittorrent.nix
     ./nix-serve.nix
   ];
 
