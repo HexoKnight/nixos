@@ -447,6 +447,8 @@ in {
   }
 
   (attrsets.optionalAttrs desktop {
+    hyprland.enable = true;
+
     home.packages = with pkgs; [
       nvtopPackages.full
       mpv
