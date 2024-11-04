@@ -22,7 +22,7 @@ in {
     ./btop.nix
     ./jupyter
   ] ++ lists.optionals desktop [
-    # ./plasma.nix
+    ./plasma.nix
     ./hyprland
   ];
 
