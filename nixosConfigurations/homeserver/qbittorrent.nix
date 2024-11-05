@@ -30,6 +30,8 @@ in
       ];
     };
 
+    acme.users.bruhpi = [ user ];
+
     services.qbittorrent = {
       enable = true;
       package = pkgs.qbittorrent-nox.overrideAttrs (oldAttrs: {
@@ -49,6 +51,12 @@ in
           WebUI = {
             Username = "nixos";
             Password_PBKDF2 = "@ByteArray(HOT7saYR0avFnr4IR5yMcg==:H6jLAYTsUaV4DYiqj/nNyIhZHn4+o6i2lt7cZS7paagPgeMbO6omUWsvlwEupIiL53yp8vf1prOEWL5DD4WTuw==)";
+
+            HTTPS = {
+              Enabled = true;
+              CertificatePath = "/var/lib/acme/bruhpi.uk/cert.pem";
+              KeyPath = "/var/lib/acme/bruhpi.uk/key.pem";
+            };
           };
           General.Locale = "en";
         };

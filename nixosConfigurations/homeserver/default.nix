@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 let
   username = "nixos";
@@ -8,7 +8,11 @@ in
     ./hardware-configuration.nix
     ./qbittorrent.nix
     ./nix-serve.nix
+
+    ./acme.nix
   ];
+
+  lib.homeserver.environmentFileDir = "/root/envFiles";
 
   setups = {
     config = {
@@ -29,6 +33,7 @@ in
 
   persist.system = {
     directories = [
+      config.lib.homeserver.environmentFileDir
       "/etc/ssh"
     ];
   };
