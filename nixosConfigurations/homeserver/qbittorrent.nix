@@ -1,7 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 let
   profileDir = "/var/lib";
+  qbittorrentDir = "${profileDir}/qBittorrent";
+
+  torrentsDir = "/var/lib/Torrents";
+
+  inherit (config.services.qbittorrent) user group;
 in
 {
   imports = [
@@ -16,7 +21,12 @@ in
   config = {
     persist.system = {
       directories = [
-        "${profileDir}/qBittorrent"
+        qbittorrentDir
+        {
+          directory = torrentsDir;
+          mode = "0755";
+          inherit user group;
+        }
       ];
     };
 
@@ -41,6 +51,20 @@ in
             Password_PBKDF2 = "@ByteArray(HOT7saYR0avFnr4IR5yMcg==:H6jLAYTsUaV4DYiqj/nNyIhZHn4+o6i2lt7cZS7paagPgeMbO6omUWsvlwEupIiL53yp8vf1prOEWL5DD4WTuw==)";
           };
           General.Locale = "en";
+        };
+
+        BitTorrent = {
+          Session = {
+            # auto torrent management
+            DisableAutoTMMByDefault = false;
+
+            DefaultSavePath = torrentsDir;
+            TorrentExportDirectory = "${torrentsDir}/prev-torrents";
+
+            # in KiB/s
+            AlternativeGlobalDLSpeedLimit = 1000;
+            AlternativeGlobalUPSpeedLimit = 1000;
+          };
         };
       };
     };
