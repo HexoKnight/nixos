@@ -9,6 +9,7 @@ in
     ./qbittorrent.nix
     ./nix-serve.nix
 
+    ./cloudflare-dyndns.nix
     ./acme.nix
   ];
 
