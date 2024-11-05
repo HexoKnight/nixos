@@ -28,7 +28,7 @@ in
       defaults.email = "harvey.gream@gmail.com";
       certs = {
         "bruhpi.uk" = {
-          domain = "bruhpi.uk";
+          extraDomainNames = [ "*.bruhpi.uk" ];
           dnsProvider = "cloudflare";
           group = "acme-bruhpi";
           # location of CLOUDFLARE_DNS_API_TOKEN=[value]
