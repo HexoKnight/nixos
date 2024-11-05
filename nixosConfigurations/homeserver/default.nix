@@ -6,6 +6,8 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+
+    ./nginx.nix
     ./qbittorrent.nix
     ./nix-serve.nix
 
