@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ lib, pkgs, config, ... }:
 
 let
   username = "nixos";
@@ -24,6 +24,9 @@ in
     minimal = true;
     sops = false;
   };
+
+  boot.loader.timeout = 0;
+  boot.loader.grub.useOSProber = lib.mkForce false;
 
   environment.systemPackages = [
     pkgs.kitty.terminfo
