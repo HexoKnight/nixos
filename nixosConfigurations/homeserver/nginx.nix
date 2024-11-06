@@ -11,6 +11,16 @@
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
 
+      virtualHosts."bruhpi.uk" =  {
+        addSSL = true;
+        useACMEHost = "bruhpi.uk";
+        default = true;
+
+        locations."/" = {
+          return = "404";
+        };
+      };
+
       virtualHosts."cache.bruhpi.uk" =  {
         addSSL = true;
         useACMEHost = "bruhpi.uk";
