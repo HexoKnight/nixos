@@ -194,6 +194,11 @@ in {
         "github.com" = {
           forwardAgent = true;
         };
+        homeserver = {
+          user = "nixos";
+          hostname = "ssh.bruhpi.uk";
+          port = 22;
+        };
       };
     };
     services.ssh-agent.enable = true;
