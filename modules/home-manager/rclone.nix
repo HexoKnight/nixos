@@ -24,8 +24,8 @@ in
         [bruhpi]
         type = sftp
         user = bruh
-        host = bruhpi.uk
-        port = 22
+        host = ssh.bruhpi.uk
+        port = 2222
         key_use_agent = true
         shell_type = unix
         md5sum_command = md5sum
