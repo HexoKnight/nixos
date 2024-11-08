@@ -64,6 +64,8 @@ in
             # in KiB/s
             AlternativeGlobalDLSpeedLimit = 1000;
             AlternativeGlobalUPSpeedLimit = 1000;
+            # use alt by default, to reduce network usage
+            UseAlternativeGlobalSpeedLimit = true;
           };
         };
       };
