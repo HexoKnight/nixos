@@ -21,6 +21,16 @@ in
 
     xdg.configFile."rclone/rclone.conf".text =
       lib.optionalString cfg.bruhpi.enable (lib.generators.toINI {} {
+        homeserver = {
+          type = "sftp";
+          user = "nixos";
+          host = "ssh.bruhpi.uk";
+          port = 22;
+          key_use_agent = true;
+          shell_type = "unix";
+          md5sum_command = "md5sum";
+          sha1sum_command = "sha1sum";
+        };
         bruhpi = {
           type = "sftp";
           user = "bruh";
