@@ -20,16 +20,17 @@ in
     };
 
     xdg.configFile."rclone/rclone.conf".text =
-      lib.optionalString cfg.bruhpi.enable /* ini */ ''
-        [bruhpi]
-        type = sftp
-        user = bruh
-        host = ssh.bruhpi.uk
-        port = 2222
-        key_use_agent = true
-        shell_type = unix
-        md5sum_command = md5sum
-        sha1sum_command = sha1sum
-      '';
+      lib.optionalString cfg.bruhpi.enable (lib.generators.toINI {} {
+        bruhpi = {
+          type = "sftp";
+          user = "bruh";
+          host = "ssh.bruhpi.uk";
+          port = 2222;
+          key_use_agent = true;
+          shell_type = "unix";
+          md5sum_command = "md5sum";
+          sha1sum_command = "sha1sum";
+        };
+      });
   };
 }
