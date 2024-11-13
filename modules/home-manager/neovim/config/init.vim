@@ -34,7 +34,7 @@ augroup END
 " ########## MAPPINGS ##########
 map <silent> <expr> <F5> ':wa \| !' . g:build_cmd . '<CR>'
 
-nmap <C-S> <Cmd>w<CR>
+nmap <C-S> <Cmd>update<CR>
 nmap <C-f> za
 imap <C-z> <C-o>zz
 
