@@ -7,7 +7,9 @@
 (defwidget sidestuff []
   (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
     (systray :class "systray")
-    "${connection}"
+    (tooltip :class "connection"
+      {connection.full}
+      {connection.short})
     (metric :label ""
             :value volume
             :onchange "")

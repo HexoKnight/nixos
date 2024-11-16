@@ -11,14 +11,19 @@ jq -r '
 ifne -n echo 'no connection' |
 while IFS=$'\n' read -r device; do
   if [ "$device" = "no connection" ]; then
-    echo "Disconnected "
+    echo '{"name":"Disconnected", "symbol:""}'
     break
   fi
-  jc nmcli -f general,ip4,ap device show "$device" |
-  jq -r '
+  jc nmcli -f general,ip4,ap device show "$device"
+done |
+jq -sr '
+  map(
     .[] |
     if .type == "ethernet" then
-      "Ethernet 󰈀" # 󰌗
+      {
+        name: "Ethernet",
+        symbol: "󰈀" # 󰌗
+      }
     elif .type == "wifi" then
       # there are many flat "ap_{1,2,..}_{in_use,ssid,bars,..}" entries
       # so the single "in_use" one must be extracted
@@ -37,9 +42,16 @@ while IFS=$'\n' read -r device; do
         "▂▄▆_": "󰤥",
         "▂▄▆█": "󰤨"
       }.[.bars] as $signal_strength |
-      "\(.ssid) \($signal_strength)(\(.signal)%)"
+      {
+        name: "\(.ssid)(\(.signal)%)",
+        symbol: $signal_strength
+      }
     else
       empty # idk what to do with this??
     end
-  '
-done
+  ) |
+  {
+    short: map(.symbol) | join(" "),
+    full: map(.symbol + " " + .name) | join("\n")
+  }
+'
