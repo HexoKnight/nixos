@@ -44,7 +44,11 @@ in {
     programs.eww = {
       enable = true;
       package = pkgs.eww;
-      configDir = ./eww;
+      configDir = pkgs.runCommandLocal "eww-config" {} ''
+        cp -rT ${./eww} $out
+
+        chmod +x $out/scripts/*
+      '';
     };
 
     gtk = {
