@@ -1,7 +1,7 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  touchpad-name = config.home-inputs.disable-touchpad;
+  touchpad-name = config.home-inputs.config.disable-touchpad;
 
   touchpad-enabled = "$TOUCHPAD_ENABLED";
   toggle-touchpad = lib.getExe (pkgs.writeShellScriptBin "toggle-touchpad" ''

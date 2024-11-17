@@ -3,13 +3,14 @@
 let
   inherit (lib) mkEnableOption;
 
-  cfg = config.rclone;
+  cfg = config.setups.rclone;
 in
 {
-  options.rclone = {
+  options.setups.rclone = {
     enable = mkEnableOption "rclone";
     bruhpi.enable = mkEnableOption "bruhpi sftp" // { default = true; };
   };
+
   config = lib.mkIf cfg.enable {
     home.packages = [
       pkgs.rclone

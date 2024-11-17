@@ -1,10 +1,10 @@
 { lib, pkgs, config, ... }:
 
 let
-  cfg = config.google-chrome;
+  cfg = config.setups.google-chrome;
 in
 {
-  options.google-chrome = {
+  options.setups.google-chrome = {
     enable = lib.mkEnableOption "google chrome";
     xwayland = lib.mkOption {
       description = "Whether to force xwayland.";

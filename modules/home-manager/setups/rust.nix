@@ -1,10 +1,10 @@
 { lib, pkgs, config, ... }:
 
 let
-  cfg = config.rust;
+  cfg = config.setups.rust;
 in
 {
-  options.rust = {
+  options.setups.rust = {
     enable = lib.mkEnableOption "rust dev stuff";
   };
 

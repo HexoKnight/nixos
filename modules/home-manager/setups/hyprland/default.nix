@@ -4,7 +4,7 @@ with lib;
 let
   inherit (config.home-inputs) disable-touchpad;
 
-  cfg = config.hyprland;
+  cfg = config.setups.hyprland;
 in {
   imports = [
     ./main-settings.nix
@@ -15,7 +15,7 @@ in {
     ./toggle-touchpad.nix
   ];
 
-  options.hyprland = {
+  options.setups.hyprland = {
     enable = lib.mkEnableOption "hyprland configuration";
   };
 

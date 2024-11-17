@@ -66,8 +66,20 @@ in {
       name = username;
       value = {
         imports = [
-          (import "${inputs.self}/modules/home-manager/home.nix" ({ inherit username; } // config.host-config // value))
+          ../home-manager
         ] ++ value.extraHmModules;
+
+        config = {
+          setups = {
+            config = {
+              inherit username;
+              inherit (config.host-config) disable-touchpad;
+            };
+            inherit (config.host-config) desktop;
+            impermanence = value.persistence;
+            inherit (value) personal-gaming;
+          };
+        };
       };
     }) users;
   };

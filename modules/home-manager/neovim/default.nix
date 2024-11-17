@@ -1,56 +1,111 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, ... }@inputs:
 
-{
-  imports = [
-    # define neovim options
-    ./package
-    # configure neovim using said options
-    ./config ./plugins
-  ];
+let
+  inherit (lib) mkOption types;
 
-  neovim.main = {
-    name = "nvim";
-    package = pkgs.unstable.neovim-unwrapped;
-    lspServers = {
-      nil_ls = {
-        extraPackages = with pkgs; [ nil ];
-        config = /* lua */ ''
-          {
-            settings = {
-              ['nil'] = {
-                nix = {
-                  flake = {
-                    autoArchive = true,
-                    autoEvalInputs = false,
-                  },
-                },
-              },
-            },
-          }
-        '';
+  neovimPackageModule = {config, ...}: {
+    imports = [
+      (import ./lspconfig.nix inputs)
+      (import ./plugins.nix inputs)
+    ];
+    options = {
+      name = mkOption {
+        description = "The name of the binary (defaults to the submodule attr name or 'nvim')";
+        type = types.nonEmptyStr;
+        default = config._module.args.name or "nvim";
       };
-      vimls = {
-        extraPackages = with pkgs; [ vim-language-server ];
+
+      env = mkOption {
+        description = "Extra environment variables to set in the neovim wrapper.";
+        type = types.attrsOf types.str;
+        default = {};
+      };
+
+      extraWrapperArgs = mkOption {
+        description = "Extra `makeWrapper` args.";
+        type = types.listOf types.str;
+        default = [];
+      };
+
+      vimlConfig = mkOption {
+        description = "Main viml config (loaded after lua config).";
+        type = types.lines;
+        default = "";
+      };
+      luaConfig = mkOption {
+        description = "Main lua config (loaded before vim config).";
+        type = types.lines;
+        default = "";
+      };
+
+      pluginPackages = mkOption {
+        description = "Plugin packages.";
+        type = types.listOf types.package;
+        default = [];
+      };
+      extraPackages = mkOption {
+        description = "Extra packages made available to neovim.";
+        type = types.listOf types.package;
+        default = [];
+      };
+      extraPython3Packages = mkOption {
+        description = "Extra packages provided to neovim's python3.";
+        type = types.functionTo (types.listOf types.package);
+        default = _: [];
+      };
+
+      package = mkOption {
+        description = "The package to use for the neovim binary.";
+        type = types.package;
+        default = pkgs.neovim-unwrapped;
+      };
+      finalPackage = mkOption {
+        description = "Resulting configured neovim package.";
+        type = types.package;
+        readOnly = true;
       };
     };
+    config =
+    let
+      isCustomName = config.name != "nvim";
+
+      neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
+        customRC = config.vimlConfig;
+        plugins = config.pluginPackages;
+        inherit (config) extraPython3Packages;
+      };
+      neovimPackage = pkgs.wrapNeovimUnstable config.package (neovimConfig // {
+        extraName = "-wrapped-" + config.name;
+        luaRcContent = config.luaConfig;
+        wrapperArgs = lib.concatLists ([
+          neovimConfig.wrapperArgs
+          [ "--prefix" "PATH" ":" (lib.makeBinPath config.extraPackages) ]
+        ] ++ lib.mapAttrsToList (name: value: [ "--set" name value ] ) config.env ++ [
+          config.extraWrapperArgs
+        ]);
+      });
+
+      finalNeovimPackage = neovimPackage.overrideAttrs (final: prev: {
+        # vi(m)Alias are not currently possible but
+        # make sure to fix the symlinks if they do
+        postBuild = prev.postBuild +
+          lib.optionalString isCustomName ''
+            mv $out/bin/nvim $out/bin/${lib.escapeShellArg config.name}
+          '';
+
+        meta = prev.meta // {
+          mainProgram = config.name;
+        };
+      });
+    in
+    {
+      finalPackage = finalNeovimPackage;
+    };
   };
-
-  persist-home = {
-    directories = [
-      # stores transient state that could be removed without
-      # too much issue (undos, swaps, shada, etc.)
-      ".local/state/nvim"
-      # stores more permanent state that should not be
-      # removed so easily (sessions, etc.)
-      ".local/share/nvim"
-    ];
-  };
-
-  home.packages = [ config.neovim.main.finalPackage ];
-
-  home.sessionVariables = {
-    EDITOR = lib.getExe (pkgs.writeShellScriptBin "remote-nvim-edit" ''
-      exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait "$@"
-    '');
+in
+{
+  options.neovim = mkOption {
+    description = "Neovim package configurations.";
+    type = types.attrsOf (types.submodule neovimPackageModule);
   };
 }

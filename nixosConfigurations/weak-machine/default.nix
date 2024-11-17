@@ -52,7 +52,7 @@ in
         ];
       };
 
-      jupyter.enable = true;
+      setups.jupyter.enable = true;
     }
   );
 

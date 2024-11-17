@@ -1,12 +1,13 @@
 { lib, pkgs, config, nixosConfig, ... }:
 
 let
-  cfg = config.btop;
+  cfg = config.setups.btop;
 in
 {
-  options.btop = {
+  options.setups.btop = {
     enable = lib.mkEnableOption "btop";
   };
+
   config = lib.mkIf cfg.enable {
     programs.btop = {
       enable = true;
