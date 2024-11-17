@@ -6,7 +6,7 @@ let
   mkListIf = condition: value: [ (lib.mkIf condition value) ];
 
   mkBoolOption = msg: lib.mkOption {
-    description = "Whether to ${msg}.";
+    description = "Whether ${msg}.";
     type = lib.types.bool;
     default = false;
   };
@@ -46,11 +46,11 @@ in
 
     sops = mkEnableOption "sops password management" // { default = cfg.minimal; };
 
-    installBootloader = mkBoolOption "Whether to install grub." // { default = cfg.minimal; };
+    installBootloader = mkBoolOption "to install grub" // { default = cfg.minimal; };
 
     impermanence = mkEnableOption "impermanence";
 
-    desktop = mkBoolOption "Whether the system should have a desktop." // { default = cfg.personal-gaming; };
+    desktop = mkBoolOption "the system should have a desktop" // { default = cfg.personal-gaming; };
 
     special-capslock = mkEnableOption "special-capslock" // { default = cfg.desktop; };
 
@@ -60,7 +60,7 @@ in
 
     ssh = mkEnableOption "ssh stuff" // { default = cfg.minimal; };
 
-    personal-gaming = mkBoolOption "Whether the user/system should have personal/gaming stuff.";
+    personal-gaming = mkBoolOption "the user/system should have personal/gaming stuff";
 
     flatpak = mkEnableOption "flatpak stuff";
   };
