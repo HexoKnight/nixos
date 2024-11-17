@@ -6,7 +6,11 @@ in
 {
   options.google-chrome = {
     enable = lib.mkEnableOption "google chrome";
-    xwayland = lib.mkEnableOption "force xwayland";
+    xwayland = lib.mkOption {
+      description = "Whether to force xwayland.";
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
   config = lib.mkIf cfg.enable {
