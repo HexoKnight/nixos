@@ -10,7 +10,7 @@ in
     enable = mkEnableOption "rclone";
     bruhpi.enable = mkEnableOption "bruhpi sftp" // { default = true; };
   };
-  config = {
+  config = lib.mkIf cfg.enable {
     home.packages = [
       pkgs.rclone
     ];
