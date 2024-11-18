@@ -39,9 +39,9 @@ in {
           type = types.bool;
           apply = val: assert (val -> host-config.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
         };
-        extraHmModules = mkOption {
-          description = "extra home manager modules";
-          type = types.listOf types.deferredModule;
+        extraHmConfig = mkOption {
+          description = "extra home manager config";
+          type = types.deferredModule;
           default = [];
         };
         extraOptions = mkOption {
@@ -67,7 +67,8 @@ in {
       value = {
         imports = [
           ../home-manager
-        ] ++ value.extraHmModules;
+          value.extraHmConfig
+        ];
 
         config = {
           setups = {

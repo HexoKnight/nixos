@@ -40,15 +40,14 @@ in
     ];
   };
 
-  userhome-config.${username}.extraHmModules = lib.singleton (
+  userhome-config.${username}.extraHmConfig =
     { pkgs, ... }:
     {
       setups.google-chrome.xwayland = true;
 
       setups.rust.enable = true;
       setups.jupyter.enable = true;
-    }
-  );
+    };
 
   syncthing = {
     enable = true;

@@ -25,7 +25,7 @@ in
     enable = true;
   };
 
-  userhome-config.${username}.extraHmModules = lib.singleton (
+  userhome-config.${username}.extraHmConfig =
     { pkgs, ... }:
     {
       nixpkgs.allowUnfreePkgs = [
@@ -53,8 +53,7 @@ in
       };
 
       setups.jupyter.enable = true;
-    }
-  );
+    };
 
   persist.defaultSetup = {
     swapSize = "4G";
