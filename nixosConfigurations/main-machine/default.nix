@@ -25,8 +25,6 @@ in
     flatpak = true;
   };
 
-  host-config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
-
   fileSystems."/c_drive" = {
     device = "/dev/nvme0n1p3";
     fsType = "ntfs3";
@@ -43,6 +41,7 @@ in
   userhome-config.${username}.extraHmConfig =
     { pkgs, ... }:
     {
+      setups.config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
       setups.google-chrome.xwayland = true;
 
       setups.rust.enable = true;

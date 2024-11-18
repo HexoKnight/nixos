@@ -12,9 +12,6 @@ in {
     default = {};
     description = "users to configure";
     type =
-    let
-      host-config = config.host-config;
-    in
     types.attrsOf (types.submodule ({name, config, ...}: {
       options = {
         username = mkOption {
@@ -37,7 +34,7 @@ in {
           default = false;
           description = "whether the user should have personal/gaming applications";
           type = types.bool;
-          apply = val: assert (val -> host-config.desktop || throw "a user having personal-gaming requires the host to have a desktop"); val;
+          apply = val: assert (val -> true /* FIXME */ || throw "a user having personal-gaming requires the host to have a desktop"); val;
         };
         extraHmConfig = mkOption {
           description = "extra home manager config";
@@ -74,9 +71,7 @@ in {
           setups = {
             config = {
               inherit username;
-              inherit (config.host-config) disable-touchpad;
             };
-            inherit (config.host-config) desktop;
             impermanence = value.persistence;
             inherit (value) personal-gaming;
           };

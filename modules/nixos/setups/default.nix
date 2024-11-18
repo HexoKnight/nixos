@@ -82,6 +82,15 @@ in
         } // cfg.config.extraUserOptions;
       };
 
+      users.mutableUsers = lib.mkDefault false;
+      boot.tmp.useTmpfs = lib.mkDefault true;
+
+      documentation.man.generateCaches = true;
+
+      programs.nix-ld = {
+        enable = true;
+      };
+
       environment.variables = {
         # TODO: improve
         NIXOS_BUILD_FLAKE = ''
@@ -150,9 +159,8 @@ in
       };
     } ++
     mkListIf cfg.desktop {
-      # TODO: integrate
-      host-config = {
-        desktop = true;
+      userhome-config.${username}.extraHmConfig = {
+        setups.desktop = true;
       };
 
       services.xserver.enable = true;
