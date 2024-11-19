@@ -170,8 +170,6 @@ in
         setups.desktop = true;
       };
 
-      services.xserver.enable = true;
-
       services.displayManager.sddm =
         let
           # TODO: remove when 24.11 pkgs
