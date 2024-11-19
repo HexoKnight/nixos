@@ -490,8 +490,6 @@ in
       };
     } ++
     mkListIf cfg.desktop {
-      setups.hyprland.enable = true;
-
       home.packages = with pkgs; [
         nvtopPackages.full
         mpv

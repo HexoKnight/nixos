@@ -51,6 +51,13 @@ in
     impermanence = mkEnableOption "impermanence";
 
     desktop = mkBoolOption "the system should have a desktop" // { default = cfg.personal-gaming; };
+    desktop-type = mkOption {
+      description = "Desktop type";
+      type = lib.types.nullOr (lib.types.enum [
+        "hyprland" "plasma"
+      ]);
+      default = "hyprland";
+    };
 
     special-capslock = mkEnableOption "special-capslock" // { default = cfg.desktop; };
 
@@ -203,10 +210,6 @@ in
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 
-      programs.hyprland = {
-        enable = true;
-      };
-
       sound.enable = true;
       # TODO: disable this options
       hardware.pulseaudio.enable = false;
@@ -230,6 +233,46 @@ in
         roboto
         (nerdfonts.override { fonts = [ "RobotoMono" ]; })
       ];
+    } ++
+    mkListIf (cfg.desktop && cfg.desktop-type == "hyprland") {
+      programs.hyprland = {
+        enable = true;
+      };
+
+      userhome-config.${username}.extraHmConfig = {
+        setups.hyprland.enable = true;
+      };
+    } ++
+    mkListIf (cfg.desktop && cfg.desktop-type == "plasma") {
+      services.desktopManager.plasma6.enable = true;
+      environment.plasma6.excludePackages = with pkgs.kdePackages; [
+        # from optionalPackages at https://github.com/NixOS/nixpkgs/blob/nixos-24.05/nixos/modules/services/desktop-managers/plasma6.nix#L135-L150
+        # comments are what is kept
+
+        plasma-browser-integration
+        konsole
+        # seems important??
+        # (lib.getBin qttools) # Expose qdbus in PATH
+        ark
+        elisa
+        # gwenview
+        okular
+        kate
+        khelpcenter
+        print-manager
+        dolphin
+        dolphin-plugins
+        spectacle
+        ffmpegthumbs
+      ];
+
+      environment.systemPackages = lib.mkIf cfg.flatpak [
+        pkgs.kdePackages.discover
+      ];
+
+      userhome-config.${username}.extraHmConfig = {
+        setups.plasma.enable = true;
+      };
     } ++
     mkListIf cfg.special-capslock {
       # TODO: improve
