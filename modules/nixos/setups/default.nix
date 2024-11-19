@@ -165,29 +165,43 @@ in
 
       services.xserver.enable = true;
 
-      services.displayManager.sddm = {
-        enable = true;
-        wayland.enable = true;
-        theme = "where_is_my_sddm_theme_qt5";
-      };
-      environment.systemPackages = [
-        # TODO: hardcode into sddm conf
-        (pkgs.local.where-is-my-sddm-theme-qt5.override {
-          themeConfig.General = {
-            background = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-            backgroundFill = "#000000";
-            backgroundFillMode = "none";
-            blurRadius = 32;
-            passwordCharacter = "∗"; # ● • >∗ ﹡ ＊ ✲
-            passwordInputWidth = 1.0;
-            passwordCursorColor = "#ffffff";
-            passwordInputCursorVisible = false;
-            # sessionsFontSize = 24;
-            # usersFontSize = 24;
-            showUserRealNameByDefault = false;
+      services.displayManager.sddm =
+        let
+          # TODO: remove when 24.11 pkgs
+          where-is-my-sddm-theme = pkgs.where-is-my-sddm-theme.overrideAttrs (oldAttrs: {
+            version = "1.11.0";
+            src = pkgs.fetchFromGitHub {
+              owner = "stepanzubkov";
+              repo = "where-is-my-sddm-theme";
+              rev = "v1.11.0";
+              hash = "sha256-EzO+MTz1PMmgeKyw65aasetmjUCpvilcvePt6HJZrpo=";
+            };
+          });
+          theme = where-is-my-sddm-theme.override {
+            themeConfig.General = {
+              background = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              backgroundFill = "#000000";
+              backgroundFillMode = "none";
+              blurRadius = 32;
+              passwordCharacter = "∗"; # ● • >∗ ﹡ ＊ ✲
+              passwordInputWidth = 1.0;
+              passwordCursorColor = "#ffffff";
+              passwordInputCursorVisible = false;
+              # sessionsFontSize = 24;
+              # usersFontSize = 24;
+              showUserRealNameByDefault = false;
+            };
           };
-        })
-      ];
+        in
+        {
+          enable = true;
+          wayland.enable = true;
+          package = lib.mkDefault pkgs.qt6Packages.sddm;
+          # goddamn qt weirdness
+          # remove flatten when flattened upstream
+          extraPackages = lib.flatten theme.propagatedUserEnvPkgs or [];
+          theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
+        };
 
       programs.hyprland = {
         enable = true;
