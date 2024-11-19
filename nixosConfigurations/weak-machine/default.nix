@@ -58,6 +58,6 @@ in
   persist.defaultSetup = {
     swapSize = "4G";
     # prefer battery life over disk space
-    btrfsCompression = null;
+    btrfsCompression = "zstd:1";
   };
 }
