@@ -17,15 +17,16 @@
   };
 
   config = {
-    nixpkgs.config.allowUnfreePredicate = pkg:
-    let
-      name = lib.getName pkg;
-    in
-    lib.any (val:
-      if lib.isString val then
-        name == val
-      else # if lib.isFunction then
-        val pkg
-    ) config.nixpkgs.allowUnfreePkgs;
+    nixpkgs = lib.mkIf (config.nixpkgs.allowUnfreePkgs != []) {
+      config.allowUnfreePredicate = pkg:
+        lib.any (val:
+          if lib.isString val then
+            val == lib.getName pkg
+          else if lib.isFunction val then
+            val pkg
+          else
+            throw "unreachable"
+        ) config.nixpkgs.allowUnfreePkgs;
+    };
   };
 }
