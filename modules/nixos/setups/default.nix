@@ -20,6 +20,7 @@ in
     inputs.sops-nix.nixosModules.sops
 
     ./internationalisation.nix
+    ./nix.nix
   ];
 
   options.setups = {
@@ -82,6 +83,10 @@ in
       networking.hostName = hostname;
 
       setups.internationalisation = true;
+      setups.nix = {
+        flakes.enable = true;
+        autoclean.enable = true;
+      };
 
       # TODO: integrate??
       userhome-config.${username} = {
