@@ -54,10 +54,14 @@ in
 
     # straight from impermanence repo: https://github.com/nix-community/impermanence#btrfs-subvolumes
     # adapted to use a subvolume for `old_roots` (but nothing actually needed to change)
-    boot.initrd.postDeviceCommands = lib.mkAfter ''
+    boot.initrd.postDeviceCommands = lib.mkAfter /* bash */ ''
       mkdir /btrfs_tmp
       mount /dev/root_vg/root /btrfs_tmp
       if [[ -e /btrfs_tmp/root ]]; then
+
+          # delete stuff that fills up quick
+          rm -r /btrfs_tmp/root/{home/*/.cache,var/lib/systemd/coredump/*}
+
           mkdir -p /btrfs_tmp/old_roots
           timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%d_%H:%M:%S")
           mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
