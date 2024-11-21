@@ -85,12 +85,8 @@ in
 
     environment.systemPackages = [
       (pkgs.writeShellScriptBin "mount-oldroots" ''
-        if [ -n "$OLD_ROOTS_RW" ]; then rtype=rw
-        else rtype=ro
-        fi
-
         mkdir -p /old_roots &&
-        mount /dev/root_vg/root /old_roots -o subvol=/old_roots,''${rtype},noatime
+        mount /dev/root_vg/root /old_roots -o subvol=/old_roots,ro,noatime "$@"
       '')
     ];
 
