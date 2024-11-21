@@ -18,6 +18,8 @@ in
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
+
+    ./internationalisation.nix
   ];
 
   options.setups = {
@@ -78,6 +80,8 @@ in
       services.envfs.enable = true;
 
       networking.hostName = hostname;
+
+      setups.internationalisation = true;
 
       # TODO: integrate??
       userhome-config.${username} = {

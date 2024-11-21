@@ -2,7 +2,6 @@
   imports = [
     ../generic
 
-    ./internationalisation.nix
     ./userhome-config.nix
     ./grub-timestamp-format.nix
     ./overlays.nix
