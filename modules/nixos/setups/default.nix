@@ -180,14 +180,6 @@ in
         setups.desktop = true;
       };
 
-      unstable-overlay.extraArgs = final: _prev: {
-        overlays = [
-          (_final-unstable: _prev-unstable: {
-            xwayland = final.xwayland;
-          })
-        ];
-      };
-
       services.displayManager.sddm =
         let
           # TODO: remove when 24.11 pkgs
