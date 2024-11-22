@@ -21,10 +21,6 @@ let
   );
 in
 {
-  imports = [
-    inputs.disko.nixosModules.default
-  ];
-
   options.persist.defaultSetup = {
     enable = mkEnableOption "the default impermanence setup (disko, wipe on boot, etc.), see the source for details";
     device = mkOption {

@@ -4,10 +4,6 @@ with lib;
 let
   users = config.userhome-config;
 in {
-  imports = [
-    inputs.home-manager.nixosModules.home-manager
-  ];
-
   options.userhome-config = mkOption {
     default = {};
     description = "users to configure";

@@ -1,13 +1,9 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.setups.plasma;
 in
 {
-  imports = [
-    inputs.plasma-manager.homeManagerModules.plasma-manager
-  ];
-
   options.setups.plasma = {
     enable = lib.mkEnableOption "plasma configuration";
   };

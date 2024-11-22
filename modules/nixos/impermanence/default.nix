@@ -45,7 +45,6 @@ let
 in
 {
   imports = [
-    inputs.impermanence.nixosModules.impermanence
     ./default-setup.nix
   ];
 

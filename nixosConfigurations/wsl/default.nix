@@ -1,11 +1,10 @@
-{ inputs, ... }:
+{ ... }:
 
 let
   username = "nixos";
 in {
   imports = [
     ./hardware-configuration.nix
-    inputs.nixos-wsl.nixosModules.wsl
   ];
 
   wsl.enable = true;

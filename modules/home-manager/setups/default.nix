@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, config, nixosConfig, ... }:
+{ lib, pkgs, config, nixosConfig, ... }:
 
 let
   inherit (lib) mkOption mkEnableOption;
@@ -19,8 +19,6 @@ let
 in
 {
   imports = [
-    inputs.nix-index-database.hmModules.nix-index
-
     ./neovim
     ./fzf.nix
     ./trash.nix

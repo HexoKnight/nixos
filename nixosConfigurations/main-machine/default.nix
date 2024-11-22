@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, config_name, ... }:
+{ config, lib, pkgs, config_name, ... }:
 
 let
   username = "harvey";
@@ -6,7 +6,6 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
   ];
 
   setups = {

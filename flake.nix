@@ -72,11 +72,32 @@
     nixosConfigurations = mkNixosConfigurations {
       desktop = {};
       homeserver = {};
-      main-machine = {};
+      main-machine = {
+        extraModules = [
+          inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
+        ];
+      };
       weak-machine = {};
-      wsl = {};
+      wsl = {
+        extraModules = [
+          inputs.nixos-wsl.nixosModules.wsl
+        ];
+      };
     } [
       {
+        imports = [
+          inputs.home-manager.nixosModules.home-manager
+
+          inputs.sops-nix.nixosModules.sops
+          inputs.impermanence.nixosModules.impermanence
+          inputs.disko.nixosModules.disko
+        ];
+
+        home-manager.sharedModules = [
+          inputs.nix-index-database.hmModules.nix-index
+          inputs.plasma-manager.homeManagerModules.plasma-manager
+        ];
+
         nixpkgs-overlays = [
           (final: _prev: {
             local = local-pkgs final;

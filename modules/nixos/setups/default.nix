@@ -17,8 +17,6 @@ let
 in
 {
   imports = [
-    inputs.sops-nix.nixosModules.sops
-
     ./internationalisation.nix
     ./nix.nix
   ];
