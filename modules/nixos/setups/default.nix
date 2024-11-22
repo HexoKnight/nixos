@@ -78,7 +78,7 @@ in
   config = lib.mkMerge (
     mkListIf cfg.minimal {
       # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
-      services.envfs.enable = true;
+      services.envfs.enable = lib.mkDefault true;
 
       networking.hostName = hostname;
 

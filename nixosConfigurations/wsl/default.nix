@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, config_name, ... }:
+{ inputs, ... }:
 
 let
   username = "nixos";
@@ -10,19 +10,14 @@ in {
 
   wsl.enable = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.channel.enable = false; # only flakes :)
-
   # allows 'normal' UNIX shebangs (eg. #!/bin/bash)
   # seems to fail on wsl (it uses a wierd file system or smthn)
-  # services.envfs.enable = true;
+  services.envfs.enable = false;
 
-  networking.hostName = "nixos";
-
-  userhome-config.${username} = {
-    cansudo = true;
-    extraOptions = {
-      # isNormalUser = true;
+  setups = {
+    config = {
+      inherit username;
+      hostname = "nixos";
     };
   };
 
@@ -30,17 +25,9 @@ in {
 
   wsl.defaultUser = username;
 
-  environment.variables = {
-    NIXOS_CURRENT_SYSTEM_BUILD_DIR = inputs.self;
-    NIXOS_BUILD_CONFIGURATION = config_name;
-  };
-
   programs.ssh = {
     startAgent = true;
   };
-
-  environment.systemPackages = with pkgs; [
-  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
