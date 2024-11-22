@@ -39,7 +39,7 @@ in {
         extraHmConfig = mkOption {
           description = "extra home manager config";
           type = types.deferredModule;
-          default = [];
+          default = {};
         };
         extraOptions = mkOption {
           type = types.attrs;
