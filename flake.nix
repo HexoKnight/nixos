@@ -65,7 +65,7 @@
       import ./packages args //
       import ./scripts args;
 
-    mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix { inherit inputs lib local-pkgs; };
+    mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix { inherit inputs lib; };
     forAllSystems = lib.genAttrs lib.systems.flakeExposed;
   in
   {
@@ -77,10 +77,11 @@
       wsl = {};
     } [
       {
-        # nix.settings = {
-        #   substituters = ["https://hyprland.cachix.org"];
-        #   trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-        # };
+        nixpkgs-overlays = [
+          (final: _prev: {
+            local = local-pkgs final;
+          })
+        ];
       }
     ];
 

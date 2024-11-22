@@ -1,4 +1,4 @@
-{ lib, inputs, local-pkgs }:
+{ lib, inputs }:
 
 configurations:
 extraModules:
@@ -12,11 +12,6 @@ lib.mapAttrs (config_name: extraOptions: lib.nixosSystem (
       ./${config_name}
       ../modules/nixos
       {
-        nixpkgs-overlays = [
-          (final: _prev: {
-            local = local-pkgs final;
-          })
-        ];
       }
     ] ++ extraModules;
   }
