@@ -68,6 +68,7 @@ in
   config = lib.mkMerge (
     mkListIf cfg.normal {
       home = { inherit username homeDirectory; };
+      nix.settings.use-xdg-base-directories = true;
 
       nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
       nixpkgs.allowUnfreePkgs = [
