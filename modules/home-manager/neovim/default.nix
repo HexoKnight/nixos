@@ -1,12 +1,12 @@
-{ lib, pkgs, ... }@inputs:
+{ lib, pkgs, ... }:
 
 let
   inherit (lib) mkOption types;
 
   neovimPackageModule = {config, ...}: {
     imports = [
-      (import ./lspconfig.nix inputs)
-      (import ./plugins.nix inputs)
+      ./lspconfig.nix
+      ./plugins.nix
     ];
     options = {
       name = mkOption {
@@ -99,6 +99,8 @@ let
       });
     in
     {
+      _module.args = { inherit lib pkgs; };
+
       finalPackage = finalNeovimPackage;
     };
   };
