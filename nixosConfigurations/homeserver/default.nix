@@ -28,6 +28,10 @@ in
     sops = false;
   };
 
+  userhome-config.${username}.extraHmConfig = {
+    setups.normal = true;
+  };
+
   boot.loader.timeout = 0;
   boot.loader.grub.useOSProber = lib.mkForce false;
 
