@@ -24,9 +24,11 @@ in
     flatpak = true;
   };
 
+  # doesn't recognise lowntfs-3g
+  boot.supportedFilesystems.ntfs-3g = true;
   fileSystems."/c_drive" = {
     device = "/dev/nvme0n1p3";
-    fsType = "ntfs3";
+    fsType = "lowntfs-3g";
     options = [
       # in case it's confusing this actually means
       # the filesystem failing to mount won't cause
@@ -34,6 +36,10 @@ in
       "nofail"
       "uid=1000"
       "gid=100"
+
+      "windows_names"
+      # requires lowntfs-3g
+      "ignore_case"
     ];
   };
 
