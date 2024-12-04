@@ -61,6 +61,10 @@ in
             DefaultSavePath = torrentsDir;
             TorrentExportDirectory = "${torrentsDir}/prev-torrents";
 
+            MaxActiveDownloads = 3;
+            MaxActiveUploads = 17;
+            MaxActiveTorrents = 20;
+
             # in KiB/s
             AlternativeGlobalDLSpeedLimit = 1000;
             AlternativeGlobalUPSpeedLimit = 1000;
