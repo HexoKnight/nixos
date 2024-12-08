@@ -16,8 +16,6 @@
         "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
 
-        no_cursor_warps = true;
-
         layout = "dwindle";
 
         # Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
@@ -37,6 +35,11 @@
         sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
       };
 
+      cursor = {
+        no_warps = true;
+        hide_on_key_press = true;
+      };
+
       decoration = {
         rounding = 0;
 
@@ -46,10 +49,12 @@
           passes = 1;
         };
 
-        drop_shadow = true;
-        shadow_range = 4;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(1a1a1aee)";
+        shadow = {
+          enabled = true;
+          range = 4;
+          render_power = 3;
+          color = "rgba(1a1a1aee)";
+        };
       };
 
       animations = {
@@ -71,9 +76,6 @@
         pseudotile = true;
         preserve_split = true;
       };
-      master = {
-        new_is_master = true;
-      };
 
       gestures = {
         workspace_swipe = false;
@@ -83,7 +85,6 @@
         force_default_wallpaper = -1;
         disable_hyprland_logo = true;
         mouse_move_focuses_monitor = false;
-        hide_cursor_on_key_press = true;
       };
     };
   };

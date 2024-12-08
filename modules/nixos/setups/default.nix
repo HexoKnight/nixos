@@ -216,7 +216,6 @@ in
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 
-      sound.enable = true;
       # TODO: disable this options
       hardware.pulseaudio.enable = false;
       security.rtkit.enable = true;
@@ -243,6 +242,7 @@ in
     mkListIf (cfg.desktop && cfg.desktop-type == "hyprland") {
       programs.hyprland = {
         enable = true;
+        withUWSM = true;
       };
 
       userhome-config.${username}.extraHmConfig = {
@@ -335,7 +335,7 @@ in
     } ++
     mkListIf cfg.personal-gaming {
       nixpkgs.allowUnfreePkgs = [
-        "steam" "steam-original" "steam-run"
+        "steam" "steam-unwrapped" "steam-run"
       ];
 
       programs.steam = {

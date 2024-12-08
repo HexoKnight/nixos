@@ -19,8 +19,8 @@
     "SUPER, V" = mkNoArgBind "togglefloating";
     "SUPER, F" = mkBind "fullscreen" "0"; # proper fullscreen
     "SUPER SHIFT, F" = mkBind "fullscreen" "1"; # maximise
-    "SUPER ALT, F" = mkBind "fullscreen" "2"; # fullscreen (but doesn't tell application)
-    "SUPER CTRL, F" = mkBind "fakefullscreen" ""; # only tells application that it is fullscreen
+    "SUPER ALT, F" = mkBind "fullscreenstate" "2 0"; # fullscreen (but doesn't tell application)
+    "SUPER CTRL, F" = mkBind "fullscreenstate" "0 2"; # only tells application that it is fullscreen
 
     "SUPER SHIFT, S" = mkExec ''${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"'';
 
