@@ -98,11 +98,11 @@ in
             })
           '';
         }
-        { plugin = pkgs.unstable.vimPlugins.quarto-nvim;
+        { plugin = pkgs.vimPlugins.quarto-nvim;
           type = "lua";
           config = builtins.readFile ./quarto-nvim.lua;
         }
-        { plugin = pkgs.unstable.vimPlugins.otter-nvim;
+        { plugin = pkgs.vimPlugins.otter-nvim;
           type = "lua";
         }
       ];
