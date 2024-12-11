@@ -164,8 +164,9 @@ in
         };
         system = {
           directories = [
-            "/var/lib/systemd/backlight"
-            "/var/lib/systemd/timers"
+            "/var/lib/nixos"
+            "/var/lib/systemd"
+            "/var/log/journal"
           ];
           files = [
             "/etc/machine-id"

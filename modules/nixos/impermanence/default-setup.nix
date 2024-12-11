@@ -57,7 +57,6 @@ in
 
           # delete stuff that fills up quick
           rm -r /btrfs_tmp/root/home/*/.cache
-          rm -r /btrfs_tmp/root/var/lib/systemd/coredump
 
           mkdir -p /btrfs_tmp/old_roots
           timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%d_%H:%M:%S")
