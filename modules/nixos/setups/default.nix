@@ -181,17 +181,7 @@ in
 
       services.displayManager.sddm =
         let
-          # TODO: remove when 24.11 pkgs
-          where-is-my-sddm-theme = pkgs.where-is-my-sddm-theme.overrideAttrs (oldAttrs: {
-            version = "1.11.0";
-            src = pkgs.fetchFromGitHub {
-              owner = "stepanzubkov";
-              repo = "where-is-my-sddm-theme";
-              rev = "v1.11.0";
-              hash = "sha256-EzO+MTz1PMmgeKyw65aasetmjUCpvilcvePt6HJZrpo=";
-            };
-          });
-          theme = where-is-my-sddm-theme.override {
+          theme = pkgs.where-is-my-sddm-theme.override {
             themeConfig.General = {
               background = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               backgroundFill = "#000000";
@@ -212,8 +202,7 @@ in
           wayland.enable = true;
           package = lib.mkDefault pkgs.qt6Packages.sddm;
           # goddamn qt weirdness
-          # remove flatten when flattened upstream
-          extraPackages = lib.flatten theme.propagatedUserEnvPkgs or [];
+          extraPackages = theme.propagatedUserEnvPkgs or [];
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 
