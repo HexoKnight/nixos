@@ -94,6 +94,7 @@ in
         ethtool
         acpi
         ssh-to-age
+        compsize
 
         # programs
         lf
