@@ -30,7 +30,7 @@
         };
       };
 
-      virtualHosts."qbittorrent.bruhpi.uk" =  {
+      virtualHosts."qbit.bruhpi.uk" =  {
         addSSL = true;
         useACMEHost = "bruhpi.uk";
 
