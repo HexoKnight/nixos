@@ -85,6 +85,7 @@ in
         flakes.enable = true;
         autoclean.enable = true;
       };
+      nix.settings.trusted-users = [ "@wheel" ];
       unstable-overlay.enable = true;
 
       # TODO: integrate??
