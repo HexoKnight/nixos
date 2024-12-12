@@ -275,14 +275,18 @@ in
 
           u() { NIXPKGS_FLAKE=nixpkgs-unstable "$@"; }
 
-          nixrun() (
+          nixrun() {
             nix run "''${NIXPKGS_FLAKE:-nixpkgs}#$1" -- "''${@:2}"
-          )
+          }
           nixrun-u() { u nixrun "$@"; }
-          nixshell() (
+          nixshell() {
             nix shell "''${NIXPKGS_FLAKE:-nixpkgs}#$1" "''${@:2}"
-          )
+          }
           nixshell-u() { u nixshell "$@"; }
+
+          nixrun-sudo() {
+            nixshell "$1" -c sudo "$1" "''${@:2}"
+          }
 
           nixman() (
             # WTF idek..: nix shell nixpkgs#texliveInfraOnly.man -c env man --path texhash
