@@ -10,6 +10,7 @@ in
     ./nginx.nix
     ./qbittorrent.nix
     ./nix-serve.nix
+    ./project-zomboid
 
     ./cloudflare-dyndns.nix
     ./acme.nix
