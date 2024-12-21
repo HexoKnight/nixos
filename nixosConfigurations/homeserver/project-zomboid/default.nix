@@ -6,6 +6,20 @@ let
 
   zomboid-server = pkgs.callPackage ./dedicated-server.nix {};
 
+  zomboid-client = pkgs.writeShellApplication {
+    name = "zomboid-client";
+
+    runtimeEnv = {
+      ZOMBOID_UNIT = "zomboid.service";
+      ZOMBOID_SOCKET = socketPath;
+    };
+    runtimeInputs = [
+      pkgs.socat
+    ];
+
+    text = builtins.readFile ./zomboid-client.sh;
+  };
+
   dataDir = "/var/lib/Zomboid";
   socketPath = "/run/zomboid/control";
 
@@ -20,6 +34,7 @@ in
 
     environment.systemPackages = [
       zomboid-server
+      zomboid-client
     ];
 
     users.users.${config.setups.config.username}.extraGroups = [ group ];
