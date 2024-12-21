@@ -40,6 +40,16 @@ in
   ];
 
   security.sudo.wheelNeedsPassword = false;
+  security.polkit = {
+    enable = true;
+    extraConfig = /* js */ ''
+      polkit.addRule(function(action, subject) {
+        if (subject.isInGroup("wheel")) {
+          return polkit.Result.YES
+        }
+      })
+    '';
+  };
 
   persist.system = {
     directories = [
