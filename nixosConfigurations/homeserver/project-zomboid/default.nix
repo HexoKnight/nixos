@@ -37,6 +37,7 @@ in
         dataDir
       ];
     };
+    networking.firewall.allowedUDPPorts = [ 16261 16262 ];
 
     environment.systemPackages = [
       zomboid-server
