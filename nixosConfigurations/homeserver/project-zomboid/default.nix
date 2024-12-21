@@ -32,6 +32,12 @@ in
 
     nixpkgs.allowUnfreePkgs = [ "project-zomboid-server" "steamworks-sdk-redist" ];
 
+    persist.system = {
+      directories = [
+        dataDir
+      ];
+    };
+
     environment.systemPackages = [
       zomboid-server
       zomboid-client
