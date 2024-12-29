@@ -21,7 +21,14 @@ let
   };
 
   dataDir = "/var/lib/Zomboid";
-  socketPath = "/run/zomboid/control";
+  runDir = "/run/zomboid";
+
+  overlay = {
+    dir = runDir + "/server";
+    workdir = dataDir + "/empty";
+    upperdir = dataDir + "/runtime";
+  };
+  socketPath = runDir + "/control";
 
   user = "pzuser";
   group = "pzuser";
@@ -59,6 +66,14 @@ in
           mode = "770";
           inherit user group;
         };
+        "${overlay.dir}".d = {
+          mode = "770";
+          inherit user group;
+        };
+        "${overlay.upperdir}".d = {
+          mode = "770";
+          inherit user group;
+        };
       };
       services.zomboid = {
         description = "Project Zomboid Server";
@@ -72,10 +87,11 @@ in
           Group = group;
           KillSignal = "SIGCONT";
 
-          WorkingDirectory = dataDir;
+          WorkingDirectory = overlay.dir;
           ReadOnlyPaths = [ "/" ];
           ReadWritePaths = [
             dataDir
+            runDir
             "/tmp"
           ];
 
@@ -102,6 +118,16 @@ in
           SocketUser = user;
           SocketGroup = group;
         };
+      };
+      mounts = lib.singleton {
+        bindsTo    = [ "zomboid.service" ];
+        before     = [ "zomboid.service" ];
+        requiredBy = [ "zomboid.service" ];
+
+        type = "overlay";
+        what = "overlay";
+        where = overlay.dir;
+        options = "lowerdir=${zomboid-server},upperdir=${overlay.upperdir},workdir=${overlay.workdir}";
       };
     };
   };
