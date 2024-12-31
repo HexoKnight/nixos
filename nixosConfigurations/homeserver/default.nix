@@ -33,7 +33,8 @@ in
     setups.normal = true;
   };
 
-  boot.loader.timeout = 0;
+  # no timeout makes it next to impossible to rollback
+  boot.loader.timeout = 1;
   boot.loader.grub.useOSProber = lib.mkForce false;
 
   environment.systemPackages = [
