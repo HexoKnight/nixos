@@ -80,6 +80,22 @@ in
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
 
+        # restart automatically but stop after 3 restarts in 6 minutes
+        unitConfig = {
+          StartLimitIntervalSec = 360;
+          StartLimitBurst = 3;
+        };
+        serviceConfig = {
+          Restart = "always";
+          RestartMode = "direct";
+        };
+
+        # despite having Restart=always, the service does not restart on success
+        # so manually convert success into failure
+        script = ''
+          ${lib.getExe zomboid-server} -cachedir=${dataDir} && exit 1
+        '';
+
         serviceConfig = {
           PrivateTmp = true;
           Type = "exec";
@@ -95,7 +111,6 @@ in
             "/tmp"
           ];
 
-          ExecStart = "${lib.getExe zomboid-server} -cachedir=${dataDir}";
           StandardInput = "file:" + socketPath;
           # shouldn't be necessary but just in case
           Sockets = [ "zomboid.socket" ];

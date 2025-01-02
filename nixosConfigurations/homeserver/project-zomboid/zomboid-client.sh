@@ -19,6 +19,12 @@ stop() {
         exit 1
     }
 }
+restart() {
+    systemctl restart $ZOMBOID_UNIT || {
+        err "failed to restart server, exiting..."
+        exit 1
+    }
+}
 
 check_running() {
     if ! is_running; then
@@ -61,6 +67,10 @@ case "$subcommand" in
         else
             echo "server not running, exiting..."
         fi
+    ;;
+    (restart)
+        echo "restarting server..."
+        restart
     ;;
     (log)
         check_running
