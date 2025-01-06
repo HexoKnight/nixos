@@ -2,6 +2,8 @@
 
 let
   cfg = config.setups.rust;
+
+  cargoDir = ".local/share/cargo";
 in
 {
   options.setups.rust = {
@@ -11,8 +13,12 @@ in
   config = lib.mkIf cfg.enable {
     persist-home = {
       directories = [
-        ".cargo"
+        cargoDir
       ];
+    };
+
+    home.sessionVariables = {
+      CARGO_HOME = "$HOME/${cargoDir}";
     };
 
     home.packages = with pkgs; [
