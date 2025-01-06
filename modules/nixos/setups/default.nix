@@ -64,7 +64,7 @@ in
 
     networking = mkEnableOption "networking" // { default = cfg.desktop; };
     printing = mkEnableOption "printing";
-    adb = mkEnableOption "adb";
+    android = mkEnableOption "android tools";
 
     ssh = mkEnableOption "ssh stuff" // { default = cfg.minimal; };
 
@@ -311,7 +311,7 @@ in
         openFirewall = true;
       };
     } ++
-    mkListIf cfg.adb {
+    mkListIf cfg.android {
       services.udev.packages = [
         pkgs.android-udev-rules
       ];

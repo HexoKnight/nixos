@@ -20,7 +20,7 @@ in
     impermanence = true;
     personal-gaming = true;
     printing = true;
-    adb = true;
+    android = true;
     flatpak = true;
   };
 
