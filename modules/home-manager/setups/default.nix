@@ -27,6 +27,7 @@ in
     ./rust.nix
     ./btop.nix
     ./jupyter
+    ./android.nix
 
     ./plasma.nix
     ./hyprland

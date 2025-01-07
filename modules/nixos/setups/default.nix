@@ -315,6 +315,10 @@ in
       services.udev.packages = [
         pkgs.android-udev-rules
       ];
+
+      userhome-config.${username}.extraHmConfig = {
+        setups.android.enable = true;
+      };
     } ++
     mkListIf cfg.ssh {
       programs.ssh = {
