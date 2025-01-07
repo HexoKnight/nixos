@@ -11,13 +11,21 @@ let
     enableJavaFX = true;
   };
 in
-stdenvNoCC.mkDerivation rec {
+stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "visual-paradigm";
   version = "17.2";
+  # visual paradigm does not keep old builds so this has to be updated occasionally
+  build = "20250101";
 
   src = fetchurl {
-    url = "https://www.visual-paradigm.com/downloads/vp${version}/Visual_Paradigm_Linux64_InstallFree.tar.gz";
-    hash = "sha256-1ifQO7TrEbumumemur5g3e7T3YShEuJUSZKvw2JgnyU=";
+    # use the following to get the build number:
+    # curl -v "https://www.visual-paradigm.com/downloads/vp${version}/Visual_Paradigm_Linux64_InstallFree.tar.gz" 2>&1 | grep '< location'
+    url =
+      let
+        underscore_version = builtins.replaceStrings [ "." ] [ "_" ] finalAttrs.version;
+      in
+      "https://eu8.dl.visual-paradigm.com/visual-paradigm/vp${finalAttrs.version}/${finalAttrs.build}/Visual_Paradigm_${underscore_version}_${finalAttrs.build}_Linux64_InstallFree.tar.gz";
+    hash = "sha256-LBG2toVVKyUbVGauCd9fOt5iVsJJUl558iWi3d9xEds=";
   };
 
   nativeBuildInputs = [
@@ -66,4 +74,4 @@ stdenvNoCC.mkDerivation rec {
     platforms = [ "x86_64-linux" ];
     mainProgram = "visual-paradigm";
   };
-}
+})
