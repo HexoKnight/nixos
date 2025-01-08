@@ -28,6 +28,7 @@ in
     ./btop.nix
     ./jupyter
     ./android.nix
+    ./mpv.nix
 
     ./plasma.nix
     ./hyprland
@@ -497,8 +498,9 @@ in
     mkListIf cfg.desktop {
       home.packages = with pkgs; [
         nvtopPackages.full
-        mpv
       ];
+
+      setups.mpv.enable = true;
 
       setups.google-chrome.enable = true;
 
