@@ -2,4 +2,13 @@
 #! nix shell nixpkgs#playerctl
 #! nix --command bash
 
-playerctl --follow metadata --format '{{ artist }} - {{ title }}'
+playerctl --follow metadata --format '{{ status }} {{ artist }} - {{ title }} [{{ duration(position) }}/{{ duration(mpris:length) }}]' |
+    sed --unbuffered '
+        # replace status with emoji
+        s/^Playing// # 󰐊
+        s/^Paused// # 󰏤
+        s/^Stopped// # 󰓛
+
+        # remove extraneous dash if artist is unavailable
+        s/^\(\S\+\)  -/\1/
+    '
