@@ -2,7 +2,7 @@
 #! nix shell nixpkgs#playerctl
 #! nix --command bash
 
-playerctl --follow metadata --format '{{ status }} {{ artist }} - {{ title }} [{{ duration(position) }}/{{ duration(mpris:length) }}]' |
+playerctl --player=playerctld,%any --follow metadata --format '{{ status }} {{ artist }} - {{ title }} [{{ duration(position) }}/{{ duration(mpris:length) }}]' |
     sed --unbuffered '
         # replace status with emoji
         s/^Playing// # 󰐊

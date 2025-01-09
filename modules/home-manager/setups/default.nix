@@ -501,6 +501,7 @@ in
       ];
 
       setups.mpv.enable = true;
+      services.playerctld.enable = true;
 
       setups.google-chrome.enable = true;
 
