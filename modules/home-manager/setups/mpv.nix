@@ -37,6 +37,11 @@ in
             rev = "16fee38988bb0f4a0865b6e8c3b332df2d6d8f14";
             hash = "sha256-q0QhVhXOPFva1CVedox5X/dmUtR4aTaCK4BIBL+pkhY=";
           };
+
+          patches = oldAttrs.patches or [] ++ [
+            # only update duration when playing
+            ./mpv-mpris.patch
+          ];
         }))
       ];
 

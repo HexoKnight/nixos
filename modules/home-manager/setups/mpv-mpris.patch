@@ -1,0 +1,39 @@
+diff --git a/mpris.c b/mpris.c
+index cbdde1e..2df218b 100644
+--- a/mpris.c
++++ b/mpris.c
+@@ -82,6 +82,7 @@ typedef struct UserData
+     const char *loop_status;
+     GHashTable *changed_properties;
+     GVariant *metadata;
++    int64_t duration_us;
+     gboolean seek_expected;
+     gboolean idle;
+     gboolean paused;
+@@ -402,9 +403,14 @@ static GVariant *create_metadata(UserData *ud)
+     g_free(temp_str);
+ 
+     // mpris:length
+-    res = mpv_get_property(ud->mpv, "duration", MPV_FORMAT_DOUBLE, &duration);
+-    if (res == MPV_ERROR_SUCCESS) {
+-        g_variant_dict_insert(&dict, "mpris:length", "x", (int64_t)(duration * 1000000.0));
++    if (ud->status == STATUS_PLAYING || ud->duration_us == 0) {
++        res = mpv_get_property(ud->mpv, "duration", MPV_FORMAT_DOUBLE, &duration);
++        if (res == MPV_ERROR_SUCCESS) {
++            ud->duration_us = (int64_t)(duration * 1000000.0);
++        }
++    }
++    if (ud->duration_us != 0) {
++        g_variant_dict_insert(&dict, "mpris:length", "x", ud->duration_us);
+     }
+ 
+     // initial value. Replaced with metadata value if available
+@@ -934,7 +940,7 @@ static void handle_property_change(const char *name, void *data, UserData *ud)
+         prop_value = set_playback_status(ud);
+ 
+     } else if (g_strcmp0(name, "media-title") == 0 ||
+-               g_strcmp0(name, "duration") == 0) {
++              (g_strcmp0(name, "duration") == 0 && ud->status == STATUS_PLAYING)) {
+         // Free existing metadata object
+         if (ud->metadata) {
+             g_variant_unref(ud->metadata);
