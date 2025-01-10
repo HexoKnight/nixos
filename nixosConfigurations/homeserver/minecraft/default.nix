@@ -48,6 +48,13 @@ in
             motd = ''this is \u00A7n\u00A7o\u00A7nthe\u00A7r server of \u00A7kthere is nothing\u00A7r'';
           };
           jvmOpts = "-Xmx4G -Xms500M";
+
+          symlinks = {
+            "mods" = "${pkgs.fetchPackwizModpack {
+              url = "file://${./modpack}/pack.toml";
+              packHash = "sha256-VF6WhWcsI42njRCUtKKXE3dZF4yBwj6vcv2usTFflW8=";
+            }}/mods";
+          };
         };
       };
     };

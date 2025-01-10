@@ -1,0 +1,13 @@
+name = "modpack"
+author = "HexoKnight"
+version = "1.0.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "19faca1c0101356fe09205c7550d816661385f139bcc2a3212bebca7b2bf3cec"
+
+[versions]
+fabric = "0.16.10"
+minecraft = "1.21.4"
