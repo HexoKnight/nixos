@@ -34,6 +34,12 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    # homeserver specific
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # external package repos
     # hyprland = {
     #   url = "github:hyprwm/Hyprland/v0.39.0";
@@ -71,7 +77,11 @@
   {
     nixosConfigurations = mkNixosConfigurations {
       desktop = {};
-      homeserver = {};
+      homeserver = {
+        extraModules = [
+          inputs.nix-minecraft.nixosModules.minecraft-servers
+        ];
+      };
       main-machine = {
         extraModules = [
           inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502

@@ -12,6 +12,7 @@ in
     ./nix-serve.nix
     ./project-zomboid
     ./bruh-bot
+    ./minecraft
 
     ./cloudflare-dyndns.nix
     ./acme.nix
