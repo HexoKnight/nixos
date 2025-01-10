@@ -11,6 +11,7 @@ in
     ./qbittorrent.nix
     ./nix-serve.nix
     ./project-zomboid
+    ./bruh-bot
 
     ./cloudflare-dyndns.nix
     ./acme.nix
