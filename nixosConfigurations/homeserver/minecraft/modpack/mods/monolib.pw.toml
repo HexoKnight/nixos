@@ -1,0 +1,13 @@
+name = "MonoLib"
+filename = "monolib-fabric-1.20.1-1.4.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/9leXt4A5/versions/sMI5mSJ7/monolib-fabric-1.20.1-1.4.1.jar"
+hash-format = "sha1"
+hash = "74b5494c0045c2752215060f8714f26c4395b64a"
+
+[update]
+[update.modrinth]
+mod-id = "9leXt4A5"
+version = "sMI5mSJ7"

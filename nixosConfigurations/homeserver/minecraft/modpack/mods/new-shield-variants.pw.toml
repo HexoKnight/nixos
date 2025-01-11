@@ -1,0 +1,13 @@
+name = "New Shield Variants"
+filename = "new_shield_variants-merged-1.20.1-2.0.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/w5Fni7I5/versions/iestPyAW/new_shield_variants-merged-1.20.1-2.0.0.jar"
+hash-format = "sha1"
+hash = "34056e420eba78eec95730ba882b072b08ae07ae"
+
+[update]
+[update.modrinth]
+mod-id = "w5Fni7I5"
+version = "iestPyAW"

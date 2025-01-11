@@ -41,7 +41,7 @@ in
           autoStart = true;
           restart = "always";
 
-          package = pkgs.minecraftServers.vanilla-1_21_4;
+          package = pkgs.minecraftServers.fabric-1_20_1;
 
           serverProperties = {
             server-port = 25565;
@@ -52,7 +52,7 @@ in
           symlinks = {
             "mods" = "${pkgs.fetchPackwizModpack {
               url = "file://${./modpack}/pack.toml";
-              packHash = "sha256-VF6WhWcsI42njRCUtKKXE3dZF4yBwj6vcv2usTFflW8=";
+              packHash = "sha256-sonid5nMT3M5ovUKtaEu+bJoCIitFZjjuVcrQE02FYA=";
             }}/mods";
           };
         };
