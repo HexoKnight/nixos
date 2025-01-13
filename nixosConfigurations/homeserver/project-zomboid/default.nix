@@ -41,7 +41,10 @@ in
 
     persist.system = {
       directories = [
-        dataDir
+        {
+          directory = dataDir;
+          inherit user group;
+        }
       ];
     };
     networking.firewall.allowedUDPPorts = [ 16261 16262 ];
