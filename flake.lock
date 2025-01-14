@@ -166,6 +166,21 @@
         "type": "github"
       }
     },
+    "nix-minecraft-servers": {
+      "locked": {
+        "lastModified": 1736869203,
+        "narHash": "sha256-gLyfd6ft7sAmXNZ4a768qSNdkTOTRRxBgSoWK5FbHto=",
+        "owner": "HexoKnight",
+        "repo": "nix-minecraft-servers",
+        "rev": "bef396422157752693f91e92bd455d97e501a79e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "HexoKnight",
+        "repo": "nix-minecraft-servers",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1733861262,
@@ -266,6 +281,7 @@
         "impermanence": "impermanence",
         "nix-index-database": "nix-index-database",
         "nix-minecraft": "nix-minecraft",
+        "nix-minecraft-servers": "nix-minecraft-servers",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",

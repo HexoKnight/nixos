@@ -39,6 +39,9 @@
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-minecraft-servers = {
+      url = "github:HexoKnight/nix-minecraft-servers";
+    };
 
     # external package repos
     # hyprland = {
@@ -80,6 +83,7 @@
       homeserver = {
         extraModules = [
           inputs.nix-minecraft.nixosModules.minecraft-servers
+          inputs.nix-minecraft-servers.nixosModules.servers
         ];
       };
       main-machine = {
