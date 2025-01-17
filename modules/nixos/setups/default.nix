@@ -217,6 +217,10 @@ in
         pulse.enable = true;
       };
 
+      environment.systemPackages = [
+        pkgs.gparted
+      ];
+
       fonts.fontconfig = {
         enable = true;
         defaultFonts = {
