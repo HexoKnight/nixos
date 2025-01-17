@@ -41,6 +41,7 @@
     };
     nix-minecraft-servers = {
       url = "github:HexoKnight/nix-minecraft-servers";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # external package repos

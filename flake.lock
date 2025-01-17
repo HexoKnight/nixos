@@ -167,17 +167,44 @@
       }
     },
     "nix-minecraft-servers": {
+      "inputs": {
+        "nix-packwiz": "nix-packwiz",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1736901854,
-        "narHash": "sha256-996SEhhjbO1Xnj43UXH9qD+QuTtFaWCxyvwVnVj2LGg=",
+        "lastModified": 1737066098,
+        "narHash": "sha256-ZAf8sHIp43DaUCjvgeIFtI/xEabOWiLTc0rD1FhkDlk=",
         "owner": "HexoKnight",
         "repo": "nix-minecraft-servers",
-        "rev": "ccb99b497ddb76644dc0fceaf020268ed77aa794",
+        "rev": "4e72aed96807a7aa48ebd2c85e1f374c6b09d9d3",
         "type": "github"
       },
       "original": {
         "owner": "HexoKnight",
         "repo": "nix-minecraft-servers",
+        "type": "github"
+      }
+    },
+    "nix-packwiz": {
+      "inputs": {
+        "nixpkgs": [
+          "nix-minecraft-servers",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1737065946,
+        "narHash": "sha256-ZhvqPQqXrCwKLr72ukSizmq0YmPVXkLsRlt7i2nZXT0=",
+        "owner": "HexoKnight",
+        "repo": "nix-packwiz",
+        "rev": "16ced1e3e6a29aa7f8c92dee17e29ec37259f508",
+        "type": "github"
+      },
+      "original": {
+        "owner": "HexoKnight",
+        "repo": "nix-packwiz",
         "type": "github"
       }
     },
