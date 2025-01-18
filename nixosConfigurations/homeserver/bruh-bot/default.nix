@@ -52,6 +52,7 @@ in
         description = "Bruh Bot";
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
 
         serviceConfig = {
           PrivateTmp = true;
