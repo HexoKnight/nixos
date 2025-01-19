@@ -21,7 +21,7 @@ in
     };
 
     users.users.${config.setups.config.username}.extraGroups = [ group ];
-    
+
     services.minecraft-servers = {
       enable = true;
       eula = true;
@@ -38,8 +38,19 @@ in
       servers = {
         main = {
           enable = true;
+          autoStart = false;
+          restart = "always";
+          serverProperties = {
+            server-port = 25565;
+          };
+        };
+        deceased = {
+          enable = true;
           autoStart = true;
           restart = "always";
+          serverProperties = {
+            server-port = 25566;
+          };
         };
       };
     };
