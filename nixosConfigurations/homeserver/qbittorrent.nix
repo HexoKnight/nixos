@@ -30,6 +30,12 @@ in
       ];
     };
 
+    nginx.hosts.qbit = {
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8080";
+      };
+    };
+
     services.qbittorrent = {
       enable = true;
       package = pkgs.qbittorrent-nox.overrideAttrs (oldAttrs: {
