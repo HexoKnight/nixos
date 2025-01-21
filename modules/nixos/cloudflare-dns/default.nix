@@ -44,9 +44,16 @@ let
   ];
 
   finalConfig = {
-    domains = lib.mapAttrs (_: v:
+    domains = lib.mapAttrs (domain: v:
       v // {
-        dnsRecords = filterMapEnabled v.dnsRecords;
+        dnsRecords = lib.mapAttrs (_: v:
+          # manually replace @ with apex domain
+          lib.mapAttrsRecursive (p: v:
+            if lib.last p == "comment" then v else
+            if ! lib.isString v then v else
+            lib.replaceStrings ["@"] [domain] v
+          ) v
+        ) (filterMapEnabled v.dnsRecords);
       }
     ) (filterMapEnabled cfg.domains);
   };
