@@ -1,4 +1,4 @@
-{ pkgs, inputs, config, ... }:
+{ lib, inputs, config, ... }:
 
 let
   dataDir = "/var/lib/minecraft";
@@ -54,5 +54,28 @@ in
         };
       };
     };
+
+    dnsRecords = {
+      minecraft.record = {
+        type = "CNAME";
+        name = "mc";
+        content = "@";
+        proxied = false;
+      };
+    } // lib.mapAttrs' (name: config:
+      lib.nameValuePair "minecraft-server-${name}" {
+        enable = config.enable;
+        record = {
+          type = "SRV";
+          name = "_minecraft._tcp.${name}.mc";
+          data = {
+            target = "mc.@";
+            port = config.serverProperties.server-port or 25565;
+            priority = 0;
+            weight = 0;
+          };
+        };
+      }
+    ) config.services.minecraft-servers.servers;
   };
 }

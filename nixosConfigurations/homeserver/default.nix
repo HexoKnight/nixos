@@ -14,6 +14,7 @@ in
     ./bruh-bot
     ./minecraft
 
+    ./cloudflare-dns.nix
     ./cloudflare-dyndns.nix
     ./acme.nix
   ];
@@ -68,6 +69,12 @@ in
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
     };
+  };
+  dnsRecords.ssh.record = {
+    type = "CNAME";
+    name = "ssh";
+    content = "@";
+    proxied = false;
   };
 
   users.users.${username}.openssh = {
