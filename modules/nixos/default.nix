@@ -7,6 +7,7 @@
     ./overlays.nix
     ./syncthing.nix
     ./impermanence
+    ./cloudflare-dns
     ./setups
   ];
 }
