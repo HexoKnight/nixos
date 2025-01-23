@@ -2,7 +2,6 @@
 
 let
   overrides = {
-    where-is-my-sddm-theme-qt5.pkgs = pkgs.libsForQt5;
   };
 in
 
