@@ -46,10 +46,18 @@ in
         };
         deceased = {
           enable = true;
-          autoStart = true;
+          autoStart = false;
           restart = "always";
           serverProperties = {
             server-port = 25566;
+          };
+        };
+        skyfactory4 = {
+          enable = true;
+          autoStart = true;
+          restart = "always";
+          serverProperties = {
+            server-port = 25567;
           };
         };
       };
