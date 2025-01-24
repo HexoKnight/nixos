@@ -38,6 +38,11 @@ let
     };
   };
 
+  update-dns = pkgs.local.writeNushellApplication {
+    name = "dns-update";
+    text = builtins.readFile ./update-dns.nu;
+  };
+
   filterMapEnabled = attrs: lib.pipe attrs [
     (lib.filterAttrs (_: v: v.enable))
     (lib.mapAttrs (_: v: lib.removeAttrs v ["enable"]))
@@ -103,7 +108,7 @@ in
 
         EnvironmentFile = cfg.apiTokenFile;
 
-        ExecStart = "${lib.getExe pkgs.nushell} ${./update-dns.nu} ${builtins.toFile "dns-config.json" (builtins.toJSON finalConfig)}";
+        ExecStart = "${lib.getExe update-dns} ${builtins.toFile "dns-config.json" (builtins.toJSON finalConfig)}";
       };
     }
     // lib.optionalAttrs (cfg.frequency != null) {
