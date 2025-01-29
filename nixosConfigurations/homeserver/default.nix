@@ -32,7 +32,7 @@ in
     sops = false;
   };
 
-  userhome-config.${username}.extraHmConfig = {
+  home-manager.users.${username} = {
     setups.normal = true;
   };
 

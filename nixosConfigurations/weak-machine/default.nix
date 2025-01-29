@@ -13,19 +13,19 @@ in
       inherit username;
       hostname = "IDEAPAD";
       device = "/dev/sda";
-      extraUserOptions = {
-        description = "Harvey Gream";
-      };
     };
     impermanence = true;
     desktop = true;
+  };
+  users.users.${username} = {
+    description = "Harvey Gream";
   };
 
   services.tlp = {
     enable = true;
   };
 
-  userhome-config.${username}.extraHmConfig =
+  home-manager.users.${username} =
     { pkgs, ... }:
     {
       nixpkgs.allowUnfreePkgs = [

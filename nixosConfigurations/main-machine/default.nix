@@ -13,15 +13,15 @@ in
       inherit username;
       hostname = "HARVEY";
       device = "/dev/nvme0n1";
-      extraUserOptions = {
-        description = "Harvey Gream";
-      };
     };
     impermanence = true;
     personal-gaming = true;
     printing = true;
     android = true;
     flatpak = true;
+  };
+  users.users.${username} = {
+    description = "Harvey Gream";
   };
 
   # doesn't recognise lowntfs-3g
@@ -43,7 +43,7 @@ in
     ];
   };
 
-  userhome-config.${username}.extraHmConfig =
+  home-manager.users.${username} =
     { pkgs, ... }:
     {
       setups.config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";

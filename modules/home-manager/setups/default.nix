@@ -481,6 +481,9 @@ in
       programs.home-manager.enable = true;
     } ++
     mkListIf cfg.impermanence {
+      home.packages = [
+        pkgs.local.persist
+      ];
       persist-home = {
         enable = true;
         directories = [

@@ -35,12 +35,6 @@ in
         description = "Device to install nixos on.";
         type = inputs.disko.lib.optionTypes.absolute-pathname;
       };
-
-      extraUserOptions = mkOption {
-        description = "Extra options passed to users.users.<username>.";
-        type = lib.types.attrs;
-        default = {};
-      };
     };
 
     minimal = mkEnableOption "the minimal setup" // { default = cfg.desktop; };
@@ -88,14 +82,20 @@ in
       nix.settings.trusted-users = [ "@wheel" ];
       unstable-overlay.enable = true;
 
-      # TODO: integrate??
-      userhome-config.${username} = {
-        cansudo = true;
-        persistence = cfg.impermanence;
-        inherit (cfg) personal-gaming;
-        extraOptions = {
-          isNormalUser = true;
-        } // cfg.config.extraUserOptions;
+      users.users.${username} = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" ];
+      };
+      home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.users.${username} = {
+        imports = [
+          ../../home-manager
+        ];
+        config = {
+          setups.config = {
+            inherit username;
+          };
+        };
       };
 
       users.mutableUsers = lib.mkDefault false;
@@ -174,9 +174,13 @@ in
           ];
         };
       };
+
+      home-manager.users.${username} = {
+        setups.impermanence = true;
+      };
     } ++
     mkListIf cfg.desktop {
-      userhome-config.${username}.extraHmConfig = {
+      home-manager.users.${username} = {
         setups.desktop = true;
       };
 
@@ -240,7 +244,7 @@ in
         withUWSM = true;
       };
 
-      userhome-config.${username}.extraHmConfig = {
+      home-manager.users.${username} = {
         setups.hyprland.enable = true;
       };
     } ++
@@ -271,7 +275,7 @@ in
         pkgs.kdePackages.discover
       ];
 
-      userhome-config.${username}.extraHmConfig = {
+      home-manager.users.${username} = {
         setups.plasma.enable = true;
       };
     } ++
@@ -320,7 +324,7 @@ in
         pkgs.android-udev-rules
       ];
 
-      userhome-config.${username}.extraHmConfig = {
+      home-manager.users.${username} = {
         setups.android.enable = true;
       };
     } ++
@@ -333,6 +337,10 @@ in
       services.flatpak.enable = true;
     } ++
     mkListIf cfg.personal-gaming {
+      home-manager.users.${username} = {
+        setups.personal-gaming = true;
+      };
+
       nixpkgs.allowUnfreePkgs = [
         "steam" "steam-unwrapped" "steam-run"
       ];
