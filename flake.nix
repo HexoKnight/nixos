@@ -80,7 +80,6 @@
   in
   {
     nixosConfigurations = mkNixosConfigurations {
-      desktop = {};
       homeserver = {
         extraModules = [
           inputs.nix-minecraft.nixosModules.minecraft-servers
