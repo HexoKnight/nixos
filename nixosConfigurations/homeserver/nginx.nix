@@ -42,6 +42,21 @@ in
       };
     };
 
+    dnsRecords = {
+      root.record = {
+        type = "CNAME";
+        name = "@";
+        content = "raw.@";
+        proxied = true;
+      };
+      root_wildcard.record = {
+        type = "CNAME";
+        name = "*.@";
+        content = "raw.@";
+        proxied = true;
+      };
+    };
+
     services.nginx = {
       enable = true;
       recommendedProxySettings = true;

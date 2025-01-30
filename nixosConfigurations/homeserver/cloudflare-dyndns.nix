@@ -7,9 +7,9 @@
 
       ipv4 = true;
       ipv6 = true;
-      proxied = true;
+      proxied = false;
 
-      domains = [ "bruhpi.uk" "*.bruhpi.uk" ];
+      domains = [ "raw.bruhpi.uk" ];
 
       # location of CLOUDFLARE_API_TOKEN=[value]
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=

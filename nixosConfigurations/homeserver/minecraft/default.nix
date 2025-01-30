@@ -67,7 +67,7 @@ in
       minecraft.record = {
         type = "CNAME";
         name = "mc";
-        content = "@";
+        content = "raw.@";
         proxied = false;
       };
     } // lib.mapAttrs' (name: config:

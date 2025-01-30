@@ -73,7 +73,7 @@ in
   dnsRecords.ssh.record = {
     type = "CNAME";
     name = "ssh";
-    content = "@";
+    content = "raw.@";
     proxied = false;
   };
 
