@@ -54,10 +54,18 @@ in
         };
         skyfactory4 = {
           enable = true;
-          autoStart = true;
+          autoStart = false;
           restart = "always";
           serverProperties = {
             server-port = 25567;
+          };
+        };
+        atm9sky = {
+          enable = true;
+          autoStart = true;
+          restart = "always";
+          serverProperties = {
+            server-port = 25568;
           };
         };
       };
