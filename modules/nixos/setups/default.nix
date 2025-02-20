@@ -73,6 +73,8 @@ in
       services.envfs.enable = lib.mkDefault true;
 
       networking.hostName = hostname;
+      # allow transient changes to /etc/hosts
+      environment.etc.hosts.mode = "0644";
 
       setups.internationalisation = true;
       setups.nix = {
