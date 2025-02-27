@@ -13,6 +13,7 @@ in {
     ./audio.nix
     ./hyprbinds.nix
     ./toggle-touchpad.nix
+    ./polkit-agent.nix
   ];
 
   options.setups.hyprland = {
