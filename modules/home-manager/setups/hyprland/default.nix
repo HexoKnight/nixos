@@ -64,6 +64,11 @@ in {
         gtk-application-prefer-dark-theme = 1;
       };
     };
+    qt = {
+      enable = true;
+      platformTheme.name = "gtk3";
+      style.name = "adwaita-dark";
+    };
 
     dconf.settings."org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
