@@ -359,6 +359,12 @@ in
             sed -En "''${1}p"
           }
 
+          lastcmd() {
+            fc -ln "$1" "$1" |
+            # remove added leading whitespace
+            sed '1s/^[[:space:]]*//'
+          }
+
           realwhich() {
             realpath $(which "$@")
           }
