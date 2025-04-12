@@ -25,7 +25,7 @@ in
   };
 
   fileSystems."/c_drive" = {
-    device = "/dev/nvme0n1p3";
+    device = "/dev/disk/by-uuid/AC5C11195C10DFBE";
     fsType = "ntfs3";
     options = [
       # in case it's confusing this actually means
