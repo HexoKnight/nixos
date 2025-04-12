@@ -24,11 +24,9 @@ in
     description = "Harvey Gream";
   };
 
-  # doesn't recognise lowntfs-3g
-  boot.supportedFilesystems.ntfs-3g = true;
   fileSystems."/c_drive" = {
     device = "/dev/nvme0n1p3";
-    fsType = "lowntfs-3g";
+    fsType = "ntfs3";
     options = [
       # in case it's confusing this actually means
       # the filesystem failing to mount won't cause
@@ -38,8 +36,6 @@ in
       "gid=100"
 
       "windows_names"
-      # requires lowntfs-3g
-      "ignore_case"
     ];
   };
 
