@@ -34,10 +34,13 @@ in
       "nofail"
       "uid=1000"
       "gid=100"
+      "noatime"
 
       "windows_names"
     ];
   };
+
+  disko = (import ./disko.nix).disko;
 
   home-manager.users.${username} =
     { pkgs, ... }:
