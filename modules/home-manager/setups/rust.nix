@@ -27,6 +27,9 @@ in
       rust-analyzer
       rustfmt
       clippy
+
+      # a cc is necessary for building rust programs
+      gcc
     ];
 
     neovim.main.lspServers = {
