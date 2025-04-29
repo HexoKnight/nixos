@@ -249,6 +249,9 @@ in
         rebuild-test = "nixos build --switch";
         rebuild-poweroff = "nixos build --boot --timeout 10 ; poweroff";
         rebuild-gc-poweroff = "nixos build --boot --timeout 10 && nix-collect-garbage --delete-older-than 14d ; poweroff";
+
+        c = "wl-copy --";
+        p = "wl-paste";
       };
       programs.bash = {
         enable = true;
@@ -363,6 +366,12 @@ in
             fc -ln "$1" "$1" |
             # remove added leading whitespace
             sed '1s/^[[:space:]]*//'
+          }
+
+          cf() {
+            file=$(readlink -f "$1") || return
+            mime=$(xdg-mime query filetype "$file") || return
+            cat "$file" | wl-copy --type "$mime"
           }
 
           realwhich() {
