@@ -65,6 +65,7 @@ function! SmartTab()
 endfunction
 
 map grd <Cmd>lua vim.lsp.buf.definition()<CR>
+map grI <Cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>
 
 lua <<EOF
   vim.api.nvim_create_augroup('lsp_stuff', { clear = true })
@@ -81,6 +82,10 @@ lua <<EOF
           buffer = args.buf,
           callback = vim.lsp.buf.clear_references,
         })
+      end
+
+      if client.supports_method('textDocument/inlayHint') then
+        vim.lsp.inlay_hint.enable(true)
       end
     end,
   })
