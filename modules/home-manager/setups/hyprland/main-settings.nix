@@ -72,6 +72,12 @@
         ];
       };
 
+      layerrule = [
+        # fix borders in screenshots (due to the selection getting caught in the screenshot)
+        "noanim, selection"
+        "noanim, hyprpicker"
+      ];
+
       dwindle = {
         pseudotile = true;
         preserve_split = true;
