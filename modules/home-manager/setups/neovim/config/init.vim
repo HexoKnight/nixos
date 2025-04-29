@@ -54,12 +54,6 @@ tnoremap <expr> <C-\><C-V> nr2char(getchar())
 
 " ########## LSP STUFF #########
 
-" to-be defaults
-map grn <Cmd>lua vim.lsp.buf.rename()<CR>
-map gra <Cmd>lua vim.lsp.buf.code_action()<CR>
-map grr <Cmd>lua vim.lsp.buf.references()<CR>
-imap <C-S> <Cmd>lua vim.lsp.buf.signature_help()<CR>
-
 " inoremap <expr> <Tab> SmartTab()
 
 function! SmartTab()

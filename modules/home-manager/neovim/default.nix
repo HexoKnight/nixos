@@ -69,12 +69,12 @@ let
     let
       isCustomName = config.name != "nvim";
 
-      neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
+      neovimConfig = pkgs.unstable.neovimUtils.makeNeovimConfig {
         customRC = config.vimlConfig;
         plugins = config.pluginPackages;
         inherit (config) extraPython3Packages;
       };
-      neovimPackage = pkgs.wrapNeovimUnstable config.package (neovimConfig // {
+      neovimPackage = pkgs.unstable.wrapNeovimUnstable config.package (neovimConfig // {
         extraName = "-wrapped-" + config.name;
         luaRcContent = config.luaConfig;
         wrapperArgs = lib.concatLists ([

@@ -41,6 +41,8 @@ let
       builtins.removeAttrs value [ "override" "postPatch" ] // { inherit plugin; }
     else throw "plugin attr '${name}' must be a string or attrset"
   );
+
+  vimPlugins = pkgs.unstable.vimPlugins;
 in
 {
   lib.neovim = {
@@ -48,7 +50,7 @@ in
   };
 
   neovim.main.pluginsWithConfig =
-  pluginAttrsToList pkgs.vimPlugins (
+  pluginAttrsToList vimPlugins (
     lib.concatMapAttrs (filename: filetype:
       let
         toBeImported = filename != "default.nix" && (isDir || options ? ${extension});

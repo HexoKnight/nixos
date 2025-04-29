@@ -16,7 +16,7 @@ in
   config = lib.mkIf cfg.enable {
     neovim.main = {
       name = "nvim";
-      package = pkgs.neovim-unwrapped;
+      package = pkgs.unstable.neovim-unwrapped;
       lspServers = {
         nil_ls = {
           extraPackages = with pkgs; [ nil ];
