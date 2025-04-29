@@ -21,7 +21,7 @@ in
       CARGO_HOME = "$HOME/${cargoDir}";
     };
 
-    home.packages = with pkgs; [
+    home.packages = with pkgs.unstable; [
       rustc
       cargo
       rust-analyzer
@@ -31,7 +31,8 @@ in
 
     neovim.main.lspServers = {
       rust_analyzer = {
-        extraPackages = with pkgs; [ rust-analyzer ];
+        # already included in home.packages above
+        # extraPackages = with pkgs; [ rust-analyzer ];
       };
     };
   };
