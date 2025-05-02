@@ -12,6 +12,7 @@ set splitbelow
 
 set completeopt=longest,menuone,preview
 set wildmode=longest,full
+set winborder=rounded
 
 set undofile
 set backupdir-=.
@@ -398,6 +399,8 @@ function! s:Colourscheme(name)
 
   hi Pmenu guibg=#292929
   hi PmenuSel guibg=gray
+  hi! link NormalFloat Pmenu
+  hi! link FloatBorder NormalFloat
 
   hi Folded guibg=gray10
   " hi FoldColumn guibg=gray10
