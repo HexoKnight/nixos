@@ -291,14 +291,7 @@ set foldminlines=3
 set foldcolumn=auto:3
 set fillchars+=foldopen:,foldclose:
 
-function! s:Foldtext()
-  let start = getline(v:foldstart)
-  " for tabbed stuff
-  " let start = substitute(start, '\\t', repeat('\ ', &tabstop), 'g')
-  let end = trim(getline(v:foldend))
-  return start . ' ... ' . end
-endfunction
-set foldtext=s:Foldtext()
+set foldtext=
 
 augroup filetypefolding
   au!
