@@ -32,7 +32,8 @@ augroup insert_mode_relativenumber
 augroup END
 
 " ########## MAPPINGS ##########
-map <silent> <expr> <F5> ':wa \| !' . g:build_cmd . '<CR>'
+map <silent> <expr> <F5> ':wa \| term ' . g:build_cmd . '<CR>'
+map <silent> <expr> <F6> ':wa \| !' . g:build_cmd . '<CR>'
 
 nmap <C-S> <Cmd>update<CR>
 nmap <C-f> za
@@ -66,6 +67,8 @@ endfunction
 
 map grd <Cmd>lua vim.lsp.buf.definition()<CR>
 map grI <Cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>
+map gd <Cmd>lua vim.diagnostic.open_float()<CR>
+map gD <Cmd>lua vim.diagnostic.setqflist()<CR>
 
 lua <<EOF
   vim.api.nvim_create_augroup('lsp_stuff', { clear = true })
