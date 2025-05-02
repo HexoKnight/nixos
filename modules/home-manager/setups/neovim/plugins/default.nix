@@ -261,7 +261,7 @@ in
     '';
   })
 
-  ++ (with pkgs.vimPlugins; [
+  ++ (with vimPlugins; [
     {
       plugin = nvim-treesitter.withAllGrammars;
       type = "lua";
