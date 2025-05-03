@@ -286,7 +286,9 @@ command! RemoveTrailingWhitespace %s/\s\+$//e
 
 " ########## FOLDING ##########
 set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
+" as it turns out this was from the treesitter plugin and is broke
+" set foldexpr=nvim_treesitter#foldexpr()
+set foldexpr=v:lua.vim.treesitter.foldexpr()
 set foldminlines=3
 set foldcolumn=auto:3
 set fillchars+=foldopen:,foldclose:
