@@ -54,6 +54,30 @@ noremap <expr> <C-\><C-V> nr2char(getchar())
 inoremap <expr> <C-\><C-V> nr2char(getchar())
 tnoremap <expr> <C-\><C-V> nr2char(getchar())
 
+" ########## DIAGNOSTICS #########
+
+map gdd <Cmd>lua vim.diagnostic.open_float()<CR>
+map gdo <Cmd>lua vim.diagnostic.setqflist()<CR>
+
+lua <<EOF
+  local virtual_lines = false
+
+  vim.diagnostic.config({
+    severity_sort = true,
+    virtual_text = function() return not virtual_lines end,
+    virtual_lines = function() return virtual_lines end,
+    jump = {
+      float = true,
+    },
+  })
+
+  vim.keymap.set('n', 'gdv', function()
+    virtual_lines = not virtual_lines
+    -- refresh diagnostics
+    vim.diagnostic.show()
+  end)
+EOF
+
 " ########## LSP STUFF #########
 
 " inoremap <expr> <Tab> SmartTab()
@@ -68,8 +92,6 @@ endfunction
 
 map grd <Cmd>lua vim.lsp.buf.definition()<CR>
 map grI <Cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>
-map gd <Cmd>lua vim.diagnostic.open_float()<CR>
-map gD <Cmd>lua vim.diagnostic.setqflist()<CR>
 
 lua <<EOF
   vim.api.nvim_create_augroup('lsp_stuff', { clear = true })
