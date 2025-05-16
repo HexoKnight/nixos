@@ -35,6 +35,12 @@ in
         proxyPass = "http://127.0.0.1:8080";
       };
     };
+    dnsRecords.qbittorrent.record = {
+      type = "CNAME";
+      name = "qbit";
+      content = "raw.@";
+      proxied = false;
+    };
 
     services.qbittorrent = {
       enable = true;
