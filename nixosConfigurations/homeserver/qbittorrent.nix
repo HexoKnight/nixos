@@ -39,7 +39,7 @@ in
       type = "CNAME";
       name = "qbit";
       content = "raw.@";
-      proxied = false;
+      proxied = true;
     };
 
     services.qbittorrent = {
