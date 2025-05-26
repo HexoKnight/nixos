@@ -42,7 +42,7 @@ let
     else throw "plugin attr '${name}' must be a string or attrset"
   );
 
-  vimPlugins = pkgs.unstable.vimPlugins;
+  vimPlugins = pkgs.vimPlugins;
 in
 {
   lib.neovim = {

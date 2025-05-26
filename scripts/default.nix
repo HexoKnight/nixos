@@ -60,7 +60,7 @@ rec {
         "0,\\|^${name}=.*$|s||${name}=${bin}|"
       ) {
         jq = getExe pkgs.jq;
-        nix = getExe pkgs.nixVersions.nix_2_19;
+        nix = getExe pkgs.nix;
         configopts = getExe configopts;
       });
     in ''

@@ -98,7 +98,7 @@ in
   services.asusd = {
     enable = true;
     enableUserService = true;
-    asusdConfig = ''
+    asusdConfig.text = ''
       (
         charge_control_end_threshold: 80,
         panel_od: true,
