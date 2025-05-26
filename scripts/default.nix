@@ -48,15 +48,6 @@ rec {
     text = builtins.readFile ./persist.sh;
   };
 
-  evalvar = pkgs.writeShellScriptBin "evalvar" ''eval "$EVALVAR"'';
-  # deprecated
-  rebuild = pkgs.writeShellApplication {
-    name = "rebuild";
-    runtimeInputs = [ configopts pkgs.ssh-to-age evalvar pkgs.nixVersions.nix_2_19 ];
-    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
-    text = builtins.readFile ./rebuild.sh;
-  };
-
   nixos = pkgs.writeShellApplication {
     name = "nixos";
     extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
