@@ -213,8 +213,6 @@ in
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 
-      # TODO: disable this options
-      hardware.pulseaudio.enable = false;
       security.rtkit.enable = true;
       services.pipewire = {
         enable = true;
