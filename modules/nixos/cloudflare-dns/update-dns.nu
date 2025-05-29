@@ -36,10 +36,16 @@ const operation_parameter = {
     overwrite: puts
 };
 
-def main [dns_config_file: path, --dry-run]: nothing -> nothing {
+def main [dns_config_file: path, --api-token-file: path, --dry-run]: nothing -> nothing {
     let dns_config = open $dns_config_file
 
-    let all_zones = cfAPI get zones
+    let token_file = $api_token_file | default $env.CLOUDFLARE_API_TOKEN_FILE?
+    if $token_file == null {
+        user_error "api token file not provided, pass with `--api-token-file <...>` or via the `$CLOUDFLARE_API_TOKEN_FILE` envvar"
+    }
+    let API_TOKEN = open $token_file
+
+    let all_zones = cfAPI $API_TOKEN get zones
 
     $dns_config.domains |
     map_record {|domain, value|
@@ -58,7 +64,7 @@ def main [dns_config_file: path, --dry-run]: nothing -> nothing {
         let declared_config = $in.config.dnsRecords
 
         let existing_record_operations = (
-            cfAPI get $"zones/($zone_id)/dns_records"
+            cfAPI $API_TOKEN get $"zones/($zone_id)/dns_records"
             --params {
                 match: all
                 comment.startswith: $comment_before
@@ -145,7 +151,7 @@ def main [dns_config_file: path, --dry-run]: nothing -> nothing {
             if $dry_run {
                 print '--dry-run passed so not sending the request'
             } else {
-                let reponse = cfAPI post $"zones/($zone_id)/dns_records/batch" $body
+                let reponse = cfAPI $API_TOKEN post $"zones/($zone_id)/dns_records/batch" $body
                 print $'response: ($reponse | to json)'
             }
         }
@@ -166,7 +172,7 @@ def map_record [fv: closure]: record -> record {
     transpose -rd
 }
 
-def cfAPI [subcommand: string, endpoint: string, --params: any, data?: any] {
+def cfAPI [API_TOKEN: string, subcommand: string, endpoint: string, --params: any, data?: any] {
     let full_endpoint = {
         scheme: https
         host: api.cloudflare.com
@@ -174,7 +180,7 @@ def cfAPI [subcommand: string, endpoint: string, --params: any, data?: any] {
         params: ($params | default {})
     } | url join
     let headers = {
-        Authorization: $"Bearer ($env.CLOUDFLARE_API_TOKEN)"
+        Authorization: $"Bearer ($API_TOKEN)"
         Content-Type: application/json
     }
     let body = $data | to json

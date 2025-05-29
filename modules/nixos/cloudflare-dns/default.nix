@@ -75,11 +75,11 @@ in
     apiTokenFile = lib.mkOption {
       description = ''
         The path to a file containing the CloudFlare API token.
-        The file must have the form `CLOUDFLARE_API_TOKEN=...`
-        see: https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=
       '';
-      type = lib.types.nullOr lib.types.str;
-      default = null;
+      type = lib.types.pathWith {
+        absolute = true;
+        inStore = false;
+      };
     };
     frequency = lib.mkOption {
       description = ''
@@ -104,11 +104,17 @@ in
 
       serviceConfig = {
         Type = "simple";
+        DynamicUser = true;
         ReadOnlyPaths = [ "/" ];
 
-        EnvironmentFile = cfg.apiTokenFile;
+        LoadCredential = [
+          "apiToken:${cfg.apiTokenFile}"
+        ];
 
-        ExecStart = "${lib.getExe update-dns} ${builtins.toFile "dns-config.json" (builtins.toJSON finalConfig)}";
+        ExecStart = lib.concatStringsSep " " [
+          (lib.getExe' pkgs.coreutils "env") "CLOUDFLARE_API_TOKEN_FILE=\${CREDENTIALS_DIRECTORY}/apiToken"
+          (lib.getExe update-dns) (builtins.toFile "dns-config.json" (builtins.toJSON finalConfig))
+        ];
       };
     }
     // lib.optionalAttrs (cfg.frequency != null) {
