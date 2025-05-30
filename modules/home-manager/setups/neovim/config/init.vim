@@ -25,6 +25,7 @@ augroup END
 set expandtab
 set tabstop=4
 set shiftwidth=0 " use tabstop value
+set nofixeol
 
 augroup insert_mode_relativenumber
   au!
