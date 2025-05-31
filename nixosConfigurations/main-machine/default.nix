@@ -80,6 +80,24 @@ in
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
+  programs.virt-manager.enable = true;
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+
+      qemu = {
+        package = pkgs.qemu_kvm;
+
+        ovmf = {
+          enable = true;
+          packages = [ pkgs.OVMFFull.fd ];
+        };
+
+        swtpm.enable = true;
+      };
+    };
+  };
+
   services.tlp = {
     enable = true;
     settings = {
