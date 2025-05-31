@@ -68,6 +68,9 @@ in
           ];
 
           ExecStart = lib.getExe bruh-bot;
+
+          Restart = "on-failure";
+          RestartSec = "30m";
         };
       };
       mounts = lib.singleton {
