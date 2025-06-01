@@ -12,7 +12,6 @@
   config = {
     services.cloudflare-dns = {
       enable = true;
-      # location of CLOUDFLARE_API_TOKEN=[value]
       apiTokenFile = "${config.lib.homeserver.environmentFileDir}/CLOUDFLARE_API_TOKEN";
 
       domains."bruhpi.uk" = {

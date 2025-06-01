@@ -11,8 +11,6 @@
 
       domains = [ "raw.bruhpi.uk" ];
 
-      # location of CLOUDFLARE_API_TOKEN=[value]
-      # https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=
       apiTokenFile = "${config.lib.homeserver.environmentFileDir}/CLOUDFLARE_API_TOKEN";
     };
   };
