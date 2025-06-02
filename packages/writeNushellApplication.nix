@@ -49,14 +49,27 @@ in
    */
   passthru ? { },
   /*
-     The `checkPhase` to run. Defaults to `shellcheck` on supported
-     platforms and `bash -n`.
+     The `checkPhase` to run. For defaults see `checkAsModule`.
 
      The script path will be given as `$target` in the `checkPhase`.
 
      Type: String
    */
   checkPhase ? null,
+  /*
+     Whether to check the script as if it were a nushell module rather than a nushell 'script'.
+
+     This gives better error messages so prefer simply wrapping the script in a
+     `def main [] {...}`, to turn it into a module over disabling this option.
+
+     If true, `checkPhase` defaults to importing the script with `use`.
+     Otherwise, `checkPhase` defaults to running `nu-check`.
+
+     Ignored if `checkPhase` is set.
+
+     Type: Boolean
+   */
+  checkAsModule ? true,
   /* Extra arguments to pass to `stdenv.mkDerivation`.
 
      :::{.caution}
@@ -88,7 +101,13 @@ writeTextFile {
   checkPhase =
     if checkPhase == null then ''
       runHook preCheck
-      ${nuBin} --commands "nu-check $target"
+      ${
+        if checkAsModule then ''
+          FORCE_COLOR=1 ${nuBin} --commands "use $target"
+        '' else ''
+          FORCE_COLOR=1 ${nuBin} --commands "nu-check --debug $target"
+        ''
+      }
       runHook postCheck
     ''
     else checkPhase;
