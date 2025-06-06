@@ -252,6 +252,7 @@ in
 
         c = "wl-copy --";
         p = "wl-paste";
+        cat = "bat -p";
       };
       programs.bash = {
         enable = true;
