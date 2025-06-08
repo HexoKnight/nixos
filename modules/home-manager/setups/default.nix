@@ -511,6 +511,8 @@ in
           ".config/syncthing"
           ".local/state/lazygit"
           ".local/bin"
+
+          ".cache/nix"
         ];
       };
     } ++
