@@ -20,9 +20,6 @@ in
     android = true;
     flatpak = true;
   };
-  users.users.${username} = {
-    description = "Harvey Gream";
-  };
 
   fileSystems."/c_drive" = {
     device = "/dev/disk/by-uuid/AC5C11195C10DFBE";

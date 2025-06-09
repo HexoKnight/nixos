@@ -17,9 +17,6 @@ in
     impermanence = true;
     desktop = true;
   };
-  users.users.${username} = {
-    description = "Harvey Gream";
-  };
 
   services.tlp = {
     enable = true;
