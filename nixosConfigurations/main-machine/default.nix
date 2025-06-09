@@ -2,6 +2,8 @@
 
 let
   username = "harvey";
+
+  syncthingConfigDir = ".config/syncthing";
 in
 {
   imports = [
@@ -49,30 +51,43 @@ in
       setups.jupyter.enable = true;
     };
 
-  syncthing = {
+  systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
+  services.syncthing = {
     enable = true;
-    inherit username;
+
+    user = username;
+    group = config.users.users.${username}.group;
+
+    dataDir = "/home/${username}/Documents/syncthing";
+    configDir = "/home/${username}/${syncthingConfigDir}";
+
+    overrideDevices = true;
+    overrideFolders = false;
+
     settings = {
-      devices."Swift 2".id = "CWYRKMN-CSQXLVO-EJXUNGJ-WMFBR3G-UTIME5C-EA4FAKU-OMT4E2S-5OHECQU";
+      devices."phone" = {
+        id = "XNPMAPQ-A5QY7G7-3AVZFLV-IGIM3J3-TAPNA76-AEFZ3DG-FEGUL5B-3HAX4AP";
+        autoAcceptFolders = true;
+      };
       folders = {
-        "Swift 2 Camera" = {
-          id = "swift_2_camera";
-          path = "/home/${username}/Documents/Phone/Camera";
-          devices = [ "Swift 2" ];
         };
-        "Swift 2 Downloads" = {
-          id = "swift_2_downloads";
-          path = "/home/${username}/Documents/Phone/Downloads";
-          devices = [ "Swift 2" ];
-        };
-        "Swift 2 Pictures" = {
-          id = "swift_2_pictures";
-          path = "/home/${username}/Documents/Phone/Pictures";
-          devices = [ "Swift 2" ];
-        };
+      };
+      # each top-level option is actually an endpoint
+      "defaults/folder" = {
+        type = "receiveonly";
+        path = "~/Documents/syncthing";
       };
     };
   };
+  systemd.tmpfiles.settings.syncthing = {
+    ${config.services.syncthing.dataDir}.d = {
+      mode = "750";
+      inherit (config.services.syncthing) user group;
+    };
+  };
+  persist.users.${username}.directories = [
+    syncthingConfigDir
+  ];
 
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;

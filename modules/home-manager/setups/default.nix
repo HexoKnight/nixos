@@ -508,7 +508,6 @@ in
           ".nixos"
           ".ssh"
           ".config/sops"
-          ".config/syncthing"
           ".local/state/lazygit"
           ".local/bin"
 
