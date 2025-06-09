@@ -49,6 +49,11 @@ in
 
       setups.rust.enable = true;
       setups.jupyter.enable = true;
+
+      services.syncthing.tray.enable = true;
+      persist-home.files = [
+        ".config/syncthingtray.ini"
+      ];
     };
 
   systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
