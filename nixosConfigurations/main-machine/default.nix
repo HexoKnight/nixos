@@ -4,6 +4,8 @@ let
   username = "harvey";
 
   syncthingConfigDir = ".config/syncthing";
+
+  obsidianVaultsDir = "Documents/Obsidian";
 in
 {
   imports = [
@@ -49,6 +51,26 @@ in
 
       setups.rust.enable = true;
       setups.jupyter.enable = true;
+      setups.obsidian = {
+        enable = true;
+        plugin.workspaces = {
+          vault.path = "~/Documents/Obsidian/vault";
+        };
+        plugin.findWorkspaces = /* lua */ ''
+          local vaults_dir = '~/${obsidianVaultsDir}'
+          return vim.iter(vim.fs.dir(vaults_dir))
+            :map(function(name, type)
+              -- every non-hidden directory
+              if type == 'directory' and name:sub(1, 1) ~= '.' then
+                return {
+                  name = name,
+                  path = vaults_dir .. '/' .. name,
+                }
+              end
+            end)
+            :totable()
+        '';
+      };
 
       services.syncthing.tray.enable = true;
       persist-home.files = [
@@ -63,7 +85,7 @@ in
     user = username;
     group = config.users.users.${username}.group;
 
-    dataDir = "/home/${username}/Documents/syncthing";
+    dataDir = "/home/${username}/${obsidianVaultsDir}";
     configDir = "/home/${username}/${syncthingConfigDir}";
 
     overrideDevices = true;
@@ -75,6 +97,12 @@ in
         autoAcceptFolders = true;
       };
       folders = {
+        obsidian = {
+          label = "Obsidian";
+          path = "/home/${username}/Documents/Obsidian";
+          devices = [ "phone" ];
+
+          type = "sendreceive";
         };
       };
       # each top-level option is actually an endpoint

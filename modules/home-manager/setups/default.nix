@@ -29,6 +29,7 @@ in
     ./jupyter
     ./android.nix
     ./mpv.nix
+    ./obsidian
 
     ./plasma.nix
     ./hyprland
