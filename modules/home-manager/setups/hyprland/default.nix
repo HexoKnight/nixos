@@ -32,6 +32,11 @@ in {
     # Optional, hint electron apps to use wayland:
     home.sessionVariables.NIXOS_OZONE_WL = "1";
 
+    persist-home.directories = [
+      # otherwise hyprland shows update info every boot
+      ".local/share/hyprland"
+    ];
+
     services.swayosd = {
       enable = true;
       # https://github.com/ErikReider/SwayOSD/blob/main/data/style/style.scss
