@@ -183,6 +183,10 @@ in
       }
     '';
 
+    telescope-nvim = /* lua */ ''
+      --lua setup telescope
+    '';
+
     neocord = {
       override = final: prev: {
         # until https://github.com/IogaMaster/neocord/pull/27 is merged
