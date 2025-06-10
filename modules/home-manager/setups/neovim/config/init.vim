@@ -27,6 +27,8 @@ set tabstop=4
 set shiftwidth=0 " use tabstop value
 set nofixeol
 
+set conceallevel=2
+
 augroup insert_mode_relativenumber
   au!
   au InsertEnter * if &buftype == "" | set norelativenumber | endif
