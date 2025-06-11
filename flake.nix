@@ -70,10 +70,12 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
   let
     lib = nixpkgs.lib.extend (final: _prev: import ./lib final);
-    local-pkgs = pkgs:
-      let args = { inherit lib pkgs; }; in
-      import ./packages args //
-      import ./scripts args;
+    localOverlay = final: _prev: {
+      local =
+        let args = { inherit lib; pkgs = final; }; in
+        import ./packages args //
+        import ./scripts args;
+    };
 
     mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix { inherit inputs lib; };
     forAllSystems = lib.genAttrs lib.systems.flakeExposed;
@@ -113,9 +115,7 @@
         ];
 
         nixpkgs-overlays = [
-          (final: _prev: {
-            local = local-pkgs final;
-          })
+          localOverlay
         ];
       }
     ];
@@ -126,7 +126,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
-      local-pkgs pkgs
+      (pkgs.extend localOverlay).local
     );
   };
 }
