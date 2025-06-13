@@ -40,6 +40,7 @@ let
 
   update-dns = pkgs.local.writeNushellApplication {
     name = "dns-update";
+    isModule = true;
     text = builtins.readFile ./update-dns.nu;
   };
 
