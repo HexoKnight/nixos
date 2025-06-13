@@ -172,6 +172,14 @@ in
               command = "git rebase --autostash --keep-empty --no-autosquash --rebase-merges --committer-date-is-author-date {{.SelectedLocalCommit.Hash}}^";
               output = "log";
             }
+            {
+              key = "P";
+              command = "git push {{.SelectedRemote.Name}} {{.SelectedLocalCommit.Sha}}:{{.SelectedLocalBranch.Name}}";
+              context = "commits";
+              loadingText = "Pushing commit...";
+              description = "Push a specific commit (and any preceding)";
+              output = "log";
+            }
           ];
         };
       };
