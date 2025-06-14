@@ -34,12 +34,11 @@ rec {
       '';
   };
 
-  mklink = pkgs.writeShellApplication {
+  mklink = pkgs.local.writeNushellApplication {
     name = "mklink";
-    runtimeInputs = [ configopts ];
-    bashOptions = [];
-    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
-    text = builtins.readFile ./mklink.sh;
+    isModule = true;
+    runtimeInputs = [ pkgs.coreutils ];
+    text = builtins.readFile ./mklink.nu;
   };
   persist = pkgs.writeShellApplication {
     name = "persist";
