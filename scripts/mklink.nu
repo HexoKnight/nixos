@@ -1,8 +1,13 @@
 # Create a symbolic link at LINKPATH pointing to REALPATH:
 #
-# if LINKPATH is an empty dir or missing:
+# if both LINKPATH and REALPATH are empty dirs:
+#     remove LINKPATH
+# else if one *PATH is an empty dir while the other exists and isn't empty:
+#     remove the empty dir
+#
+# if LINKPATH doesn't exist:
 #     simply create a symlink as normal
-# else if REALPATH is an empty dir or missing:
+# else if REALPATH doesn't exist:
 #     move LINKPATH to REALPATH and symlink as normal
 # else if `--no-backup` is not passed:
 #     backup REALPATH, move LINKPATH to REALPATH and symlink as normal
@@ -26,33 +31,50 @@ def main [
         }
     }
 
-    let real_path = $REALPATH | path expand --no-symlink
-    let link_path = $LINKPATH | path expand --no-symlink
+    mut real = get_info $REALPATH
+    mut link = get_info $LINKPATH
 
-    if (readlink $link_path) == $real_path {
-        log $"'($link_path)' already correctly linked to '($real_path)'"
+    if $link.path == $real.path {
+        log $"both paths are the same: '($link.path)'"
+        return
+    }
+    if ($link.path | path type) == 'symlink' and (readlink $link.path) == $real.path {
+        log $"'($link.path)' already correctly linked to '($real.path)'"
         return
     }
 
-    if (ensure_available $link_path) {
-        log $"'($link_path)' empty..."
+    if ($link.empty_dir) and ($real.empty_dir) {
+        rm $link.path
+        $link.exists = false
+    } else if ($link.empty_dir) and ($real.exists) {
+        rm $link.path
+        $link.exists = false
+    } else if ($real.empty_dir) and ($link.exists) {
+        rm $real.path
+        $real.exists = false
+    }
+    # after this, empty_dir doesn't matter
+
+    if not $link.exists {
+        log $"'($link.path)' empty..."
 
         mkdir (
             if $create_dir {
-                $real_path
+                $real.path
             } else {
-                $real_path | path dirname
+                $real.path | path dirname
             }
         )
+        create_parents $link.path
     } else if not $real.exists {
         log $"'($link.path)' not empty but '($real.path)' is so moving the former to the latter..."
 
         create_parents $real.path
         # no `--no-target-directory` unfortunately
-        mv $link_path $real_path
+        mv $link.path $real.path
     } else {
         # even if quiet
-        print $"files present at both the linked path \('($link_path)') and real path \('($real_path)')"
+        print $"files present at both the linked path \('($link.path)') and real path \('($real.path)')"
 
         if $no_backup {
             error make {
@@ -65,31 +87,37 @@ def main [
         }
 
         print "backing up the real path and using files from the linked path"
-        numbered_backup $real_path
-        mv $link_path $real_path
+        numbered_backup $real.path
+        mv $link.path $real.path
     }
 
-    log $"linking '($link_path)' to '($real_path)'..."
-    link $real_path $link_path
-    log $"successfully linked '($link_path)' to '($real_path)'"
+    log $"linking '($link.path)' to '($real.path)'..."
+    link $real.path $link.path
+    log $"successfully linked '($link.path)' to '($real.path)'"
 }
 
-# check if no file exists then make parent directories
-# or if it is an empty directory then delete it
-def ensure_available [path: path]: nothing -> bool {
-    if not ($path | path exists) {
-        mkdir ($path | path dirname)
-        return true
+def get_info [path: path]: nothing -> record<path: path, exists: bool, empty_dir: bool> {
+    let path = $path | path expand --no-symlink
+    let exists = $path | path exists --no-symlink
+    {
+        path: $path,
+        exists: $exists,
+        empty_dir: ($exists and (is_empty_dir $path)),
     }
+}
+
+def create_parents [path: path]: nothing -> nothing {
+    let $parent_path = $path | path dirname
+    if not ($parent_path | path exists) {
+        mkdir $parent_path
+    }
+}
+
+def is_empty_dir [path: path]: nothing -> bool {
     # ls output is empty only for empty directories:
     # - non-empty directories list their contents
     # - other file types are listed themselves as a 1-element list
-    if (ls --all $path | is-empty) {
-        # can only delete empty dirs so probably no race condition??
-        rm $path
-        return true
-    }
-    return false
+    ls --all $path | is-empty
 }
 
 def numbered_backup [path: path, --suffix: string = '~']: nothing -> nothing {
