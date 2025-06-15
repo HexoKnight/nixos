@@ -40,11 +40,13 @@ rec {
     runtimeInputs = [ pkgs.coreutils ];
     text = builtins.readFile ./mklink.nu;
   };
-  persist = pkgs.writeShellApplication {
+  persist = pkgs.local.writeNushellApplication {
     name = "persist";
-    runtimeInputs = [ mklink configopts ];
-    extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
-    text = builtins.readFile ./persist.sh;
+    isModule = true;
+    # needs to run mklink as sudo so it must be
+    # provided as a binary rather than a module
+    runtimeInputs = [ mklink ];
+    text = builtins.readFile ./persist.nu;
   };
 
   nixos = pkgs.writeShellApplication {
