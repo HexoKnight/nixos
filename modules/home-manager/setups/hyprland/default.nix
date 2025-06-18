@@ -80,6 +80,10 @@ in {
       color-scheme = "prefer-dark";
     };
 
+    # fix for 'No GSettings schemas are installed on the system'
+    # that occurs with some (ironically) qt apps
+    home.sessionVariables.GSETTINGS_SCHEMA_DIR = "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}/glib-2.0/schemas";
+
     wayland.windowManager.hyprland = {
       enable = true;
       plugins = [
