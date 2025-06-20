@@ -76,6 +76,10 @@ in
       persist-home.files = [
         ".config/syncthingtray.ini"
       ];
+
+      home.packages = [
+        pkgs.haguichi
+      ];
     };
 
   systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
@@ -121,6 +125,8 @@ in
   persist.users.${username}.directories = [
     syncthingConfigDir
   ];
+
+  services.logmein-hamachi.enable = true;
 
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;

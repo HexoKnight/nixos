@@ -6,6 +6,7 @@
     ./overlays.nix
     ./impermanence
     ./cloudflare-dns
+    ./logmein-hamachi.nix
     ./setups
   ];
 }
