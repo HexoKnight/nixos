@@ -47,6 +47,12 @@ in
    */
   isModule ? false,
   /*
+     Nushell modules to be `use ... *`ed in the script.
+
+     Type: [String|Derivation]
+   */
+  modules ? [ ],
+  /*
      Inputs to add to the shell script's `$PATH` at runtime.
 
      Type: [String|Derivation]
@@ -99,7 +105,9 @@ let
     load-env ${builtins.toJSON runtimeEnv}
   '' + lib.optionalString (runtimeInputs != []) ''
     $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
-  '' + ''
+  '' + lib.concatMapStrings (module: ''
+    use '${if lib.isString module then module else module.modFile}' *
+  '') modules + ''
 
     ${text}
   '';
@@ -121,8 +129,11 @@ let
     sed -i $target -Ee 's/^(\s*export\s)?(\s*def\s[^["]*"?)main(\s[^]]*\[)/export \2${name}\3/'
   '';
 
-  moduleText = if !runtimeChanges then text else ''
-    ${text}
+  moduleText = lib.concatMapStrings (module: ''
+    use '${if lib.isString module then module else module.modFile}' *
+  '') modules
+  + text
+  + lib.optionalString runtimeChanges (''
 
     def --env __load_runtime [] {
     '' + lib.optionalString (runtimeEnv != null) ''
@@ -131,7 +142,7 @@ let
       $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
     '' + ''
     }
-  '';
+  '');
 
   nuModName = name + "-mod";
   nuModPath = "/${nuModName}.nu";
