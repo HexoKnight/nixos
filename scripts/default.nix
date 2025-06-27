@@ -49,6 +49,13 @@ rec {
     text = builtins.readFile ./persist.nu;
   };
 
+  multilink = pkgs.local.writeNushellApplication {
+    name = "multilink";
+    isModule = true;
+    modules = [ mklink.nuModule ];
+    text = builtins.readFile ./multilink.nu;
+  };
+
   nixos = pkgs.writeShellApplication {
     name = "nixos";
     extraShellCheckFlags = [ "-x" "-P" (lib.makeBinPath [ configopts ]) ];
