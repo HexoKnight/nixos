@@ -6,8 +6,6 @@
   };
 
   config = lib.mkIf config.setups.internationalisation {
-    time.timeZone = "Europe/London";
-
     # Internationalisation properties.
     i18n.defaultLocale = "en_GB.UTF-8";
     i18n.extraLocaleSettings = {

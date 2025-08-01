@@ -76,6 +76,8 @@ in
       # allow transient changes to /etc/hosts
       environment.etc.hosts.mode = "0644";
 
+      services.automatic-timezoned.enable = true;
+
       setups.internationalisation = true;
       setups.nix = {
         flakes.enable = true;
