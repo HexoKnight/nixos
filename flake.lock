@@ -156,11 +156,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1740935393,
-        "narHash": "sha256-3nNX8FHKDCGB4e7dESvz7VIpCrBzMo+UBKDTK3WzrSM=",
+        "lastModified": 1755816836,
+        "narHash": "sha256-hwbVStpK3kVKy2/Rcvvm8IkYHeAHJ2FwXK8gYeHHQPs=",
         "owner": "HexoKnight",
         "repo": "nix-minecraft-servers",
-        "rev": "3545992c76f97d4f6138af72e5220923180345d6",
+        "rev": "6c3e71a2e138be2d14f44a47400f826c05db2873",
         "type": "github"
       },
       "original": {
