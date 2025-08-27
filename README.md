@@ -30,19 +30,19 @@ Lots of these could be switched out with relative ease, some... not so much :/
 
 - optional [impermanence](https://github.com/nix-community/impermanence) setup (tldr: / go BOOM on boot) which really displays the power of NixOS.
 - [nice scripts](scripts/) (that can be run outside of this config easily: `github:HexoKnight/nixos#<script-name>` for use in `nix shell/run/etc.`) including:
-    - [configopts.sh](scripts/configopts.sh) -
-        allows for easily making small (ba)sh scripts that have fully featured option parsing and help pages
     - [nixos](scripts/nixos.sh) -
         essentially a more ergonomic `nixos-rebuild`, centred around flakes, I've tried my best to keep it general so that it works for managing any nixos flake, not just this one
 
 ### Some nice modules
 
-- [hyprbinds](modules/home-manager/hyprland/hyprbinds.nix) -
+- [hyprbinds](modules/home-manager/setups/hyprland/hyprbinds.nix) -
     a nixy?? interface to declare hyprland binds (submap support is missing but to be added eventually hopefully)
 - [fzf](modules/home-manager/fzf.nix) -
     a few functions for generating complex fzf commands
-- [neovim plugin stuff](modules/home-manager/neovim/plugins/default.nix) -
+- [neovim plugin stuff](modules/home-manager/setups/neovim/plugins/default.nix) -
     not entirely standalone but provides a few functions for concisely importing and configuring plugins
+- [declarative cloudflare dns](modules/nixos/cloudflare-dns/default.nix) -
+    a module for managing cloudflare dns records declaratively from a nixos config
 
 ## Use it yourself
 
