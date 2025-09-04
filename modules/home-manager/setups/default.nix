@@ -585,6 +585,26 @@ in
         termusic
         qbittorrent
 
+        # mostly copied from:
+        # https://github.com/NixOS/nixpkgs/blob/0e6684e6c5755325f801bda1751a8a4038145d7d/pkgs/by-name/he/helvum/package.nix#L21-L35
+        (pkgs.helvum.overrideAttrs (finalAttrs: prevAttrs: {
+          version = "2025-07-01-volume-control";
+
+          src = pkgs.fetchFromGitLab {
+            domain = "gitlab.freedesktop.org";
+            owner = "pipewire";
+            repo = "helvum";
+            rev = "74cd6b23e12321b606107206474d04f671f335d0";
+            hash = "sha256-EIhyopyjxhlMxEVue6otcFwwUZWRbeS/oq3TP3l205I=";
+          };
+
+          cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+            inherit (finalAttrs) src;
+            name = "${finalAttrs.pname}-${finalAttrs.version}";
+            hash = "sha256-M3Ay4yhCx8oQWlaXGsXW2cTrabnNnECPIgYMC9khwQA=";
+          };
+        }))
+
         prismlauncher
 
         local.mklink
