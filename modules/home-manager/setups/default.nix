@@ -23,6 +23,7 @@ in
     ./fzf.nix
     ./trash.nix
     ./google-chrome.nix
+    ./librewolf.nix
     ./rclone.nix
     ./rust.nix
     ./btop.nix
@@ -533,6 +534,7 @@ in
       services.playerctld.enable = true;
 
       setups.google-chrome.enable = true;
+      setups.librewolf.enable = true;
 
       services.wlsunset = {
         enable = true;
