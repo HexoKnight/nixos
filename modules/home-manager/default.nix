@@ -7,6 +7,7 @@
     ./fzf.nix
     ./steam-presence.nix
     ./flatpak.nix
+    ./xdg.nix
     ./setups
   ];
 }
