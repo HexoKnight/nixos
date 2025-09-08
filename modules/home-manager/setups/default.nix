@@ -546,8 +546,9 @@ in
         longitude = "";
       };
 
-      home.sessionVariables = {
-        TERMINAL = "kitty";
+      xdg.defaults = {
+        terminal.command = "kitty";
+        browser.command = "librewolf";
       };
 
       programs.kitty = {
@@ -580,6 +581,12 @@ in
           ".config/qBittorrent"
           ".local/share/qBittorrent"
         ];
+      };
+      xdg.mimeApps = {
+        enable = true;
+        defaultApplications = {
+          "x-scheme-handler/discord" = "vesktop.desktop";
+        };
       };
 
       home.packages = with pkgs; [
