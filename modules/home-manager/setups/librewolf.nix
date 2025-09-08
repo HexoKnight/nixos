@@ -38,6 +38,9 @@ in
         "middlemouse.paste" = false;
         "general.autoScroll" = true;
         "media.autoplay.blocking_policy" = 2;
+
+        # enable userChrome.css
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
       };
 
       policies = {
@@ -73,6 +76,16 @@ in
 
       profiles.default = {
         isDefault = true;
+
+        # to fix issue:
+        # https://github.com/hyprwm/Hyprland/issues/10515
+        # workaround from here:
+        # https://github.com/hyprwm/Hyprland/discussions/10355#discussioncomment-13181787
+        userChrome = ''
+          :root:not([chromehidden~="toolbar"]){
+            min-width: 20px !important;
+          }
+        '';
       };
     };
   };
