@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   hyprbinds = with lib.hyprbinds; lib.mkMerge [{
@@ -8,6 +8,7 @@
     ];
     "SUPER, Q" = mkNoArgBind "killactive";
     "SUPER, T" = mkExec config.home.sessionVariables.TERMINAL;
+    "SUPER, B" = mkExec "x-www-browser";
     "SUPER CTRL ALT, XKB_KEY_Delete" = mkNoArgBind "exit";
     "SUPER, E" = mkExec "lf";
     "SUPER, R" = mkExec "rofi -show run";
