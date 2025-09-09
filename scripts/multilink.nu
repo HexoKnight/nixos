@@ -33,6 +33,14 @@ def main [
     FILE: path
     --quiet (-q) # Suppress less important output
 ] {
+    let parsed = multilink parse-file $FILE
+
+    $parsed.links | multilink direct $parsed.default --quiet=$quiet
+}
+
+# Parse FILE according to `multilink` into a structure that `multilink direct`
+# could take to produce the same behaviour
+export def "multilink parse-file" [ FILE: path ] {
     # only time where we want full (ie. absolute) expansion
     let file = $FILE | path expand --no-symlink
 
@@ -47,7 +55,10 @@ def main [
 
     let links = $config.links? | default [] | default {} options
 
-    $links | multilink direct $default --quiet=$quiet
+    {
+        default: $default
+        links: $links
+    }
 }
 
 # Bypass specifying FILE and directly pass in required info.

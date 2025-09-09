@@ -55,6 +55,12 @@ rec {
     modules = [ mklink.nuModule ];
     text = builtins.readFile ./multilink.nu;
   };
+  addmultilink = pkgs.local.writeNushellApplication {
+    name = "addmultilink";
+    isModule = true;
+    modules = [ multilink.nuModule ];
+    text = builtins.readFile ./addmultilink.nu;
+  };
 
   nixos = pkgs.writeShellApplication {
     name = "nixos";
