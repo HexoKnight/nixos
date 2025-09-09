@@ -617,14 +617,15 @@ in
         prismlauncher
 
         local.mklink
-        local.linkSaveDirs
-        local.addLinkedSave
+        local.multilink
+        local.addmultilink
       ];
 
       steam-presence.enable = true;
 
+      # not critical so allow failure
       home.activation.linkSaves = lib.hm.dag.entryAfter ["writeBoundary"] ''
-        $DRY_RUN_CMD ${lib.getExe pkgs.local.linkSaveDirs}
+        run ${lib.getExe pkgs.local.multilink} ~/Saves/links.toml || true
       '';
     }
   );
