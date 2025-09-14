@@ -77,6 +77,15 @@ in
       environment.etc.hosts.mode = "0644";
 
       services.automatic-timezoned.enable = true;
+      # uwsm waits for graphical.target (aliases default.target) for 60s
+      # so prevent an automatic Before=default.target because otherwise, uwsm will wait on
+      # these units (which require network-online.target) so with no/bad internet, you are
+      # left with up to 60s after logging in for the graphical session to start
+      # in general default.target should not transitively depend on network-online.target
+      systemd.services.automatic-timezoned.unitConfig.DefaultDependencies = false;
+      systemd.services.automatic-timezoned.before = [ "shutdown.target" ];
+      systemd.services.automatic-timezoned-geoclue-agent.unitConfig.DefaultDependencies = false;
+      systemd.services.automatic-timezoned-geoclue-agent.before = [ "shutdown.target" ];
 
       setups.internationalisation = true;
       setups.nix = {
