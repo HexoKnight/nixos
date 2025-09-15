@@ -58,18 +58,16 @@ def main [
     if not $link.exists {
         log $"'($link.path)' empty..."
 
-        mkdir (
-            if $create_dir {
-                $real.path
-            } else {
-                $real.path | path dirname
-            }
-        )
-        create_parents $link.path
+        if $create_dir {
+            create_dir --if-not-present $real.path
+        } else {
+            create_dir ($real.path | path dirname)
+        }
+        create_dir ($link.path | path dirname)
     } else if not $real.exists {
         log $"'($link.path)' not empty but '($real.path)' is so moving the former to the latter..."
 
-        create_parents $real.path
+        create_dir ($real.path | path dirname)
         # no `--no-target-directory` unfortunately
         mv $link.path $real.path
     } else {
@@ -106,10 +104,17 @@ def get_info [path: path]: nothing -> record<path: path, exists: bool, empty_dir
     }
 }
 
-def create_parents [path: path]: nothing -> nothing {
-    let $parent_path = $path | path dirname
-    if not ($parent_path | path exists) {
-        mkdir $parent_path
+def create_dir [path: path, --if-not-present]: nothing -> nothing {
+    if ($if_not_present and ($path | path exists)) {
+        return
+    }
+    try {
+        # ignores existing directories and creates necessary parents
+        mkdir $path
+    } catch {|$err|
+        error make --unspanned {
+            msg: $"Failed to create directory at path \('($path)'\):\n($err.rendered | str trim)"
+        }
     }
 }
 
