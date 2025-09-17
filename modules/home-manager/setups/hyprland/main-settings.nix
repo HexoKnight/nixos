@@ -94,4 +94,12 @@
       };
     };
   };
+
+  xdg.configFile."hypr/xdph.conf".text = lib.hm.generators.toHyprconf {
+    attrs = {
+      screencopy = {
+        allow_token_by_default = true;
+      };
+    };
+  };
 }
