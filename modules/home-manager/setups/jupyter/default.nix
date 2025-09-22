@@ -116,7 +116,7 @@ in
       ];
 
       extraPackages = [
-        pkgs.python311Packages.jupytext
+        pkgs.python3Packages.jupytext
       ];
       
       lspServers.pyright = {
