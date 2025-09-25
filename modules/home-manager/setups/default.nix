@@ -201,6 +201,10 @@ in
           };
         };
 
+        lfs = {
+          enable = true;
+        };
+
         delta = {
           enable = true;
           options = {
