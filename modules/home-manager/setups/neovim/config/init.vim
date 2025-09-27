@@ -35,6 +35,11 @@ augroup insert_mode_relativenumber
   au InsertLeave * if &buftype == "" | set relativenumber | endif
 augroup END
 
+if executable('rg')
+  set grepformat=%f:%l:%c:%m
+  set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+endif
+
 " ########## MAPPINGS ##########
 map <silent> <expr> <F5> ':wa \| term ' . g:build_cmd . '<CR>'
 map <silent> <expr> <F6> ':wa \| !' . g:build_cmd . '<CR>'
