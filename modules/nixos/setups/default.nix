@@ -87,6 +87,10 @@ in
       systemd.services.automatic-timezoned-geoclue-agent.unitConfig.DefaultDependencies = false;
       systemd.services.automatic-timezoned-geoclue-agent.before = [ "shutdown.target" ];
 
+      systemd.sleep.extraConfig = ''
+        HibernateMode=shutdown
+      '';
+
       setups.internationalisation = true;
       setups.nix = {
         flakes.enable = true;
