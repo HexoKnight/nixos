@@ -23,6 +23,8 @@ in
     printing = true;
     android = true;
     flatpak = true;
+
+    podman.enable = true;
   };
 
   fileSystems."/c_drive" = {

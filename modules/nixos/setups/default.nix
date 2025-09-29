@@ -19,6 +19,7 @@ in
   imports = [
     ./internationalisation.nix
     ./nix.nix
+    ./podman.nix
   ];
 
   options.setups = {
