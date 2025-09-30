@@ -14,7 +14,7 @@ def main [
         | get path
     )
 
-    if (path | str starts-with '/home/') {
+    if ($path | str starts-with '/home/') {
         exec $mklink_bin $"/persist($path)" $path
     } else {
         exec sudo $mklink_bin $"/persist/system($path)" $path
