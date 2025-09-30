@@ -31,6 +31,7 @@ in
     ./android.nix
     ./mpv.nix
     ./obsidian
+    ./mangohud.nix
 
     ./plasma.nix
     ./hyprland
@@ -624,6 +625,8 @@ in
         local.multilink
         local.addmultilink
       ];
+
+      setups.mangohud.enable = true;
 
       steam-presence.enable = true;
 
