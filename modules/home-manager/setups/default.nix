@@ -525,6 +525,7 @@ in
           ".config/sops"
           ".local/state/lazygit"
           ".local/bin"
+          ".local/share/applications"
 
           ".cache/nix"
         ];
