@@ -341,7 +341,7 @@ in
       ];
 
       home-manager.users.${username} = {
-        setups.android.enable = true;
+        setups.tooling.android.enable = true;
       };
     } ++
     mkListIf cfg.ssh {

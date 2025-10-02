@@ -3,7 +3,7 @@
 let
   inherit (lib) mkOption types;
 
-  cfg = config.setups.jupyter;
+  cfg = config.setups.tooling.jupyter;
 
   kernelType = types.submodule (import (inputs.nixpkgs + /nixos/modules/services/development/jupyter/kernel-options.nix) {
     inherit lib pkgs;
@@ -14,7 +14,7 @@ let
   };
 in
 {
-  options.setups.jupyter = {
+  options.setups.tooling.jupyter = {
     enable = lib.mkEnableOption "jupyter notebook stuff";
 
     kernels = mkOption {
@@ -78,7 +78,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    setups.jupyter.kernels = lib.mapAttrs (name: config: config.finalKernel) cfg.pythonKernels;
+    setups.tooling.jupyter.kernels = lib.mapAttrs (name: config: config.finalKernel) cfg.pythonKernels;
 
     neovim.main = {
       env.JUPYTER_PATH = toString kernels;

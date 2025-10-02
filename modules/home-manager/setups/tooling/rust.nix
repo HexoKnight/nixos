@@ -1,12 +1,12 @@
 { lib, pkgs, config, ... }:
 
 let
-  cfg = config.setups.rust;
+  cfg = config.setups.tooling.rust;
 
   cargoDir = ".local/share/cargo";
 in
 {
-  options.setups.rust = {
+  options.setups.tooling.rust = {
     enable = lib.mkEnableOption "rust dev stuff";
   };
 

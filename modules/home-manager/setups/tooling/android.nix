@@ -1,12 +1,12 @@
 { lib, pkgs, config, ... }:
 
 let
-  cfg = config.setups.android;
+  cfg = config.setups.tooling.android;
 
   configDir = ".local/share/android";
 in
 {
-  options.setups.android = {
+  options.setups.tooling.android = {
     enable = lib.mkEnableOption "android tools";
   };
 

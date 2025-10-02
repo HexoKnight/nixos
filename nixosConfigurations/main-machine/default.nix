@@ -51,8 +51,8 @@ in
       setups.config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
       setups.google-chrome.xwayland = true;
 
-      setups.rust.enable = true;
-      setups.jupyter.enable = true;
+      setups.tooling.rust.enable = true;
+      setups.tooling.jupyter.enable = true;
       setups.obsidian = {
         enable = true;
         plugin.workspaces = {

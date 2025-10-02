@@ -25,7 +25,7 @@ in
   home-manager.users.${username} =
     { pkgs, ... }:
     {
-      setups.jupyter.enable = true;
+      setups.tooling.jupyter.enable = true;
     };
 
   persist.defaultSetup = {
