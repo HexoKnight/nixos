@@ -26,6 +26,7 @@ in
     { pkgs, ... }:
     {
       setups.tooling.jupyter.enable = true;
+      setups.tooling.typescript.enable = true;
     };
 
   persist.defaultSetup = {

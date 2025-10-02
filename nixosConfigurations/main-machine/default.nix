@@ -53,6 +53,8 @@ in
 
       setups.tooling.rust.enable = true;
       setups.tooling.jupyter.enable = true;
+      setups.tooling.typescript.enable = true;
+
       setups.obsidian = {
         enable = true;
         plugin.workspaces = {
