@@ -20,6 +20,7 @@ in
     ./internationalisation.nix
     ./nix.nix
     ./podman.nix
+    ./printing.nix
   ];
 
   options.setups = {
@@ -58,7 +59,6 @@ in
     special-capslock = mkEnableOption "special-capslock" // { default = cfg.desktop; };
 
     networking = mkEnableOption "networking" // { default = cfg.desktop; };
-    printing = mkEnableOption "printing";
     android = mkEnableOption "android tools";
 
     ssh = mkEnableOption "ssh stuff" // { default = cfg.minimal; };
@@ -325,14 +325,6 @@ in
         directories = [
           "/etc/NetworkManager/system-connections"
         ];
-      };
-    } ++
-    mkListIf cfg.printing {
-      services.printing.enable = true;
-      services.avahi = {
-        enable = true;
-        nssmdns4 = true;
-        openFirewall = true;
       };
     } ++
     mkListIf cfg.android {

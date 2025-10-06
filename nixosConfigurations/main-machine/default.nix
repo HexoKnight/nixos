@@ -20,10 +20,10 @@ in
     };
     impermanence = true;
     personal-gaming = true;
-    printing = true;
     android = true;
     flatpak = true;
 
+    printing.enable = true;
     podman.enable = true;
   };
 
