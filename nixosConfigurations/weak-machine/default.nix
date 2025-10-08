@@ -27,6 +27,7 @@ in
     {
       setups.tooling.jupyter.enable = true;
       setups.tooling.typescript.enable = true;
+      setups.tooling.c.enable = true;
     };
 
   persist.defaultSetup = {
