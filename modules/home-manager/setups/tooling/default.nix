@@ -5,5 +5,6 @@
     ./jupyter
     ./rust.nix
     ./typescript.nix
+    ./unity
   ];
 }
