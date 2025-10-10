@@ -130,7 +130,9 @@ lua <<EOF
           -- group = vim.api.nvim_create_augroup('my.lsp', {clear=false}),
           buffer = args.buf,
           callback = function()
-            vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
+            if vim.g.format_on_save or vim.g.format_on_save == nil then
+              vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
+            end
           end,
         })
       end
