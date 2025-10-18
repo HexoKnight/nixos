@@ -32,6 +32,17 @@ require('lualine').setup({
     theme = 'ayu',
   },
   sections = {
+    lualine_x = {
+      -- TODO: allow configuring this externally
+      function()
+        -- lualine ignores this component if it errors
+        -- so no issue with it's unconditional inclusion
+        return require('direnv').statusline()
+      end,
+      'encoding',
+      'fileformat',
+      'filetype',
+    },
     lualine_z = {
       'location',
       trailing_whitespace,

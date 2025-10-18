@@ -31,6 +31,7 @@ in
     ./mpv.nix
     ./obsidian
     ./mangohud.nix
+    ./direnv.nix
 
     ./plasma.nix
     ./hyprland
@@ -130,6 +131,7 @@ in
 
       setups = {
         neovim.enable = true;
+        direnv.enable = true;
         fzf.enable = true;
         trash.enable = true;
         rclone.enable = true;
