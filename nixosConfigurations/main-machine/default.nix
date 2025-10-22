@@ -49,7 +49,6 @@ in
     { pkgs, ... }:
     {
       setups.config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
-      setups.google-chrome.xwayland = true;
 
       setups.tooling.c.enable = true;
       setups.tooling.jupyter.enable = true;
