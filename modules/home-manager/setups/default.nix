@@ -22,16 +22,18 @@ in
     ./tooling
 
     ./neovim
+
+    ./btop.nix
+    ./direnv.nix
     ./fzf.nix
-    ./trash.nix
     ./google-chrome.nix
     ./librewolf.nix
-    ./rclone.nix
-    ./btop.nix
+    ./mangohud.nix
     ./mpv.nix
     ./obsidian
-    ./mangohud.nix
-    ./direnv.nix
+    ./rclone.nix
+    ./trash.nix
+    ./zathura.nix
 
     ./plasma.nix
     ./hyprland
@@ -542,6 +544,7 @@ in
 
       setups.google-chrome.enable = true;
       setups.librewolf.enable = true;
+      setups.zathura.enable = true;
 
       services.wlsunset = {
         enable = true;
