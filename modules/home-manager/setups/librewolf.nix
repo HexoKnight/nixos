@@ -6,6 +6,16 @@ in
 {
   options.setups.librewolf = {
     enable = lib.mkEnableOption "LibreWolf";
+    userChrome = lib.mkOption {
+      description = "Custom user chrome CSS.";
+      type = lib.types.lines;
+      default = "";
+    };
+    userContent = lib.mkOption {
+      description = "Custom user content CSS.";
+      type = lib.types.lines;
+      default = "";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -14,6 +24,16 @@ in
         ".librewolf"
       ];
     };
+
+    # to fix issue:
+    # https://github.com/hyprwm/Hyprland/issues/10515
+    # workaround from here:
+    # https://github.com/hyprwm/Hyprland/discussions/10355#discussioncomment-13181787
+    setups.librewolf.userChrome = ''
+      :root:not([chromehidden~="toolbar"]){
+        min-width: 20px !important;
+      }
+    '';
 
     programs.librewolf = {
       enable = true;
@@ -77,14 +97,15 @@ in
       profiles.default = {
         isDefault = true;
 
-        # to fix issue:
-        # https://github.com/hyprwm/Hyprland/issues/10515
-        # workaround from here:
-        # https://github.com/hyprwm/Hyprland/discussions/10355#discussioncomment-13181787
         userChrome = ''
-          :root:not([chromehidden~="toolbar"]){
-            min-width: 20px !important;
-          }
+          @import "userChromeLocal.css";
+
+          ${cfg.userChrome}
+        '';
+        userContent = ''
+          @import "userContentLocal.css";
+
+          ${cfg.userContent}
         '';
       };
     };
