@@ -105,6 +105,7 @@ in
         extraGroups = [ "wheel" ];
       };
       home-manager.extraSpecialArgs = { inherit inputs; };
+      home-manager.backupFileExtension = "hmbackup";
       home-manager.users.${username} = {
         imports = [
           ../../home-manager
