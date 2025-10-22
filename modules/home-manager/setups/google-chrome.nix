@@ -22,6 +22,10 @@ in
       ];
     };
 
+    nixpkgs.allowUnfreePkgs = [
+      "google-chrome"
+    ];
+
     home.packages = lib.singleton (pkgs.google-chrome.override {
       commandLineArgs = [
         "--incognito"

@@ -77,7 +77,6 @@ in
 
       nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
       nixpkgs.allowUnfreePkgs = [
-        "google-chrome"
         (pkg: builtins.elem pkg.meta.license.shortName [
           "CUDA EULA"
         ])
