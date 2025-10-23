@@ -319,6 +319,7 @@ in
     mkListIf cfg.networking {
       networking = {
         networkmanager.enable = true;
+        networkmanager.wifi.backend = "iwd";
       };
 
       persist.system = {
