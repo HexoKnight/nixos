@@ -1,19 +1,16 @@
-{ config, lib, pkgs, inputs, ... }:
+{ lib, pkgs, config, ... }:
 
-with lib;
 let
-  inherit (config.home-inputs) disable-touchpad;
-
   cfg = config.setups.hyprland;
 in {
   imports = [
-    ./main-settings.nix
-    ./binds.nix
-    ./workspaces.nix
     ./audio.nix
+    ./binds.nix
     ./hyprbinds.nix
-    ./toggle-touchpad.nix
+    ./main-settings.nix
     ./polkit-agent.nix
+    ./toggle-touchpad.nix
+    ./workspaces.nix
   ];
 
   options.setups.hyprland = {
@@ -21,13 +18,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      rofi-wayland
+    home.packages = [
+      pkgs.rofi-wayland
 
-      mako
-      libnotify
+      pkgs.mako
+      pkgs.libnotify
 
-      wl-clipboard-rs
+      pkgs.wl-clipboard-rs
     ];
     # Optional, hint electron apps to use wayland:
     home.sessionVariables.NIXOS_OZONE_WL = "1";
@@ -102,12 +99,12 @@ in {
       plugins = [
         # inputs.hycov.packages.${pkgs.system}.hycov
       ];
-      settings = with pkgs; {
+      settings = {
         exec-once = [
-          (concatStringsSep " && " [
-            "${config.programs.eww.package}/bin/eww daemon"
-            "${config.programs.eww.package}/bin/eww open bar0"
-            "${config.programs.eww.package}/bin/eww open bar1"
+          (lib.concatStringsSep " && " [
+            "${lib.getExe config.programs.eww.package} daemon"
+            "${lib.getExe config.programs.eww.package} open bar0"
+            "${lib.getExe config.programs.eww.package} open bar1"
           ])
           "vesktop"
           "steam"
@@ -120,11 +117,9 @@ in {
         windowrulev2 = [
           "workspace name:__discord silent, initialtitle:(Discord)"
           "workspace name:__steam silent, initialclass:(steam)"
-
-          "workspace name:__gvim, initialclass:(Gvim)"
         ];
 
-        env = (attrsets.mapAttrsToList (
+        env = (lib.attrsets.mapAttrsToList (
             name: value: name + "," + builtins.toString value
           ) config.home.sessionVariables)
         ++ [

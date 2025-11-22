@@ -1,19 +1,20 @@
-{ config, lib, pkgs, inputs, ... }:
+{ lib, pkgs, ... }:
 
-with lib;
 let
+  jqBin = lib.getExe pkgs.jq;
+
   workspaces = rec {
     # NORMAL WORKSPACES
     getNormalWorkspaces = ''
       hyprctl workspaces -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[].name |
         select(startswith("special") | not)
       '
     '';
     getCurrentNormalWorkspace = ''
       hyprctl monitors -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[] |
         select(.focused==true).activeWorkspace.name
       '
@@ -30,7 +31,7 @@ let
     getExtraName = name: extraPrefix + name;
     getExtraWorkspaces = ''
       hyprctl workspaces -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[].name |
         select(startswith("${extraPrefix}")) |
         ltrimstr("${extraPrefix}")
@@ -39,7 +40,7 @@ let
     # non-zero exit code when there is no extra workspace activated
     getCurrentExtraWorkspace = ''
       hyprctl monitors -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[] |
         select(.focused==true).activeWorkspace.name |
         if startswith("${extraPrefix}") then
@@ -56,7 +57,7 @@ let
     # SPECIAL WORKSPACES
     getSpecialWorkspaces = ''
       hyprctl workspaces -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[].name |
         select(startswith("special")) |
         if . == "special" then "" else ltrimstr("special:") end
@@ -66,7 +67,7 @@ let
     # empty string when the anonymous special workspace is activated
     getCurrentSpecialWorkspace = ''
       hyprctl monitors -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[] |
         select(.focused==true).specialWorkspace.name |
         if . == "" then halt_error end |
@@ -87,7 +88,7 @@ let
     # EXTRA SPECIAL WORKSPACES
     getExtraSpecialWorkspaces = ''
       hyprctl workspaces -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[].name |
         select(startswith("special:${extraPrefix}")) |
         ltrimstr("special:${extraPrefix}")
@@ -96,7 +97,7 @@ let
     # non-zero exit code when there is no extra special workspace activated
     getCurrentExtraSpecialWorkspace = ''
       hyprctl monitors -j |
-      ${pkgs.jq}/bin/jq --raw-output '
+      ${jqBin} --raw-output '
         .[] |
         select(.focused==true).specialWorkspace.name |
         if startswith("special:${extraPrefix}") then
@@ -112,29 +113,27 @@ let
   };
 in
 {
-  options.hyprland-workspaces = with lib; mkOption {
-    type = types.attrs;
-    visible = false;
-    readOnly = true;
-    default = workspaces;
+  config.lib.hyprland = {
+    inherit workspaces;
   };
 
   config.wayland.windowManager.hyprland = {
-    settings = with pkgs;
-    with workspaces;
+    settings =
     let
-      frece = pkgs.frece + "/bin/frece";
+      w = workspaces;
+
+      freceBin = lib.getExe pkgs.frece;
       # actOnWorkspace must return a non-zero exit code if the db
       # should not be updated (eg. it was a noop or it was invalid)
       createWorkspaceAction = binName: getWorkspaces: actOnWorkspace:
-        scripts.mkScript pkgs binName ''
+        lib.scripts.mkScript pkgs binName ''
           DB_FILE="''${XDG_STATE_HOME:-$HOME/.local/state}/${binName}.db"
 
           workspaces="$(
             ${getWorkspaces}
           )"
-          ${frece} update "$DB_FILE" <(echo "$workspaces")
-          options="$(${frece} print "$DB_FILE" | grep -Fx "$workspaces")"
+          ${freceBin} update "$DB_FILE" <(echo "$workspaces")
+          options="$(${freceBin} print "$DB_FILE" | grep -Fx "$workspaces")"
           workspace=$(if [ -n "$options" ]; then echo "$options"; fi | rofi -dmenu)
           if [ -n "$workspace" ]; then
             {
@@ -143,8 +142,8 @@ in
               workspaces="$(
                 ${getWorkspaces}
               )"
-              ${frece} update "$DB_FILE" <(echo "$workspaces")
-              ${frece} increment "$DB_FILE" "$workspace"
+              ${freceBin} update "$DB_FILE" <(echo "$workspaces")
+              ${freceBin} increment "$DB_FILE" "$workspace"
             }
           fi
         '';
@@ -153,17 +152,13 @@ in
         ${actOnWorkspace workspace}
       '';
       gotoExtraWorkspaceBin = createWorkspaceAction
-        "gotoExtraWorkspace" getExtraWorkspaces (ifNotEqualTo getCurrentExtraWorkspace gotoExtraWorkspace);
+        "gotoExtraWorkspace" w.getExtraWorkspaces (ifNotEqualTo w.getCurrentExtraWorkspace w.gotoExtraWorkspace);
       moveToExtraWorkspaceBin = createWorkspaceAction
-        "moveToExtraWorkspace" getExtraWorkspaces moveToExtraWorkspace;
-      # closeCurrentSpecialWorkspaceBin = (pkgs.pkgs.writeShellScriptBin "closeCurrentSpecialWorkspace" ''
-      #   ${closeCurrentSpecialWorkspace}
-      # '') + "/bin/closeCurrentSpecialWorkspace";
+        "moveToExtraWorkspace" w.getExtraWorkspaces w.moveToExtraWorkspace;
     in {
       bind = [
         "SUPER, D, exec, ${gotoExtraWorkspaceBin}"
         "SUPER SHIFT, D, exec, ${moveToExtraWorkspaceBin}"
-        # "SUPER SHIFT, D, exec, ${closeCurrentSpecialWorkspaceBin}"
       ];
     };
   };

@@ -1,4 +1,4 @@
-{ config, nixosConfig, lib, pkgs, inputs, ... }:
+{ lib, nixosConfig, ... }:
 
 {
   wayland.windowManager.hyprland = {

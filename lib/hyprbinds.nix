@@ -13,7 +13,7 @@ rec {
 
   mkMouseBind = withFlags "m" mkNoArgBind;
 
-  mergeFlags = flags: with lib; concatStrings (unique (concatMap stringToCharacters flags));
+  mergeFlags = flags: lib.concatStrings (lib.unique (lib.concatMap lib.stringToCharacters flags));
 
   addFlags = flags: { oldFlags ? "", ...}@bind:
     bind // { flags = mergeFlags [oldFlags flags]; };

@@ -1,7 +1,21 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 
 {
-  hyprbinds = with lib.hyprbinds; lib.mkMerge [{
+  hyprbinds =
+  let
+    inherit (lib.hyprbinds)
+      mkBind
+      mkNoArgBind
+      mkExec
+      mkMouseBind
+
+      # mergeFlags
+      # addFlags
+      withFlags
+      repeating
+      ;
+  in
+  lib.mkMerge [{
     "SUPER, grave" = [
       (mkExec "hyprctl keyword input:follow_mouse 1")
       (withFlags "r" mkExec "hyprctl keyword input:follow_mouse 2")
@@ -23,7 +37,7 @@
     "SUPER ALT, F" = mkBind "fullscreenstate" "2 0"; # fullscreen (but doesn't tell application)
     "SUPER CTRL, F" = mkBind "fullscreenstate" "0 2"; # only tells application that it is fullscreen
 
-    "SUPER SHIFT, S" = mkExec ''${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)"'';
+    "SUPER SHIFT, S" = mkExec ''${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})"'';
 
     "SUPER, M" = mkBind "focusmonitor" "+1";
     "SUPER SHIFT, M" = mkBind "movecurrentworkspacetomonitor" "+1";
@@ -69,22 +83,23 @@
 
   (let
     mergeMap = f: list: lib.attrsets.mergeAttrsList (map f list);
-  in mergeMap (directionList: with with lib; builtins.listToAttrs
-    ((zipListsWith nameValuePair) ["arrowKey" "homeKey" "hyprDir" "resize"] directionList);
-    # allows a function to take a function as an argument instead of an object
-    # hmm = func: (f: f f) (self: arg: if builtins.isFunction arg then arg2: (self self) (arg arg2) else func arg)
-    # (t: t t t t "0") (hmm (a: a + "!"))
+  in mergeMap ({ arrowKey, homeKey, hyprDir, resize }:
     mergeMap (key: {
       "SUPER, ${key}" = mkBind "movefocus" hyprDir;
       "SUPER SHIFT, ${key}" = mkBind "swapwindow" hyprDir;
       "SUPER CTRL, ${key}" = repeating mkBind "resizeactive" (resize "10");
     }) [arrowKey homeKey]
-  ) [
-    ["left"  "h" "l" (amount: "-${amount} 0")]
-    ["down"  "j" "d" (amount: "0 ${amount}")]
-    ["up"    "k" "u" (amount: "0 -${amount}")]
-    ["right" "l" "r" (amount: "${amount} 0")]
-  ])
+  ) (
+    lib.map (directionList:
+      lib.listToAttrs ((lib.zipListsWith lib.nameValuePair)
+      ["arrowKey" "homeKey" "hyprDir" "resize"] directionList)
+    ) [
+      ["left"  "h" "l" (amount: "-${amount} 0")]
+      ["down"  "j" "d" (amount: "0 ${amount}")]
+      ["up"    "k" "u" (amount: "0 -${amount}")]
+      ["right" "l" "r" (amount: "${amount} 0")]
+    ]
+  ))
 
   (lib.attrsets.mergeAttrsList (builtins.genList (
     x:

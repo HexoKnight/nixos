@@ -1,22 +1,26 @@
-{ config, lib, pkgs, inputs, ... }:
+{ lib, pkgs, config, ... }:
 
 let
   touchpad-name = config.home-inputs.config.disable-touchpad;
 
-  touchpad-enabled = "$TOUCHPAD_ENABLED";
+  touchpad-enabled-var = "$TOUCHPAD_ENABLED";
   toggle-touchpad = lib.getExe (pkgs.writeShellScriptBin "toggle-touchpad" ''
-    export STATUS_FILE=$XDG_RUNTIME_DIR/touchpad-status
+    STATUS_FILE=$XDG_RUNTIME_DIR/touchpad-status
+
+    send_notification() {
+      notify-send --urgency normal --expire-time 3000 "$@"
+    }
 
     enable() {
       printf "enabled" >"$STATUS_FILE"
-      notify-send -u normal "Enabling Touchpad"
-      hyprctl keyword '${touchpad-enabled}' "true" -r
+      send_notification "Enabling Touchpad"
+      hyprctl keyword '${touchpad-enabled-var}' "true" -r
     }
 
     disable() {
       printf "disabled" >"$STATUS_FILE"
-      notify-send -u normal "Disabling Touchpad"
-      hyprctl keyword '${touchpad-enabled}' "false" -r
+      send_notification "Disabling Touchpad"
+      hyprctl keyword '${touchpad-enabled-var}' "false" -r
     }
 
     if [ ! -f "$STATUS_FILE" ]; then
@@ -34,11 +38,11 @@ lib.mkIf (touchpad-name != null) {
     extraConfig = ''
       device {
         name = ${touchpad-name}
-        enabled = ${touchpad-enabled}
+        enabled = ${touchpad-enabled-var}
       }
     '';
     settings = {
-      ${touchpad-enabled} = false;
+      ${touchpad-enabled-var} = false;
 
       bind = [
         ", XF86TouchpadToggle, exec, ${toggle-touchpad}"
