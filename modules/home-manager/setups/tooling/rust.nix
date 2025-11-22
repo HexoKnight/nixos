@@ -7,6 +7,14 @@ in
   options.setups.tooling.rust = {
     enable = lib.mkEnableOption "rust dev stuff";
 
+    rustupDir = lib.mkOption {
+      description = "the location (relative to $HOME) of rustup's home ($RUSTUP_HOME)";
+      type = lib.types.pathWith {
+        absolute = false;
+        inStore = false;
+      };
+      default = ".local/share/rustup";
+    };
     cargoDir = lib.mkOption {
       description = "the location (relative to $HOME) of cargo's home ($CARGO_HOME)";
       type = lib.types.pathWith {
@@ -20,11 +28,13 @@ in
   config = lib.mkIf cfg.enable {
     persist-home = {
       directories = [
+        cfg.rustupDir
         cfg.cargoDir
       ];
     };
 
     home.sessionVariables = {
+      RUSTUP_HOME = "$HOME/${cfg.rustupDir}";
       CARGO_HOME = "$HOME/${cfg.cargoDir}";
     };
 
@@ -32,21 +42,17 @@ in
       "$HOME/${cfg.cargoDir}/bin"
     ];
 
-    home.packages = with pkgs.unstable; [
-      rustc
-      cargo
-      rust-analyzer
-      rustfmt
-      clippy
+    home.packages = [
+      pkgs.rustup
 
       # a cc is necessary for building rust programs
-      gcc
+      pkgs.gcc
     ];
 
     neovim.main.lspServers = {
       rust_analyzer = {
-        # already included in home.packages above
-        # extraPackages = with pkgs; [ rust-analyzer ];
+        # rustup can be installed with rustup
+        # extraPackages = [ pkgs.rust-analyzer ];
       };
     };
   };
