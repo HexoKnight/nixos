@@ -2,12 +2,14 @@
   imports = [
     ../generic
 
+    ./setups
+
+    ./flatpak.nix
+    ./fzf.nix
     ./impermanence.nix
     ./neovim
-    ./fzf.nix
+    ./shikane.nix
     ./steam-presence.nix
-    ./flatpak.nix
     ./xdg.nix
-    ./setups
   ];
 }

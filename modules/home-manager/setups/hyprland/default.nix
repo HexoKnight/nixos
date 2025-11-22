@@ -37,6 +37,8 @@ in {
       ".local/share/hyprland"
     ];
 
+    shikane.enable = true;
+
     services.swayosd = {
       enable = true;
       # https://github.com/ErikReider/SwayOSD/blob/main/data/style/style.scss
@@ -98,6 +100,10 @@ in {
           ])
           "vesktop"
           "steam"
+        ];
+
+        exec = [
+          "${lib.getExe' config.services.shikane.package "shikanectl"} reload"
         ];
 
         windowrulev2 = [

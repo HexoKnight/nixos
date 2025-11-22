@@ -5,8 +5,6 @@
     settings = {
       monitor = [
         ",preferred,auto,1"
-        # TODO: move this into a host-specific config
-        "HDMI-A-1,preferred,auto-left,1"
       ];
 
       general = {
