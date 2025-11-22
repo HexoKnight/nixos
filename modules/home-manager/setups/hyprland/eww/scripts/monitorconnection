@@ -1,6 +1,6 @@
-#!/usr/bin/env nix
-#! nix shell nixpkgs#jc nixpkgs#jq nixpkgs#moreutils
-#! nix --command bash
+#!/usr/bin/env bash
+
+PATH=@jc@/bin:@jq@/bin:@moreutils@/bin:$PATH
 
 jc nmcli -f active,type,device connection |
 jq -r '

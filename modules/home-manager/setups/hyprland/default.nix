@@ -55,6 +55,17 @@ in {
       configDir = pkgs.runCommandLocal "eww-config" {} ''
         cp -rT ${./eww} $out
 
+        chmod ug+w $out/scripts/*
+        cp -fT ${pkgs.replaceVars ./eww/scripts/monitorconnection {
+          inherit (pkgs) jc jq moreutils;
+        }} $out/scripts/monitorconnection
+        cp -fT ${pkgs.replaceVars ./eww/scripts/monitormusic {
+          inherit (pkgs) playerctl;
+        }} $out/scripts/monitormusic
+        cp -fT ${pkgs.replaceVars ./eww/scripts/monitorvolume {
+          inherit (pkgs) jq pulseaudio pamixer;
+        }} $out/scripts/monitorvolume
+
         chmod +x $out/scripts/*
       '';
     };
