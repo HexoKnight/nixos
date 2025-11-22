@@ -1,4 +1,4 @@
-{ config, lib, pkgs, config_name, ... }:
+{ lib, pkgs, config, ... }:
 
 let
   username = "harvey";
@@ -86,6 +86,24 @@ in
       home.packages = [
         pkgs.haguichi
       ];
+
+      hyprbinds = {
+        "SUPER SHIFT, P" = lib.hyprbinds.mkExec (
+          let
+            asusctlBin = lib.getExe' pkgs.asusctl "asusctl";
+          in
+          pkgs.writeShellScript "switch-profile" ''
+            set -o errexit
+
+            ${asusctlBin} profile --next
+            message=$(
+              ${asusctlBin} profile --profile-get |
+                sed '/Active profile/!d'
+            )
+            notify-send --urgency normal --expire-time 3000 "$message"
+          ''
+       ).outPath;
+      };
     };
 
   systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
