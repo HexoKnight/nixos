@@ -109,6 +109,7 @@ in
       nnoremap <silent> <C-w>p :call WindowSwap#DoWindowSwap()<CR>
     '';
     vim-sleuth = {};
+    vim-eunuch = {};
 
     nvim-cmp = /* lua */ ''
       --lua
