@@ -136,6 +136,18 @@ lua <<EOF
           end,
         })
       end
+
+      neolsp_path = (client.root_dir or vim.fn.getcwd()) .. '/.neolsp.lua'
+      neolsp_str = vim.secure.read(neolsp_path)
+      if neolsp_str then
+        neolsp_settings = assert(loadstring(neolsp_str, neolsp_path), "failed to parse .neolsp.lua")(client)
+
+        client.settings = vim.tbl_deep_extend("force", client.settings, neolsp_settings)
+        client.notify(
+          vim.lsp.protocol.Methods.workspace_didChangeConfiguration,
+          { settings = client.settings }
+        )
+      end
     end,
   })
 EOF
@@ -304,7 +316,7 @@ tnoremap <Esc> <Cmd>TerminalEsc<CR>
 
 command! TerminalEsc call s:TerminalEsc()
 function! s:TerminalEsc()
-  if buffer_name('%') =~ '^.*:bash$' 
+  if buffer_name('%') =~ '^.*:bash$'
     stopinsert
   else
     call feedkeys("\<Esc>", 'n')
