@@ -16,6 +16,6 @@ lib.pipe ./. [
     package
   ))
   (lib.filterAttrs (name: package:
-    lib.elem pkgs.system (package.meta.platforms or lib.platforms.all)
+    lib.elem pkgs.stdenv.hostPlatform.system (package.meta.platforms or lib.platforms.all)
   ))
 ]

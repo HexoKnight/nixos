@@ -76,6 +76,10 @@ in
             end)
             :totable()
         '';
+
+        plugin.config = {
+          legacy_commands = false;
+        };
       };
 
       services.syncthing.tray.enable = true;
@@ -163,15 +167,8 @@ in
   virtualisation = {
     libvirtd = {
       enable = true;
-
       qemu = {
         package = pkgs.qemu_kvm;
-
-        ovmf = {
-          enable = true;
-          packages = [ pkgs.OVMFFull.fd ];
-        };
-
         swtpm.enable = true;
       };
     };

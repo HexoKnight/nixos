@@ -19,7 +19,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      pkgs.rofi-wayland
+      pkgs.rofi
 
       pkgs.mako
       pkgs.libnotify

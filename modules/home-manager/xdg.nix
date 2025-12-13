@@ -43,13 +43,12 @@ in
       };
     } ++
     mkListIf (cfg.defaults.terminal.desktopFile != null) {
-      # TODO(25.11):
-      # xdg.terminal-exec = {
-      #   enable = true;
-      #   settings = {
-      #     default = [ cfg.defaults.terminal.desktopFile ];
-      #   };
-      # };
+      xdg.terminal-exec = {
+        enable = true;
+        settings = {
+          default = [ cfg.defaults.terminal.desktopFile ];
+        };
+      };
     } ++
     mkListIf (cfg.defaults.browser.command != null) {
       home.packages = [

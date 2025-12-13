@@ -27,10 +27,10 @@ in
         # press ?
         mpv-cheatsheet
 
-        # fixes https://github.com/hoyon/mpv-mpris/issues/98
         (mpris.overrideAttrs (oldAttrs: {
           version = "unstable-2023-26-10";
 
+          # fixes https://github.com/hoyon/mpv-mpris/issues/98
           src = pkgs.fetchFromGitHub {
             owner = "hoyon";
             repo = "mpv-mpris";
