@@ -128,6 +128,15 @@ in
       programs.eza = {
         enable = true;
         icons = "auto";
+
+        package = pkgs.eza.overrideAttrs (finalAttrs: prevAttrs: {
+          patchPhase = prevAttrs.patchPhase or "" + ''
+            substituteInPlace src/options/flags.rs \
+              --replace-fail \
+                'short: None, '"   "'   long: "total-size",' \
+                'short: Some(b'"'z'"'), long: "total-size",'
+          '';
+        });
       };
 
       setups = {
