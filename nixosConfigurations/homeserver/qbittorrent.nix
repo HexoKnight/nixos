@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ config, ... }:
 
 let
   profileDir = "/var/lib";
@@ -9,15 +9,6 @@ let
   inherit (config.services.qbittorrent) user group;
 in
 {
-  imports = [
-    # https://github.com/NixOS/nixpkgs/pull/287923
-    (builtins.fetchTree {
-      type = "file";
-      url = "https://raw.githubusercontent.com/NixOS/nixpkgs/ed446194bbf78795e4ec2d004da093116c93653f/nixos/modules/services/torrent/qbittorrent.nix";
-      narHash = "sha256-StMwVMrGi5kbk96rNFBfLiVuYKFTE/xkkeDC3wO70lQ=";
-    }).outPath
-  ];
-
   config = {
     persist.system = {
       directories = [
@@ -44,11 +35,6 @@ in
 
     services.qbittorrent = {
       enable = true;
-      package = pkgs.qbittorrent-nox.overrideAttrs (oldAttrs: {
-        meta = oldAttrs.meta // {
-          mainProgram = "qbittorrent-nox";
-        };
-      });
 
       inherit profileDir;
 

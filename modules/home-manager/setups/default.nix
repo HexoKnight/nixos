@@ -77,9 +77,12 @@ in
 
       nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
       nixpkgs.allowUnfreePkgs = [
-        (pkg: builtins.elem pkg.meta.license.shortName [
-          "CUDA EULA"
-        ])
+        (pkg: lib.all
+          (license: builtins.elem license.shortName [
+            "CUDA EULA"
+          ])
+          (lib.toList pkg.meta.license)
+        )
       ];
 
       # This value determines the Home Manager release that your configuration is
@@ -89,7 +92,7 @@ in
       # You should not change this value, even if you update Home Manager. If you do
       # want to update the value, then make sure to first check the Home Manager
       # release notes.
-      home.stateVersion = "25.05"; # Please read the comment before changing.
+      home.stateVersion = "25.11"; # Please read the comment before changing.
 
       home.packages = with pkgs; [
         # tools
@@ -174,7 +177,9 @@ in
           git = {
             # can apparently cause issues but seems fine
             overrideGpg = true;
-            paging.pager = "delta --paging=never";
+            pagers = [
+              { pager = "delta --paging=never"; }
+            ];
           };
           customCommands = [
             {
@@ -199,8 +204,10 @@ in
 
       programs.git = {
         enable = true;
-        userName = "HexoKnight";
-        userEmail = "harvey.gream@gmail.com";
+        settings.user = {
+          name = "HexoKnight";
+          email = "harvey.gream@gmail.com";
+        };
         includes = pkgs.lib.lists.singleton {
           contents = {
             core.autocrlf = false;
@@ -217,32 +224,47 @@ in
           enable = true;
         };
 
-        delta = {
-          enable = true;
-          options = {
-            features = "default";
-            default = {
-              file-decoration-style = "";
-              file-style = "purple";
-              hunk-header-decoration-style = "";
-            };
-            line-numbers = {
-              hunk-header-style = "omit";
-              line-numbers-left-format = "{nm:>3} ";
-              line-numbers-right-format = "{np:>3} ";
-            };
-            side-by-side = {
-              line-numbers-left-format = "{nm:>3} ";
-              line-numbers-right-format = "│{np:>3} ";
-            };
+      };
+
+      programs.delta = {
+        enable = true;
+        enableGitIntegration = true;
+        options = {
+          features = "default";
+          default = {
+            file-decoration-style = "";
+            file-style = "purple";
+            hunk-header-decoration-style = "";
+          };
+          line-numbers = {
+            hunk-header-style = "omit";
+            line-numbers-left-format = "{nm:>3} ";
+            line-numbers-right-format = "{np:>3} ";
+          };
+          side-by-side = {
+            line-numbers-left-format = "{nm:>3} ";
+            line-numbers-right-format = "│{np:>3} ";
           };
         };
       };
 
       programs.ssh = {
         enable = true;
-        addKeysToAgent = "yes";
+        enableDefaultConfig = false;
         matchBlocks = {
+          "*" = {
+            addKeysToAgent = "yes";
+
+            forwardAgent = lib.mkDefault false;
+            compression = lib.mkDefault false;
+            serverAliveInterval = lib.mkDefault 0;
+            serverAliveCountMax = lib.mkDefault 3;
+            hashKnownHosts = lib.mkDefault false;
+            userKnownHostsFile = lib.mkDefault "~/.ssh/known_hosts";
+            controlMaster = lib.mkDefault "no";
+            controlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
+            controlPersist = lib.mkDefault "no";
+          };
           "github.com" = {
             forwardAgent = true;
           };
@@ -462,7 +484,7 @@ in
           }
 
           nix-locate-bin() {
-            nix-locate --minimal --no-group --type x --type s --top-level --whole-name --at-root "/bin/$1"
+            nix-locate --minimal --no-group --type x --type s --whole-name --at-root "/bin/$1"
           }
           nix-locate-choose-bin() {
             nix-locate-bin "$@" | fzf -0

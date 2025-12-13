@@ -19,7 +19,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      pkgs.rofi-wayland
+      pkgs.rofi
 
       pkgs.mako
       pkgs.libnotify
@@ -114,9 +114,9 @@ in {
           "${lib.getExe' config.services.shikane.package "shikanectl"} reload"
         ];
 
-        windowrulev2 = [
-          "workspace name:__discord silent, initialtitle:(Discord)"
-          "workspace name:__steam silent, initialclass:(steam)"
+        windowrule = [
+          "workspace name:__discord silent, initialTitle:(Discord)"
+          "workspace name:__steam silent, initialClass:(steam)"
         ];
 
         env = (lib.attrsets.mapAttrsToList (

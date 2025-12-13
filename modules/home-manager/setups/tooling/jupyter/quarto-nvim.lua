@@ -1,3 +1,5 @@
+require('otter')
+
 local quarto = require('quarto')
 quarto.setup({
     lspFeatures = {

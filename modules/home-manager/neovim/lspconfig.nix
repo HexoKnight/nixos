@@ -46,13 +46,14 @@ in
           capabilities = vim.tbl_deep_extend('force', capabilities, cmp_nvim_lsp.default_capabilities())
         end
 
-        local defaultSettings = {
+        vim.lsp.config("*", {
           capabilities = capabilities,
-        }
+        })
       '')
-      + builtins.concatStringsSep "\n" (lib.mapAttrsToList (_name: { serverName, config, ... }:
-        "lspconfig[ [[${serverName}]] ].setup(vim.tbl_deep_extend('force', defaultSettings, ${config}))"
-      ) enabledLspServers);
+      + builtins.concatStringsSep "\n" (lib.mapAttrsToList (_name: { serverName, config, ... }: ''
+        vim.lsp.config([[${serverName}]], ${config})
+        vim.lsp.enable([[${serverName}]])
+      '') enabledLspServers);
     }];
     extraPackages = builtins.concatLists
       (lib.mapAttrsToList (_name: value: value.extraPackages) enabledLspServers);
