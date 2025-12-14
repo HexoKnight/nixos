@@ -110,8 +110,8 @@
         ];
 
         home-manager.sharedModules = [
-          inputs.nix-index-database.hmModules.nix-index
-          inputs.plasma-manager.homeManagerModules.plasma-manager
+          inputs.nix-index-database.homeModules.nix-index
+          inputs.plasma-manager.homeModules.plasma-manager
         ];
 
         nixpkgs-overlays = [
