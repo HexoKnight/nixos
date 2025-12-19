@@ -49,6 +49,21 @@ in
       pkgs.gcc
     ];
 
+    programs.bacon = {
+      enable = true;
+      settings = {
+        default_job = "clippy";
+        keybindings = {
+          j = "scroll-lines(1)";
+          k = "scroll-lines(-1)";
+          ctrl-d = "scroll-pages(0.5)";
+          ctrl-u = "scroll-pages(-0.5)";
+          g = "scroll-to-top";
+          shift-g = "scroll-to-bottom";
+        };
+      };
+    };
+
     neovim.main.lspServers = {
       rust_analyzer = {
         config.settings.rust-analyzer = {
