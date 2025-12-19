@@ -121,10 +121,7 @@ in
       
       lspServers.pyright = {
         extraPackages = [ pkgs.pyright ];
-        config = ''{}'';
       };
-
-      # vimlConfig = builtins.readFile ./jupyter.vim;
     };
   };
 }

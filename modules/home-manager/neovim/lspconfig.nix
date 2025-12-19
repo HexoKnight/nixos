@@ -3,6 +3,8 @@
 let
   inherit (lib) mkOption types;
 
+  toLua = lib.generators.toLua {};
+
   enabledLspServers = lib.filterAttrs (_name: server: server.enable) config.lspServers;
 in
 {
@@ -19,8 +21,8 @@ in
           };
           config = mkOption {
             description = "Lua config passed to server setup.";
-            type = types.str;
-            default = "{}";
+            type = types.attrsOf types.anything;
+            default = {};
           };
           extraPackages = mkOption {
             description = "Extra packages made available to neovim.";
@@ -51,7 +53,7 @@ in
         })
       '')
       + builtins.concatStringsSep "\n" (lib.mapAttrsToList (_name: { serverName, config, ... }: ''
-        vim.lsp.config([[${serverName}]], ${config})
+        vim.lsp.config([[${serverName}]], ${toLua config})
         vim.lsp.enable([[${serverName}]])
       '') enabledLspServers);
     }];

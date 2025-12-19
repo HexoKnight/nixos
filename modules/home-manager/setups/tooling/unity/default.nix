@@ -39,11 +39,6 @@ in
       extraPackages = [
         pkgs.roslyn-ls
       ];
-
-      # lspServers.roslyn_ls = {
-      #   extraPackages = [ pkgs.roslyn-ls ];
-      #   config = ''{}'';
-      # };
     };
   };
 }
