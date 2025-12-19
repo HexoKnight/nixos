@@ -51,8 +51,9 @@ in
 
     neovim.main.lspServers = {
       rust_analyzer = {
-        # rustup can be installed with rustup
-        # extraPackages = [ pkgs.rust-analyzer ];
+        config.settings.rust-analyzer = {
+          check.command = "clippy";
+        };
       };
     };
   };
