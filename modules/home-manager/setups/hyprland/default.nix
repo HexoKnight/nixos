@@ -115,7 +115,7 @@ in {
         ];
 
         windowrule = [
-          "workspace name:__discord silent, initialTitle:(Discord)"
+          "workspace name:__discord silent, initialClass:(vesktop)"
           "workspace name:__steam silent, initialClass:(steam)"
         ];
 
