@@ -87,6 +87,11 @@ in
         ".config/syncthingtray.ini"
       ];
 
+      home.sessionVariables = {
+        # 12 GB shader cache at .cache/nvidia
+        __GL_SHADER_DISK_CACHE_SIZE = "12000000000";
+      };
+
       home.packages = [
         pkgs.haguichi
       ];
