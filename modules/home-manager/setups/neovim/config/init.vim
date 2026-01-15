@@ -14,6 +14,8 @@ set completeopt=longest,menuone,preview
 set wildmode=longest,full
 set winborder=rounded
 
+set sessionoptions+=globals
+
 set undofile
 set backupdir-=.
 
@@ -258,12 +260,28 @@ function! s:PrepareWindowMove(direction)
   stopinsert
 endfunction
 
-" Move to the next buffer
-nmap <silent> <C-l> <Cmd>bnext<CR>
-tmap <silent> <C-l> <Cmd>bnext<CR>
-" Move to the previous buffer
-nmap <silent> <C-h> <Cmd>bprevious<CR>
-tmap <silent> <C-h> <Cmd>bprevious<CR>
+if exists(':BufferLine*')
+  " Move to the next buffer
+  nmap <silent> <C-l> <Cmd>BufferLineCycleNext<CR>
+  tmap <silent> <C-l> <Cmd>BufferLineCycleNext<CR>
+  " Move to the previous buffer
+  nmap <silent> <C-h> <Cmd>BufferLineCyclePrev<CR>
+  tmap <silent> <C-h> <Cmd>BufferLineCyclePrev<CR>
+
+  nmap <silent> <C-b>l <Cmd>BufferLineMoveNext<CR>
+  nmap <silent> <C-b>h <Cmd>BufferLineMovePrev<CR>
+  nmap <silent> <C-b>g <Cmd>lua require'bufferline'.move_to(1)<CR>
+  nmap <silent> <C-b>G <Cmd>lua require'bufferline'.move_to(-1)<CR>
+  nmap <silent> <C-b>p <Cmd>BufferLineTogglePin<CR>
+else
+  " Move to the next buffer
+  nmap <silent> <C-l> <Cmd>bnext<CR>
+  tmap <silent> <C-l> <Cmd>bnext<CR>
+  " Move to the previous buffer
+  nmap <silent> <C-h> <Cmd>bprevious<CR>
+  tmap <silent> <C-h> <Cmd>bprevious<CR>
+endif
+
 " quit current buffer and move to previous
 nmap <silent> <C-q> <Cmd>BClose<CR>
 tmap <silent> <C-q> <Cmd>BClose<CR>
