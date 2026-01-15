@@ -64,6 +64,8 @@ noremap <expr> <C-\><C-V> nr2char(getchar())
 inoremap <expr> <C-\><C-V> nr2char(getchar())
 tnoremap <expr> <C-\><C-V> nr2char(getchar())
 
+noremap <silent> <C-P> <Cmd>eval nvim_paste(nr2char(getchar()), v:false, -1)<CR>
+
 " ########## DIAGNOSTICS #########
 
 map gdd <Cmd>lua vim.diagnostic.open_float()<CR>
