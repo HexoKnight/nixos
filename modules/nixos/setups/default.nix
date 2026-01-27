@@ -241,6 +241,7 @@ in
       environment.systemPackages = [
         pkgs.gparted
       ];
+      boot.supportedFilesystems.exfat = true;
 
       fonts.fontconfig = {
         enable = true;
