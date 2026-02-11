@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 
 let
   username = "harvey";
@@ -26,10 +26,10 @@ in
     { pkgs, ... }:
     {
       setups.tooling.c.enable = true;
+      setups.tooling.java.enable = true;
       setups.tooling.jupyter.enable = true;
       setups.tooling.typescript.enable = true;
       setups.tooling.typst.enable = true;
-      setups.tooling.unity.enable = true;
     };
 
   persist.defaultSetup = {
