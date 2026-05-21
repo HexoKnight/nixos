@@ -9,6 +9,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    setups.tooling.csharp.enable = true;
+
     home.packages = [
       pkgs.unityhub
       # TODO: script to run a unity editor directly
@@ -24,20 +26,6 @@ in
         ".config/unity3d/Preferences"
         ".config/unity3d/cache"
         ".local/share/unity3d"
-      ];
-    };
-
-    neovim.main = {
-      pluginsWithConfig = [
-        {
-          plugin = pkgs.vimPlugins.roslyn-nvim;
-          type = "lua";
-          config = builtins.readFile ./roslyn-nvim.lua;
-        }
-      ];
-
-      extraPackages = [
-        pkgs.roslyn-ls
       ];
     };
   };
