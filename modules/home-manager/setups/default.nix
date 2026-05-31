@@ -1,15 +1,23 @@
-{ lib, pkgs, config, nixosConfig, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  nixosConfig,
+  ...
+}:
 
 let
   inherit (lib) mkOption mkEnableOption;
 
   mkListIf = condition: value: [ (lib.mkIf condition value) ];
 
-  mkBoolOption = msg: lib.mkOption {
-    description = "Whether ${msg}.";
-    type = lib.types.bool;
-    default = false;
-  };
+  mkBoolOption =
+    msg:
+    lib.mkOption {
+      description = "Whether ${msg}.";
+      type = lib.types.bool;
+      default = false;
+    };
 
   cfg = config.setups;
 
@@ -53,11 +61,15 @@ in
       };
     };
 
-    normal = mkEnableOption "the normal setup" // { default = cfg.desktop; };
+    normal = mkEnableOption "the normal setup" // {
+      default = cfg.desktop;
+    };
 
     impermanence = mkEnableOption "impermanence";
 
-    desktop = mkBoolOption "the user should have a desktop" // { default = cfg.personal-gaming; };
+    desktop = mkBoolOption "the user should have a desktop" // {
+      default = cfg.personal-gaming;
+    };
 
     personal-gaming = mkBoolOption "the user should have personal/gaming stuff";
   };
@@ -77,11 +89,14 @@ in
 
       nixpkgs.overlays = nixosConfig.nixpkgs-overlays;
       nixpkgs.allowUnfreePkgs = [
-        (pkg: lib.all
-          (license: builtins.elem license.shortName [
-            "CUDA EULA"
-          ])
-          (lib.toList pkg.meta.license)
+        (
+          pkg:
+          lib.all (
+            license:
+            builtins.elem license.shortName [
+              "CUDA EULA"
+            ]
+          ) (lib.toList pkg.meta.license)
         )
       ];
 
@@ -132,14 +147,16 @@ in
         enable = true;
         icons = "auto";
 
-        package = pkgs.eza.overrideAttrs (finalAttrs: prevAttrs: {
-          patchPhase = prevAttrs.patchPhase or "" + ''
-            substituteInPlace src/options/flags.rs \
-              --replace-fail \
-                'short: None, '"   "'   long: "total-size",' \
-                'short: Some(b'"'z'"'), long: "total-size",'
-          '';
-        });
+        package = pkgs.eza.overrideAttrs (
+          finalAttrs: prevAttrs: {
+            patchPhase = prevAttrs.patchPhase or "" + ''
+              substituteInPlace src/options/flags.rs \
+                --replace-fail \
+                  'short: None, '"   "'   long: "total-size",' \
+                  'short: Some(b'"'z'"'), long: "total-size",'
+            '';
+          }
+        );
       };
 
       setups = {
@@ -304,8 +321,15 @@ in
       };
       programs.bash = {
         enable = true;
-        historyControl = [ "ignorespace" "erasedups" ];
-        historyIgnore = [ "exit" "?" "??" ];
+        historyControl = [
+          "ignorespace"
+          "erasedups"
+        ];
+        historyIgnore = [
+          "exit"
+          "?"
+          "??"
+        ];
         initExtra = /* bash */ ''
           alias bathelp='bat --plain --language=help'
           help() {
@@ -379,18 +403,20 @@ in
             export fullregex="/share/man/man$section_first_char_regex/$manual\.$section_regex(\.[^.]+)?"
             export manual
 
-            pkg=$(${config.lib.fzf.genFzfCommand {
-              defaultCommand = /* bash */ ''
-                nix-locate --whole-name --at-root --regex "$fullregex" |
-                # what the fuck
-                sed -Ee 's|(\S+).*/nix/store/.{32}-(.*)/share/man/man./'"$manual"'\.([^.])(\.[^.]+)?|start=$(printf "%-20s - " "\1 (\3)"); printf "%s%*s" "$start" "$((43 - ''${#start}))" "\2"|e'
-              '';
-              binds.enter.become = "printf %s {1} | tr -d '()'";
-              options = {
-                delimiter = "\\s+";
-                exit-0 = true;
-              };
-            }}) || {
+            pkg=$(${
+              config.lib.fzf.genFzfCommand {
+                defaultCommand = /* bash */ ''
+                  nix-locate --whole-name --at-root --regex "$fullregex" |
+                  # what the fuck
+                  sed -Ee 's|(\S+).*/nix/store/.{32}-(.*)/share/man/man./'"$manual"'\.([^.])(\.[^.]+)?|start=$(printf "%-20s - " "\1 (\3)"); printf "%s%*s" "$start" "$((43 - ''${#start}))" "\2"|e'
+                '';
+                binds.enter.become = "printf %s {1} | tr -d '()'";
+                options = {
+                  delimiter = "\\s+";
+                  exit-0 = true;
+                };
+              }
+            }) || {
               if [ "$?" -eq 1 ]; then
                 >&2 echo "No manual entry for $1"
               else
@@ -454,16 +480,18 @@ in
           man() (
             test "$#" -gt 0 && exec env man "$@"
 
-            ${config.lib.fzf.genFzfCommand {
-              defaultCommand = "man -k .";
-              binds.enter.become = "man {1}{2}";
-              options = {
-                preview = "man {1}{2}";
-                delimiter = "\\s+";
-                exit-0 = true;
-                height = "~20";
-              };
-            }} || {
+            ${
+              config.lib.fzf.genFzfCommand {
+                defaultCommand = "man -k .";
+                binds.enter.become = "man {1}{2}";
+                options = {
+                  preview = "man {1}{2}";
+                  delimiter = "\\s+";
+                  exit-0 = true;
+                  height = "~20";
+                };
+              }
+            } || {
               if [ "$?" -eq 1 ]; then
                 >&2 echo "No manuals found"
               else
@@ -543,8 +571,8 @@ in
 
       # Let Home Manager install and manage itself.
       programs.home-manager.enable = true;
-    } ++
-    mkListIf cfg.impermanence {
+    }
+    ++ mkListIf cfg.impermanence {
       home.packages = [
         pkgs.local.persist
       ];
@@ -563,8 +591,8 @@ in
           ".cache/nix"
         ];
       };
-    } ++
-    mkListIf cfg.desktop {
+    }
+    ++ mkListIf cfg.desktop {
       home.packages = with pkgs; [
         nvtopPackages.full
       ];
@@ -605,8 +633,8 @@ in
         size = 24;
         package = pkgs.local.Win10OS-cursors;
       };
-    } ++
-    mkListIf cfg.personal-gaming {
+    }
+    ++ mkListIf cfg.personal-gaming {
       persist-home = {
         directories = [
           "Pictures"
@@ -635,23 +663,25 @@ in
 
         # mostly copied from:
         # https://github.com/NixOS/nixpkgs/blob/0e6684e6c5755325f801bda1751a8a4038145d7d/pkgs/by-name/he/helvum/package.nix#L21-L35
-        (pkgs.helvum.overrideAttrs (finalAttrs: prevAttrs: {
-          version = "2025-07-01-volume-control";
+        (pkgs.helvum.overrideAttrs (
+          finalAttrs: prevAttrs: {
+            version = "2025-07-01-volume-control";
 
-          src = pkgs.fetchFromGitLab {
-            domain = "gitlab.freedesktop.org";
-            owner = "pipewire";
-            repo = "helvum";
-            rev = "74cd6b23e12321b606107206474d04f671f335d0";
-            hash = "sha256-EIhyopyjxhlMxEVue6otcFwwUZWRbeS/oq3TP3l205I=";
-          };
+            src = pkgs.fetchFromGitLab {
+              domain = "gitlab.freedesktop.org";
+              owner = "pipewire";
+              repo = "helvum";
+              rev = "74cd6b23e12321b606107206474d04f671f335d0";
+              hash = "sha256-EIhyopyjxhlMxEVue6otcFwwUZWRbeS/oq3TP3l205I=";
+            };
 
-          cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-            inherit (finalAttrs) src;
-            name = "${finalAttrs.pname}-${finalAttrs.version}";
-            hash = "sha256-M3Ay4yhCx8oQWlaXGsXW2cTrabnNnECPIgYMC9khwQA=";
-          };
-        }))
+            cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+              inherit (finalAttrs) src;
+              name = "${finalAttrs.pname}-${finalAttrs.version}";
+              hash = "sha256-M3Ay4yhCx8oQWlaXGsXW2cTrabnNnECPIgYMC9khwQA=";
+            };
+          }
+        ))
 
         prismlauncher
 
@@ -665,7 +695,7 @@ in
       steam-presence.enable = true;
 
       # not critical so allow failure
-      home.activation.linkSaves = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      home.activation.linkSaves = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run ${lib.getExe pkgs.local.multilink} ~/Saves/links.toml || true
       '';
     }

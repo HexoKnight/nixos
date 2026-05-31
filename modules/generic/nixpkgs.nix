@@ -1,4 +1,9 @@
-{ lib, config, options, ... }:
+{
+  lib,
+  config,
+  options,
+  ...
+}:
 
 # would use `nixpkgs.config.allowUnfreePkgs` but nixpkgs.config doesn't allow nested options :/
 {
@@ -12,20 +17,27 @@
           elemType = types.either types.str predType;
         in
         types.coercedTo predType lib.singleton (types.listOf elemType);
-      default = [];
+      default = [ ];
     };
   };
 
   config = {
     assertions =
       let
-        definitions = map (attrs: lib.attrsets.removeAttrs attrs [
-          "packageOverrides" "perlPackageOverrides"
-        ]) options.nixpkgs.config.definitions;
-        checkMergeFail = path: attrsets:
-          lib.foldr ({ name, value }: mergeFail:
+        definitions = map (
+          attrs:
+          lib.attrsets.removeAttrs attrs [
+            "packageOverrides"
+            "perlPackageOverrides"
+          ]
+        ) options.nixpkgs.config.definitions;
+        checkMergeFail =
+          path: attrsets:
+          lib.foldr (
+            { name, value }:
+            mergeFail:
             let
-              newPath = path ++ [name];
+              newPath = path ++ [ name ];
             in
             if mergeFail != null then
               mergeFail
@@ -37,19 +49,23 @@
               newPath
           ) null (lib.attrsToList (lib.zipAttrs attrsets));
 
-        mergeFail = checkMergeFail [] definitions;
+        mergeFail = checkMergeFail [ ] definitions;
       in
-      [{
-        assertion = mergeFail == null;
-        message = ''
-          the option 'nixpkgs.config.${lib.concatStringsSep "." mergeFail}' is defined more than once but its values will not merge :(
-          one of them will overwrite the other
-        '';
-      }];
+      [
+        {
+          assertion = mergeFail == null;
+          message = ''
+            the option 'nixpkgs.config.${lib.concatStringsSep "." mergeFail}' is defined more than once but its values will not merge :(
+            one of them will overwrite the other
+          '';
+        }
+      ];
 
-    nixpkgs = lib.mkIf (config.nixpkgs.allowUnfreePkgs != []) {
-      config.allowUnfreePredicate = pkg:
-        lib.any (val:
+    nixpkgs = lib.mkIf (config.nixpkgs.allowUnfreePkgs != [ ]) {
+      config.allowUnfreePredicate =
+        pkg:
+        lib.any (
+          val:
           if lib.isString val then
             val == lib.getName pkg
           else if lib.isFunction val then

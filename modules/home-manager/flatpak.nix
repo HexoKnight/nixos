@@ -1,4 +1,9 @@
-{ lib, config, nixosConfig, ... }:
+{
+  lib,
+  config,
+  nixosConfig,
+  ...
+}:
 
 let
   cfg = config.flatpak;

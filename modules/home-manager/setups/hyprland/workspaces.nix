@@ -19,12 +19,9 @@ let
         select(.focused==true).activeWorkspace.name
       '
     '';
-    moveToWorkspace = name:
-      ''hyprctl dispatch movetoworkspace name:${name}'';
-    moveToWorkspaceSilent = name:
-      ''hyprctl dispatch movetoworkspacesilent name:${name}'';
-    gotoWorkspace = name:
-      ''hyprctl dispatch workspace name:${name}'';
+    moveToWorkspace = name: ''hyprctl dispatch movetoworkspace name:${name}'';
+    moveToWorkspaceSilent = name: ''hyprctl dispatch movetoworkspacesilent name:${name}'';
+    gotoWorkspace = name: ''hyprctl dispatch workspace name:${name}'';
 
     # EXTRA NORMAL WORKSPACES
     extraPrefix = "__";
@@ -74,12 +71,9 @@ let
         if . == "special" then "" else ltrimstr("special:") end
       '
     '';
-    moveToSpecialWorkspace = name:
-      ''hyprctl dispatch movetoworkspace special:${name}'';
-    moveToSpecialWorkspaceSilent = name:
-      ''hyprctl dispatch movetoworkspacesilent special:${name}'';
-    toggleSpecialWorkspace = name:
-      ''hyprctl dispatch togglespecialworkspace ${name}'';
+    moveToSpecialWorkspace = name: ''hyprctl dispatch movetoworkspace special:${name}'';
+    moveToSpecialWorkspaceSilent = name: ''hyprctl dispatch movetoworkspacesilent special:${name}'';
+    toggleSpecialWorkspace = name: ''hyprctl dispatch togglespecialworkspace ${name}'';
     closeCurrentSpecialWorkspace = ''
       currentSpecialWorkspace="$(${getCurrentSpecialWorkspace})" &&
       ${toggleSpecialWorkspace "\${currentSpecialWorkspace}"}
@@ -119,47 +113,51 @@ in
 
   config.wayland.windowManager.hyprland = {
     settings =
-    let
-      w = workspaces;
+      let
+        w = workspaces;
 
-      freceBin = lib.getExe pkgs.frece;
-      # actOnWorkspace must return a non-zero exit code if the db
-      # should not be updated (eg. it was a noop or it was invalid)
-      createWorkspaceAction = binName: getWorkspaces: actOnWorkspace:
-        lib.scripts.mkScript pkgs binName ''
-          DB_FILE="''${XDG_STATE_HOME:-$HOME/.local/state}/${binName}.db"
+        freceBin = lib.getExe pkgs.frece;
+        # actOnWorkspace must return a non-zero exit code if the db
+        # should not be updated (eg. it was a noop or it was invalid)
+        createWorkspaceAction =
+          binName: getWorkspaces: actOnWorkspace:
+          lib.scripts.mkScript pkgs binName ''
+            DB_FILE="''${XDG_STATE_HOME:-$HOME/.local/state}/${binName}.db"
 
-          workspaces="$(
-            ${getWorkspaces}
-          )"
-          ${freceBin} update "$DB_FILE" <(echo "$workspaces")
-          options="$(${freceBin} print "$DB_FILE" | grep -Fx "$workspaces")"
-          workspace=$(if [ -n "$options" ]; then echo "$options"; fi | rofi -dmenu)
-          if [ -n "$workspace" ]; then
-            {
-              ${actOnWorkspace "\${workspace}"}
-            } && {
-              workspaces="$(
-                ${getWorkspaces}
-              )"
-              ${freceBin} update "$DB_FILE" <(echo "$workspaces")
-              ${freceBin} increment "$DB_FILE" "$workspace"
-            }
-          fi
+            workspaces="$(
+              ${getWorkspaces}
+            )"
+            ${freceBin} update "$DB_FILE" <(echo "$workspaces")
+            options="$(${freceBin} print "$DB_FILE" | grep -Fx "$workspaces")"
+            workspace=$(if [ -n "$options" ]; then echo "$options"; fi | rofi -dmenu)
+            if [ -n "$workspace" ]; then
+              {
+                ${actOnWorkspace "\${workspace}"}
+              } && {
+                workspaces="$(
+                  ${getWorkspaces}
+                )"
+                ${freceBin} update "$DB_FILE" <(echo "$workspaces")
+                ${freceBin} increment "$DB_FILE" "$workspace"
+              }
+            fi
+          '';
+        ifNotEqualTo = getOther: actOnWorkspace: workspace: ''
+          [ "${workspace}" != "$(${getOther})" ] &&
+          ${actOnWorkspace workspace}
         '';
-      ifNotEqualTo = getOther: actOnWorkspace: workspace: ''
-        [ "${workspace}" != "$(${getOther})" ] &&
-        ${actOnWorkspace workspace}
-      '';
-      gotoExtraWorkspaceBin = createWorkspaceAction
-        "gotoExtraWorkspace" w.getExtraWorkspaces (ifNotEqualTo w.getCurrentExtraWorkspace w.gotoExtraWorkspace);
-      moveToExtraWorkspaceBin = createWorkspaceAction
-        "moveToExtraWorkspace" w.getExtraWorkspaces w.moveToExtraWorkspace;
-    in {
-      bind = [
-        "SUPER, D, exec, ${gotoExtraWorkspaceBin}"
-        "SUPER SHIFT, D, exec, ${moveToExtraWorkspaceBin}"
-      ];
-    };
+        gotoExtraWorkspaceBin = createWorkspaceAction "gotoExtraWorkspace" w.getExtraWorkspaces (
+          ifNotEqualTo w.getCurrentExtraWorkspace w.gotoExtraWorkspace
+        );
+        moveToExtraWorkspaceBin =
+          createWorkspaceAction "moveToExtraWorkspace" w.getExtraWorkspaces
+            w.moveToExtraWorkspace;
+      in
+      {
+        bind = [
+          "SUPER, D, exec, ${gotoExtraWorkspaceBin}"
+          "SUPER SHIFT, D, exec, ${moveToExtraWorkspaceBin}"
+        ];
+      };
   };
 }

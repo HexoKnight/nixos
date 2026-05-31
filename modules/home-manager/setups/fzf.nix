@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.fzf;
@@ -24,7 +29,7 @@ in
       enable = true;
       defaultCommand = fdBin;
       defaultOptions = [
-        (lib.cli.toGNUCommandLineShell {} {
+        (lib.cli.toGNUCommandLineShell { } {
           bind = genFzfbinds {
             ctrl-y = "preview-up";
             ctrl-e = "preview-down";
@@ -44,55 +49,56 @@ in
     };
 
     programs.bash.initExtra =
-    let
-      fileBin = lib.getExe pkgs.file;
-      batBin = lib.getExe pkgs.bat;
-      ezaBin = lib.getExe pkgs.eza;
-    in /* bash */ ''
-      __fzf_select__() {
-        ${genFzfCommand rec {
-          defaultCommand = "fd -HE '.git'";
-          withData = true;
-          binds =
-          let
-            toggle-flag = fzf-data.toggle-flag-update-prompt defaultCommand;
-          in
-          {
-            focus.transform-header = "${fileBin} -Lb {}";
-            alt-l.transform = toggle-flag "-L";
-            alt-d.transform = toggle-flag "-td";
-            alt-f.transform = toggle-flag "-tf";
-            alt-x.transform = toggle-flag "-tx";
-            alt-e.transform = toggle-flag "-te";
-            enter.become = "printf '%q' {}";
-          };
-          options = {
-            preview = "${batBin} -n --color=always {} | head -200";
-            scheme = "path";
-            multi = true;
-          };
-        }}
-      }
-      __fzf_cd__() {
-        ${genFzfCommand rec {
-          defaultCommand = "fd -td -HE '.git'";
-          withData = true;
-          binds = {
-            alt-l.transform = fzf-data.toggle-flag-update-prompt defaultCommand "-L";
-            enter.become = "printf 'cd -- %q' {}";
-          };
-          options = {
-            preview = "${ezaBin} --tree --colour=always {} | head -200";
-            scheme = "path";
-            no-multi = true;
-          };
-        }}
-      }
+      let
+        fileBin = lib.getExe pkgs.file;
+        batBin = lib.getExe pkgs.bat;
+        ezaBin = lib.getExe pkgs.eza;
+      in
+      /* bash */ ''
+        __fzf_select__() {
+          ${genFzfCommand rec {
+            defaultCommand = "fd -HE '.git'";
+            withData = true;
+            binds =
+              let
+                toggle-flag = fzf-data.toggle-flag-update-prompt defaultCommand;
+              in
+              {
+                focus.transform-header = "${fileBin} -Lb {}";
+                alt-l.transform = toggle-flag "-L";
+                alt-d.transform = toggle-flag "-td";
+                alt-f.transform = toggle-flag "-tf";
+                alt-x.transform = toggle-flag "-tx";
+                alt-e.transform = toggle-flag "-te";
+                enter.become = "printf '%q' {}";
+              };
+            options = {
+              preview = "${batBin} -n --color=always {} | head -200";
+              scheme = "path";
+              multi = true;
+            };
+          }}
+        }
+        __fzf_cd__() {
+          ${genFzfCommand rec {
+            defaultCommand = "fd -td -HE '.git'";
+            withData = true;
+            binds = {
+              alt-l.transform = fzf-data.toggle-flag-update-prompt defaultCommand "-L";
+              enter.become = "printf 'cd -- %q' {}";
+            };
+            options = {
+              preview = "${ezaBin} --tree --colour=always {} | head -200";
+              scheme = "path";
+              no-multi = true;
+            };
+          }}
+        }
 
-      source ${fzf-tab-completion}/bash/fzf-bash-completion.sh
-      bind -x '"\t": fzf_bash_completion'
-      FZF_COMPLETION_AUTO_COMMON_PREFIX=true
-      FZF_COMPLETION_AUTO_COMMON_PREFIX_PART=true
-    '';
+        source ${fzf-tab-completion}/bash/fzf-bash-completion.sh
+        bind -x '"\t": fzf_bash_completion'
+        FZF_COMPLETION_AUTO_COMMON_PREFIX=true
+        FZF_COMPLETION_AUTO_COMMON_PREFIX_PART=true
+      '';
   };
 }

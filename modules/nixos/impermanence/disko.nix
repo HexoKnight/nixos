@@ -5,8 +5,7 @@
 }:
 let
   btrfsCompMntOpts =
-    if btrfsCompression == null then []
-    else [ "compress-force=${btrfsCompression}" ];
+    if btrfsCompression == null then [ ] else [ "compress-force=${btrfsCompression}" ];
 in
 {
   disko.devices = {
@@ -57,14 +56,14 @@ in
             size = "100%FREE";
             content = {
               type = "btrfs";
-              extraArgs = ["-f"];
+              extraArgs = [ "-f" ];
 
               subvolumes = {
                 "/root" = {
                   mountOptions = btrfsCompMntOpts ++ [ "noatime" ];
                   mountpoint = "/";
                 };
-                "/old_roots" = {};
+                "/old_roots" = { };
 
                 "/persist" = {
                   mountOptions = btrfsCompMntOpts ++ [ "noatime" ];

@@ -1,7 +1,9 @@
-{ lib,
+{
+  lib,
   formats,
   python3Packages,
-  fetchPypi, fetchFromGitHub,
+  fetchPypi,
+  fetchFromGitHub,
 
   # python function body evaluating to
   # the path used for storing data
@@ -18,11 +20,12 @@
     return config_dir / "steam-presence"
   '',
 
-... }:
+  ...
+}:
 
 let
   inherit (python3Packages) buildPythonPackage buildPythonApplication;
-  pyproject-format = formats.toml {};
+  pyproject-format = formats.toml { };
 
   python-steamgriddb = buildPythonPackage rec {
     pname = "python-steamgriddb";
@@ -89,29 +92,36 @@ buildPythonApplication rec {
       dynamic = {
         dependencies.file = "requirements.txt";
       };
-      py-modules = [ "main" "runningApps" ];
+      py-modules = [
+        "main"
+        "runningApps"
+      ];
     };
   };
 
   postPatch = ''
     {
-      printf '%s\n' ${lib.escapeShellArg /* python */ ''
-        def __get_data_dir():
-            ${lib.concatStringsSep "\n    " (lib.splitString "\n" config_path_py)}
+      printf '%s\n' ${
+        lib.escapeShellArg /* python */ ''
+          def __get_data_dir():
+              ${lib.concatStringsSep "\n    " (lib.splitString "\n" config_path_py)}
 
-        __file__dir = __import__("pathlib").Path(__get_data_dir())
-        __file__dir.mkdir(parents=True, exist_ok=True)
-        __file__ = __file__dir / "does_not_exist"
-      ''}
+          __file__dir = __import__("pathlib").Path(__get_data_dir())
+          __file__dir.mkdir(parents=True, exist_ok=True)
+          __file__ = __file__dir / "does_not_exist"
+        ''
+      }
       cat main.py
     } >$TMPDIR/temp-main.py
     mv $TMPDIR/temp-main.py main.py
 
     # the script will be 'run' when being imported
-    printf %s ${lib.escapeShellArg /* python */ ''
-      def main():
-          pass
-    ''} >>runningApps.py
+    printf %s ${
+      lib.escapeShellArg /* python */ ''
+        def main():
+            pass
+      ''
+    } >>runningApps.py
   '';
 
   preBuild = ''

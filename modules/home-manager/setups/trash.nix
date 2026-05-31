@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ...}:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.trash;
@@ -21,14 +26,16 @@ in
       alias trash='trash-put --force-volume "$TRASH_VOLUME"'
 
       trash-restore() {
-        ${config.lib.fzf.genFzfCommand {
-          defaultCommand = "trash-restore </dev/null 2>/dev/null | sed -e '/^\s*[0-9]/b; d'";
-          options = {
-            multi = true;
-            delimiter = "\\s+";
-            exit-0 = true;
-          };
-        }} |
+        ${
+          config.lib.fzf.genFzfCommand {
+            defaultCommand = "trash-restore </dev/null 2>/dev/null | sed -e '/^\s*[0-9]/b; d'";
+            options = {
+              multi = true;
+              delimiter = "\\s+";
+              exit-0 = true;
+            };
+          }
+        } |
         awk '
           BEGIN { all = "" }
           {

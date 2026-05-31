@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.tooling.unity;
@@ -16,7 +21,8 @@ in
       # TODO: script to run a unity editor directly
     ];
     nixpkgs.allowUnfreePkgs = [
-      "unityhub" "corefonts"
+      "unityhub"
+      "corefonts"
     ];
 
     persist-home = {

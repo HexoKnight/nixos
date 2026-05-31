@@ -1,4 +1,10 @@
-{ lib, pkgs, config, nixosConfig, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  nixosConfig,
+  ...
+}:
 
 let
   cfg = config.setups.btop;
@@ -25,11 +31,13 @@ in
         show_uptime = false;
 
         swap_disk = false;
-        disks_filter = "exclude=" + lib.concatStringsSep " " (
-          lib.mapAttrsToList
-            (mount: config: if lib.elem "bind" config.options then mount else "")
-            nixosConfig.fileSystems or {}
-        );
+        disks_filter =
+          "exclude="
+          + lib.concatStringsSep " " (
+            lib.mapAttrsToList (
+              mount: config: if lib.elem "bind" config.options then mount else ""
+            ) nixosConfig.fileSystems or { }
+          );
       };
     };
   };

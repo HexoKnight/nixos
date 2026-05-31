@@ -1,15 +1,24 @@
-{ lib, pkgs, inputs, config, config_name, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  config,
+  config_name,
+  ...
+}:
 
 let
   inherit (lib) mkOption mkEnableOption;
 
   mkListIf = condition: value: [ (lib.mkIf condition value) ];
 
-  mkBoolOption = msg: lib.mkOption {
-    description = "Whether ${msg}.";
-    type = lib.types.bool;
-    default = false;
-  };
+  mkBoolOption =
+    msg:
+    lib.mkOption {
+      description = "Whether ${msg}.";
+      type = lib.types.bool;
+      default = false;
+    };
 
   cfg = config.setups;
 
@@ -39,29 +48,46 @@ in
       };
     };
 
-    minimal = mkEnableOption "the minimal setup" // { default = cfg.desktop; };
+    minimal = mkEnableOption "the minimal setup" // {
+      default = cfg.desktop;
+    };
 
-    sops = mkEnableOption "sops password management" // { default = cfg.minimal; };
+    sops = mkEnableOption "sops password management" // {
+      default = cfg.minimal;
+    };
 
-    installBootloader = mkBoolOption "to install grub" // { default = cfg.minimal; };
+    installBootloader = mkBoolOption "to install grub" // {
+      default = cfg.minimal;
+    };
 
     impermanence = mkEnableOption "impermanence";
 
-    desktop = mkBoolOption "the system should have a desktop" // { default = cfg.personal-gaming; };
+    desktop = mkBoolOption "the system should have a desktop" // {
+      default = cfg.personal-gaming;
+    };
     desktop-type = mkOption {
       description = "Desktop type";
-      type = lib.types.nullOr (lib.types.enum [
-        "hyprland" "plasma"
-      ]);
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "hyprland"
+          "plasma"
+        ]
+      );
       default = "hyprland";
     };
 
-    special-capslock = mkEnableOption "special-capslock" // { default = cfg.desktop; };
+    special-capslock = mkEnableOption "special-capslock" // {
+      default = cfg.desktop;
+    };
 
-    networking = mkEnableOption "networking" // { default = cfg.desktop; };
+    networking = mkEnableOption "networking" // {
+      default = cfg.desktop;
+    };
     android = mkEnableOption "android tools";
 
-    ssh = mkEnableOption "ssh stuff" // { default = cfg.minimal; };
+    ssh = mkEnableOption "ssh stuff" // {
+      default = cfg.minimal;
+    };
 
     personal-gaming = mkBoolOption "the user/system should have personal/gaming stuff";
 
@@ -146,15 +172,16 @@ in
       # Before changing this value read the documentation for this option
       # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
       system.stateVersion = "25.11"; # Did you read the comment?
-    } ++
-    mkListIf cfg.sops {
+    }
+    ++ mkListIf cfg.sops {
       sops = {
         defaultSopsFile = "${inputs.self}/secrets.json";
         defaultSopsFormat = "json";
 
-        gnupg.sshKeyPaths = [];
-        age.sshKeyPaths = [];
-        age.keyFile = (if cfg.impermanence then "/persist" else "") + "/home/${username}/.config/sops/age/keys.txt";
+        gnupg.sshKeyPaths = [ ];
+        age.sshKeyPaths = [ ];
+        age.keyFile =
+          (if cfg.impermanence then "/persist" else "") + "/home/${username}/.config/sops/age/keys.txt";
 
         secrets.hashedPassword = {
           neededForUsers = true;
@@ -162,8 +189,8 @@ in
       };
 
       users.users.${username}.hashedPasswordFile = config.sops.secrets.hashedPassword.path;
-    } ++
-    mkListIf cfg.installBootloader {
+    }
+    ++ mkListIf cfg.installBootloader {
       boot.loader = {
         grub.enable = true;
         grub.useOSProber = true;
@@ -174,8 +201,8 @@ in
         grub.timestampFormat = "%F %H:%M";
         grub.default = "saved";
       };
-    } ++
-    mkListIf cfg.impermanence {
+    }
+    ++ mkListIf cfg.impermanence {
       persist = {
         enable = true;
         defaultSetup = {
@@ -197,8 +224,8 @@ in
       home-manager.users.${username} = {
         setups.impermanence = true;
       };
-    } ++
-    mkListIf cfg.desktop {
+    }
+    ++ mkListIf cfg.desktop {
       home-manager.users.${username} = {
         setups.desktop = true;
       };
@@ -226,7 +253,7 @@ in
           wayland.enable = true;
           package = lib.mkDefault pkgs.qt6Packages.sddm;
           # goddamn qt weirdness
-          extraPackages = theme.propagatedUserEnvPkgs or [];
+          extraPackages = theme.propagatedUserEnvPkgs or [ ];
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 
@@ -246,17 +273,17 @@ in
       fonts.fontconfig = {
         enable = true;
         defaultFonts = {
-          monospace = ["RobotoMono Nerd Font Mono"];
-          sansSerif = ["Roboto"];
-          serif = ["Roboto"];
+          monospace = [ "RobotoMono Nerd Font Mono" ];
+          sansSerif = [ "Roboto" ];
+          serif = [ "Roboto" ];
         };
       };
       fonts.packages = with pkgs; [
         roboto
         nerd-fonts.roboto-mono
       ];
-    } ++
-    mkListIf (cfg.desktop && cfg.desktop-type == "hyprland") {
+    }
+    ++ mkListIf (cfg.desktop && cfg.desktop-type == "hyprland") {
       programs.hyprland = {
         enable = true;
         withUWSM = true;
@@ -265,8 +292,8 @@ in
       home-manager.users.${username} = {
         setups.hyprland.enable = true;
       };
-    } ++
-    mkListIf (cfg.desktop && cfg.desktop-type == "plasma") {
+    }
+    ++ mkListIf (cfg.desktop && cfg.desktop-type == "plasma") {
       services.desktopManager.plasma6.enable = true;
       environment.plasma6.excludePackages = with pkgs.kdePackages; [
         # from optionalPackages at https://github.com/NixOS/nixpkgs/blob/nixos-24.05/nixos/modules/services/desktop-managers/plasma6.nix#L135-L150
@@ -296,8 +323,8 @@ in
       home-manager.users.${username} = {
         setups.plasma.enable = true;
       };
-    } ++
-    mkListIf cfg.special-capslock {
+    }
+    ++ mkListIf cfg.special-capslock {
       # TODO: improve
       environment.etc."dual-function-keys.yaml".text = ''
         MAPPINGS:
@@ -310,15 +337,19 @@ in
         plugins = [
           dual-function-keys
         ];
-        udevmonConfig = let dir = pkgs.interception-tools; in ''
-          - JOB: "${dir}/bin/intercept -g $DEVNODE | ${dual-function-keys}/bin/dual-function-keys -c /etc/dual-function-keys.yaml | ${dir}/bin/uinput -d $DEVNODE"
-            DEVICE:
-              EVENTS:
-                EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
-        '';
+        udevmonConfig =
+          let
+            dir = pkgs.interception-tools;
+          in
+          ''
+            - JOB: "${dir}/bin/intercept -g $DEVNODE | ${dual-function-keys}/bin/dual-function-keys -c /etc/dual-function-keys.yaml | ${dir}/bin/uinput -d $DEVNODE"
+              DEVICE:
+                EVENTS:
+                  EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
+          '';
       };
-    } ++
-    mkListIf cfg.networking {
+    }
+    ++ mkListIf cfg.networking {
       networking = {
         networkmanager.enable = true;
       };
@@ -328,27 +359,29 @@ in
           "/etc/NetworkManager/system-connections"
         ];
       };
-    } ++
-    mkListIf cfg.android {
+    }
+    ++ mkListIf cfg.android {
       home-manager.users.${username} = {
         setups.tooling.android.enable = true;
       };
-    } ++
-    mkListIf cfg.ssh {
+    }
+    ++ mkListIf cfg.ssh {
       programs.ssh = {
         startAgent = true;
       };
-    } ++
-    mkListIf cfg.flatpak {
+    }
+    ++ mkListIf cfg.flatpak {
       services.flatpak.enable = true;
-    } ++
-    mkListIf cfg.personal-gaming {
+    }
+    ++ mkListIf cfg.personal-gaming {
       home-manager.users.${username} = {
         setups.personal-gaming = true;
       };
 
       nixpkgs.allowUnfreePkgs = [
-        "steam" "steam-unwrapped" "steam-run"
+        "steam"
+        "steam-unwrapped"
+        "steam-run"
       ];
 
       programs.steam = {

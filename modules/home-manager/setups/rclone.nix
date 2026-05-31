@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   inherit (lib) mkEnableOption;
@@ -8,7 +13,9 @@ in
 {
   options.setups.rclone = {
     enable = mkEnableOption "rclone";
-    bruhpi.enable = mkEnableOption "bruhpi sftp" // { default = true; };
+    bruhpi.enable = mkEnableOption "bruhpi sftp" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -20,8 +27,8 @@ in
       directories = [ ".cache/rclone" ];
     };
 
-    xdg.configFile."rclone/rclone.conf".text =
-      lib.optionalString cfg.bruhpi.enable (lib.generators.toINI {} {
+    xdg.configFile."rclone/rclone.conf".text = lib.optionalString cfg.bruhpi.enable (
+      lib.generators.toINI { } {
         homeserver = {
           type = "sftp";
           user = "nixos";
@@ -42,6 +49,7 @@ in
           md5sum_command = "md5sum";
           sha1sum_command = "sha1sum";
         };
-      });
+      }
+    );
   };
 }

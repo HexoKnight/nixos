@@ -1,4 +1,9 @@
-{ lib, inputs, config, ... }:
+{
+  lib,
+  inputs,
+  config,
+  ...
+}:
 
 let
   inherit (lib) mkEnableOption mkOption types;
@@ -8,39 +13,55 @@ let
   persist-root = cfg.root;
   system-persist-root = "${persist-root}/system";
 
-  persistence-options = (import "${inputs.self}/modules/lib/impermanence.nix" { inherit lib; }).override (final: prev: {
-    # TODO: add extensions
-  });
+  persistence-options =
+    (import "${inputs.self}/modules/lib/impermanence.nix" { inherit lib; }).override
+      (
+        final: prev: {
+          # TODO: add extensions
+        }
+      );
 
-  filterRecursive = {
-    filter ? _:_:true,
-    filterAttrs ? filter,
+  filterRecursive =
+    {
+      filter ? _: _: true,
+      filterAttrs ? filter,
 
-    prefix ? [],
-  }@attrs: value:
+      prefix ? [ ],
+    }@attrs:
+    value:
     let
       newPrefix = next: prefix ++ [ next ];
-      recurse = next: filterRecursive (attrs // {
-        prefix = newPrefix next;
-      });
+      recurse =
+        next:
+        filterRecursive (
+          attrs
+          // {
+            prefix = newPrefix next;
+          }
+        );
     in
     if lib.isAttrs value then
       lib.mapAttrs recurse (lib.filterAttrs (n: filterAttrs (newPrefix n)) value)
     else if lib.isList value then
       lib.imap0 recurse (lib.ifilter0 (i: filter (newPrefix i)) value)
-    else value;
+    else
+      value;
 
   # would extend persistence options instead but the coercedTo type
   # cannot be merged :/
   sanitised-cfg = filterRecursive {
     filter = _: v: v != null;
-    filterAttrs = p: v: ! (
-      v == null ||
-      ( (lib.length p < 2 || lib.elemAt p (lib.length p - 2) != "users") &&
-        lib.elem (lib.last p) [
-          "backup"
-        ]
-      ));
+    filterAttrs =
+      p: v:
+      !(
+        v == null
+        || (
+          (lib.length p < 2 || lib.elemAt p (lib.length p - 2) != "users")
+          && lib.elem (lib.last p) [
+            "backup"
+          ]
+        )
+      );
   } cfg;
 in
 {
@@ -80,7 +101,8 @@ in
       persist-home.usedByOS = true;
     };
 
-    persist.users = lib.mapAttrs (_name: config:
+    persist.users = lib.mapAttrs (
+      _name: config:
       lib.mkIf (config.persist-home.enable or false) {
         inherit (config.persist-home) directories files;
         # FIXME: infinite recursion :(

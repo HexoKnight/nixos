@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   username = "harvey";
@@ -98,21 +103,23 @@ in
       ];
 
       hyprbinds = {
-        "SUPER SHIFT, P" = lib.hyprbinds.mkExec (
-          let
-            asusctlBin = lib.getExe' pkgs.asusctl "asusctl";
-          in
-          pkgs.writeShellScript "switch-profile" ''
-            set -o errexit
+        "SUPER SHIFT, P" =
+          lib.hyprbinds.mkExec
+            (
+              let
+                asusctlBin = lib.getExe' pkgs.asusctl "asusctl";
+              in
+              pkgs.writeShellScript "switch-profile" ''
+                set -o errexit
 
-            ${asusctlBin} profile --next
-            message=$(
-              ${asusctlBin} profile --profile-get |
-                sed '/Active profile/!d'
-            )
-            notify-send --urgency normal --expire-time 3000 "$message"
-          ''
-       ).outPath;
+                ${asusctlBin} profile --next
+                message=$(
+                  ${asusctlBin} profile --profile-get |
+                    sed '/Active profile/!d'
+                )
+                notify-send --urgency normal --expire-time 3000 "$message"
+              ''
+            ).outPath;
       };
     };
 
@@ -192,7 +199,7 @@ in
 
   services.supergfxd = {
     enable = true;
-    settings = {};
+    settings = { };
   };
 
   services.asusd = {
@@ -207,7 +214,8 @@ in
   };
 
   nixpkgs.allowUnfreePkgs = [
-    "nvidia-x11" "nvidia-settings"
+    "nvidia-x11"
+    "nvidia-settings"
   ];
 
   hardware.nvidia = {

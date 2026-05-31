@@ -2,13 +2,14 @@
   lib,
   formats,
   python3Packages,
-  fetchPypi, fetchFromGitHub,
+  fetchPypi,
+  fetchFromGitHub,
   ffmpeg,
 }:
 
 let
   inherit (python3Packages) buildPythonPackage buildPythonApplication;
-  pyproject-format = formats.toml {};
+  pyproject-format = formats.toml { };
 
   googletrans = buildPythonPackage rec {
     pname = "googletrans";
@@ -59,7 +60,7 @@ buildPythonApplication rec {
   ];
 
   makeWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ ffmpeg ] }"
+    "--prefix PATH : ${lib.makeBinPath [ ffmpeg ]}"
   ];
 
   pyproject-toml = pyproject-format.generate "pyproject.toml" {

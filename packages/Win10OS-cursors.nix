@@ -1,5 +1,9 @@
-{ lib, stdenvNoCC, fetchFromGitHub,
-inkscape }:
+{
+  lib,
+  stdenvNoCC,
+  fetchFromGitHub,
+  inkscape,
+}:
 
 stdenvNoCC.mkDerivation rec {
   name = "Win10OS-cursors";

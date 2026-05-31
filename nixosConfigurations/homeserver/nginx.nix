@@ -1,4 +1,9 @@
-{ lib, config, modulesPath, ... }:
+{
+  lib,
+  config,
+  modulesPath,
+  ...
+}:
 
 let
   inherit (lib) types;
@@ -10,13 +15,16 @@ let
   hostsSubmodule = types.submoduleWith {
     modules = [
       (import "${modulesPath}/services/web-servers/nginx/vhost-options.nix" { inherit config lib; })
-      ({ name, config, ... }: {
-        config = {
-          serverName = lib.mkDefault "${name}.${rootDomain}";
-          addSSL = lib.mkDefault (!config.onlySSL && !config.forceSSL && !config.rejectSSL);
-          useACMEHost = lib.mkDefault rootDomain;
-        };
-      })
+      (
+        { name, config, ... }:
+        {
+          config = {
+            serverName = lib.mkDefault "${name}.${rootDomain}";
+            addSSL = lib.mkDefault (!config.onlySSL && !config.forceSSL && !config.rejectSSL);
+            useACMEHost = lib.mkDefault rootDomain;
+          };
+        }
+      )
     ];
   };
 in
@@ -25,14 +33,17 @@ in
     hosts = lib.mkOption {
       description = "Declarative vhost config";
       type = types.attrsOf hostsSubmodule;
-      default = {};
+      default = { };
     };
   };
 
   config = {
     acme.users.${rootDomain} = [ config.services.nginx.user ];
 
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
 
     nginx.hosts.${rootDomain} = {
       serverName = rootDomain;

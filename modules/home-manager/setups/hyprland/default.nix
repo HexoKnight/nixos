@@ -1,8 +1,14 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.hyprland;
-in {
+in
+{
   imports = [
     ./audio.nix
     ./binds.nix
@@ -49,19 +55,25 @@ in {
     programs.eww = {
       enable = true;
       package = pkgs.eww;
-      configDir = pkgs.runCommandLocal "eww-config" {} ''
+      configDir = pkgs.runCommandLocal "eww-config" { } ''
         cp -rT ${./eww} $out
 
         chmod ug+w $out/scripts/*
-        cp -fT ${pkgs.replaceVars ./eww/scripts/monitorconnection {
-          inherit (pkgs) jc jq moreutils;
-        }} $out/scripts/monitorconnection
-        cp -fT ${pkgs.replaceVars ./eww/scripts/monitormusic {
-          inherit (pkgs) playerctl;
-        }} $out/scripts/monitormusic
-        cp -fT ${pkgs.replaceVars ./eww/scripts/monitorvolume {
-          inherit (pkgs) jq pulseaudio pamixer;
-        }} $out/scripts/monitorvolume
+        cp -fT ${
+          pkgs.replaceVars ./eww/scripts/monitorconnection {
+            inherit (pkgs) jc jq moreutils;
+          }
+        } $out/scripts/monitorconnection
+        cp -fT ${
+          pkgs.replaceVars ./eww/scripts/monitormusic {
+            inherit (pkgs) playerctl;
+          }
+        } $out/scripts/monitormusic
+        cp -fT ${
+          pkgs.replaceVars ./eww/scripts/monitorvolume {
+            inherit (pkgs) jq pulseaudio pamixer;
+          }
+        } $out/scripts/monitorvolume
 
         chmod +x $out/scripts/*
       '';
@@ -119,11 +131,12 @@ in {
           "workspace name:__steam silent, initialClass:(steam)"
         ];
 
-        env = (lib.attrsets.mapAttrsToList (
+        env =
+          (lib.attrsets.mapAttrsToList (
             name: value: name + "," + builtins.toString value
           ) config.home.sessionVariables)
-        ++ [
-        ];
+          ++ [
+          ];
       };
     };
   };

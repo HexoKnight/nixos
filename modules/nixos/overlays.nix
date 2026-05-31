@@ -1,12 +1,21 @@
-{ lib, inputs, config, options, ... }:
+{
+  lib,
+  inputs,
+  config,
+  options,
+  ...
+}:
 
 let
   unstable-overlay = final: prev: {
-    unstable = import config.unstable-overlay.source ({
-      # passing config is not idempotent so this could
-      # cause some issues but it seems fine for now
-      inherit (final) system config;
-    } // (config.unstable-overlay.extraArgs final prev));
+    unstable = import config.unstable-overlay.source (
+      {
+        # passing config is not idempotent so this could
+        # cause some issues but it seems fine for now
+        inherit (final) system config;
+      }
+      // (config.unstable-overlay.extraArgs final prev)
+    );
   };
 in
 {
@@ -24,7 +33,7 @@ in
       extraArgs = lib.mkOption {
         description = "Function that takes the overlay args and produces extra args to pass when importing the unstable pkgs.";
         type = lib.types.functionTo (lib.types.functionTo lib.types.attrs);
-        default = _final: _prev: {};
+        default = _final: _prev: { };
       };
     };
   };

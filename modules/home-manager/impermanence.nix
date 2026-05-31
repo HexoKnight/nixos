@@ -1,13 +1,22 @@
-{ lib, config, inputs, ... }:
+{
+  lib,
+  config,
+  inputs,
+  ...
+}:
 
 let
   cfg = config.persist-home;
 
   inherit (lib) mkEnableOption mkOption types;
 
-  persistence-options = (import "${inputs.self}/modules/lib/impermanence.nix" { inherit lib; }).override (final: prev: {
-    # TODO: add extensions
-  });
+  persistence-options =
+    (import "${inputs.self}/modules/lib/impermanence.nix" { inherit lib; }).override
+      (
+        final: prev: {
+          # TODO: add extensions
+        }
+      );
 in
 {
   options.persist-home = {

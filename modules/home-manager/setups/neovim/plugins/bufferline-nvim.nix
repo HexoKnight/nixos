@@ -1,5 +1,4 @@
-pkgs:
-{
+pkgs: {
   postPatch = ''
     substituteInPlace lua/bufferline/ui.lua \
       --replace-fail \

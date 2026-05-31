@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.mpv;
@@ -38,7 +43,7 @@ in
             hash = "sha256-q0QhVhXOPFva1CVedox5X/dmUtR4aTaCK4BIBL+pkhY=";
           };
 
-          patches = oldAttrs.patches or [] ++ [
+          patches = oldAttrs.patches or [ ] ++ [
             # only update duration when playing
             ./mpv-mpris.patch
           ];

@@ -1,4 +1,10 @@
-{ lib, inputs, pkgs, config, ... }:
+{
+  lib,
+  inputs,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   inherit (lib) mkEnableOption mkOption;
@@ -8,16 +14,16 @@ let
   # https://btrfs.readthedocs.io/en/latest/Compression.html
   # purposefully forces specification of compression level
   btrfsCompressionTypes = lib.concatLists (
-    lib.mapAttrsToList (name: levels:
-      if levels == null then
-        [ name ]
-      else
-        lib.genList (i: "${name}:${toString (i + 1)}") levels
-    ) {
-      zlib = 9;
-      lzo = null;
-      zstd = 15;
-    }
+    lib.mapAttrsToList
+      (
+        name: levels:
+        if levels == null then [ name ] else lib.genList (i: "${name}:${toString (i + 1)}") levels
+      )
+      {
+        zlib = 9;
+        lzo = null;
+        zstd = 15;
+      }
   );
 in
 {
@@ -42,9 +48,10 @@ in
   config = lib.mkIf (config.persist.enable && cfg.enable) {
     persist.root = "/persist";
 
-    disko = (import ./disko.nix {
-      inherit (cfg) device swapSize btrfsCompression;
-    }).disko;
+    disko =
+      (import ./disko.nix {
+        inherit (cfg) device swapSize btrfsCompression;
+      }).disko;
 
     fileSystems."/persist".neededForBoot = true;
 

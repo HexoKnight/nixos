@@ -5,11 +5,12 @@ let
 in
 {
   options.acme = {
-    users = lib.mapAttrs (domain: _:
+    users = lib.mapAttrs (
+      domain: _:
       lib.mkOption {
         description = "Users that can access the ${domain} certificate.";
         type = lib.types.listOf lib.types.str;
-        default = [];
+        default = [ ];
       }
     ) config.security.acme.certs;
   };
@@ -21,7 +22,8 @@ in
       ];
     };
 
-    users.groups = lib.mapAttrs' (domain: config:
+    users.groups = lib.mapAttrs' (
+      domain: config:
       lib.nameValuePair config.group {
         members = cfg.users.${domain};
       }

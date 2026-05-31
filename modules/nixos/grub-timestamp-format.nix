@@ -1,7 +1,13 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 # https://www.reddit.com/r/NixOS/comments/17ilg97/comment/k6vjqj3/
-with lib; {
+with lib;
+{
   options = {
     boot.loader.grub.timestampFormat = mkOption {
       default = "%F";
@@ -13,7 +19,8 @@ with lib; {
     system.build.installBootLoader = mkOption {
       internal = true;
       visible = false;
-      apply = old_sh:
+      apply =
+        old_sh:
         pkgs.writeShellScript "wrap-boot-loader-install" ''
           old_pl=$(${pkgs.gawk}/bin/awk '/-install-grub.pl/ { print $2 }' ${old_sh})
           new_pl=$(${pkgs.coreutils}/bin/mktemp --suffix=.pl)

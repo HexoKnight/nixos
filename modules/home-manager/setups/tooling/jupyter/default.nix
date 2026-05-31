@@ -1,15 +1,23 @@
-{ lib, pkgs, config, inputs, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
 let
   inherit (lib) mkOption types;
 
   cfg = config.setups.tooling.jupyter;
 
-  kernelType = types.submodule (import (inputs.nixpkgs + /nixos/modules/services/development/jupyter/kernel-options.nix) {
-    inherit lib pkgs;
-  });
+  kernelType = types.submodule (
+    import (inputs.nixpkgs + /nixos/modules/services/development/jupyter/kernel-options.nix) {
+      inherit lib pkgs;
+    }
+  );
 
-  kernels = pkgs.jupyter-kernel.create  {
+  kernels = pkgs.jupyter-kernel.create {
     definitions = cfg.kernels;
   };
 in
@@ -20,59 +28,71 @@ in
     kernels = mkOption {
       description = "Declarative kernel config (see [services.jupyter.kernels](https://search.nixos.org/options?query=services.jupyter.kernels)).";
       type = types.attrsOf kernelType;
-      default = {};
+      default = { };
     };
     pythonKernels = mkOption {
       description = "Python kernel config.";
-      type = types.attrsOf (types.submodule ({ config, name, ...}: {
-        freeformType = (pkgs.formats.json { }).type;
+      type = types.attrsOf (
+        types.submodule (
+          { config, name, ... }:
+          {
+            freeformType = (pkgs.formats.json { }).type;
 
-        options = {
-          displayName = lib.mkOption {
-            type = lib.types.str;
-            description = "Name that will be shown to the user.";
-            default = "";
-          };
-          extraPythonPackages = mkOption {
-            description = "Extra packages provided ti the python env.";
-            type = types.functionTo (types.listOf types.package);
-          };
+            options = {
+              displayName = lib.mkOption {
+                type = lib.types.str;
+                description = "Name that will be shown to the user.";
+                default = "";
+              };
+              extraPythonPackages = mkOption {
+                description = "Extra packages provided ti the python env.";
+                type = types.functionTo (types.listOf types.package);
+              };
 
-          package = mkOption {
-            description = "The python package to use.";
-            type = types.package;
-            default = pkgs.python3;
-          };
-          finalPythonEnv = mkOption {
-            description = "Resulting python env.";
-            type = types.package;
-            readOnly = true;
-          };
-          finalKernel = mkOption {
-            description = "Resulting kernel.";
-            type = kernelType;
-            readOnly = true;
-          };
-        };
+              package = mkOption {
+                description = "The python package to use.";
+                type = types.package;
+                default = pkgs.python3;
+              };
+              finalPythonEnv = mkOption {
+                description = "Resulting python env.";
+                type = types.package;
+                readOnly = true;
+              };
+              finalKernel = mkOption {
+                description = "Resulting kernel.";
+                type = kernelType;
+                readOnly = true;
+              };
+            };
 
-        config = {
-          extraPythonPackages = ps: [ ps.ipykernel ];
-          finalPythonEnv = config.package.withPackages config.extraPythonPackages;
-          finalKernel = {
-            language = "python";
-            argv = [
-              config.finalPythonEnv.interpreter
-              "-m" "ipykernel_launcher"
-              "-f" "{connection_file}"
-            ];
-          } // lib.attrsets.removeAttrs config [
-            "_module" "freeformType"
-            "extraPythonPackages" "package" "finalPythonEnv" "finalKernel"
-          ];
-        };
-      }));
+            config = {
+              extraPythonPackages = ps: [ ps.ipykernel ];
+              finalPythonEnv = config.package.withPackages config.extraPythonPackages;
+              finalKernel = {
+                language = "python";
+                argv = [
+                  config.finalPythonEnv.interpreter
+                  "-m"
+                  "ipykernel_launcher"
+                  "-f"
+                  "{connection_file}"
+                ];
+              }
+              // lib.attrsets.removeAttrs config [
+                "_module"
+                "freeformType"
+                "extraPythonPackages"
+                "package"
+                "finalPythonEnv"
+                "finalKernel"
+              ];
+            };
+          }
+        )
+      );
       default = {
-        default = {};
+        default = { };
       };
     };
   };
@@ -84,11 +104,13 @@ in
       env.JUPYTER_PATH = toString kernels;
 
       pluginsWithConfig = [
-        { plugin = pkgs.vimPlugins.molten-nvim;
+        {
+          plugin = pkgs.vimPlugins.molten-nvim;
           type = "viml";
           config = builtins.readFile ./molten-nvim.vim;
         }
-        { plugin = pkgs.vimPlugins.jupytext-nvim;
+        {
+          plugin = pkgs.vimPlugins.jupytext-nvim;
           type = "lua";
           config = /* lua */ ''
             require('jupytext').setup({
@@ -98,27 +120,30 @@ in
             })
           '';
         }
-        { plugin = pkgs.vimPlugins.quarto-nvim;
+        {
+          plugin = pkgs.vimPlugins.quarto-nvim;
           type = "lua";
           config = builtins.readFile ./quarto-nvim.lua;
         }
-        { plugin = pkgs.vimPlugins.otter-nvim;
+        {
+          plugin = pkgs.vimPlugins.otter-nvim;
           type = "lua";
         }
       ];
 
-      extraPython3Packages = ps: with ps; [
-        pynvim
-        jupyter-client
+      extraPython3Packages =
+        ps: with ps; [
+          pynvim
+          jupyter-client
 
-        pyperclip
-        nbformat
-      ];
+          pyperclip
+          nbformat
+        ];
 
       extraPackages = [
         pkgs.python3Packages.jupytext
       ];
-      
+
       lspServers.pyright = {
         extraPackages = [ pkgs.pyright ];
       };

@@ -1,5 +1,6 @@
 {
-  lib, stdenvNoCC,
+  lib,
+  stdenvNoCC,
   fetchurl,
   autoPatchelfHook,
 
@@ -41,7 +42,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     mkdir -p $out
 
     mv -t $out Application .install4j
-    
+
     MODULES=$(source jre/release; printf %s "$MODULES")
     ${lib.getExe' jdk_javafx "jlink"} \
       --module-path ${jdk_javafx}/lib/openjdk/jmods \

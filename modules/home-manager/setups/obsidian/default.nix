@@ -1,34 +1,44 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.obsidian;
 
-  toLua = lib.generators.toLua {};
+  toLua = lib.generators.toLua { };
 
   # https://github.com/epwalsh/obsidian.nvim/blob/14e0427bef6c55da0d63f9a313fd9941be3a2479/lua/obsidian/workspace.lua#L4-L9
-  workspacesType = lib.types.attrsOf (lib.types.submodule ({ name, ... }: {
-    options = {
-      name = lib.mkOption {
-        description = "Workspace name. Defaults to attr name";
-        type = lib.types.str;
-        default = name;
-      };
-      path = lib.mkOption {
-        description = "Workspace path.";
-        type = lib.types.pathWith { inStore = false; };
-      };
-      strict = lib.mkOption {
-        description = "Whether the workspace root should be `path` rather than the valut root.";
-        type = lib.types.bool;
-        default = false;
-      };
-      overrides = lib.mkOption {
-        description = "Override config for this workspace.";
-        type = settingsType;
-        default = {};
-      };
-    };
-  }));
+  workspacesType = lib.types.attrsOf (
+    lib.types.submodule (
+      { name, ... }:
+      {
+        options = {
+          name = lib.mkOption {
+            description = "Workspace name. Defaults to attr name";
+            type = lib.types.str;
+            default = name;
+          };
+          path = lib.mkOption {
+            description = "Workspace path.";
+            type = lib.types.pathWith { inStore = false; };
+          };
+          strict = lib.mkOption {
+            description = "Whether the workspace root should be `path` rather than the valut root.";
+            type = lib.types.bool;
+            default = false;
+          };
+          overrides = lib.mkOption {
+            description = "Override config for this workspace.";
+            type = settingsType;
+            default = { };
+          };
+        };
+      }
+    )
+  );
   # https://github.com/epwalsh/obsidian.nvim/blob/14e0427bef6c55da0d63f9a313fd9941be3a2479/lua/obsidian/config.lua#L6-L34
   settingsType = lib.types.attrsOf lib.types.anything;
 in
@@ -55,7 +65,7 @@ in
           https://github.com/epwalsh/obsidian.nvim?tab=readme-ov-file#configuration-options
         '';
         type = settingsType;
-        default = {};
+        default = { };
       };
     };
   };
@@ -68,7 +78,8 @@ in
 
     neovim.main = {
       pluginsWithConfig = [
-        { plugin = pkgs.vimPlugins.obsidian-nvim;
+        {
+          plugin = pkgs.vimPlugins.obsidian-nvim;
           type = "lua";
           config = /* lua */ ''
             local workspaces = (${toLua (lib.attrValues cfg.plugin.workspaces)})

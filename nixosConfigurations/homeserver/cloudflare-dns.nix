@@ -1,11 +1,16 @@
-{ lib, config, options, ... }:
+{
+  lib,
+  config,
+  options,
+  ...
+}:
 
 {
   options = {
     dnsRecords = lib.mkOption {
       description = "DNS records to be updated.";
-      type = (options.services.cloudflare-dns.domains.type.getSubOptions []).dnsRecords.type;
-      default = {};
+      type = (options.services.cloudflare-dns.domains.type.getSubOptions [ ]).dnsRecords.type;
+      default = { };
     };
   };
 

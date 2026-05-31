@@ -1,4 +1,9 @@
-{ lib, inputs, config, ... }:
+{
+  lib,
+  inputs,
+  config,
+  ...
+}:
 
 let
   dataDir = "/var/lib/minecraft";
@@ -86,7 +91,9 @@ in
         content = "raw.@";
         proxied = false;
       };
-    } // lib.mapAttrs' (name: config:
+    }
+    // lib.mapAttrs' (
+      name: config:
       lib.nameValuePair "minecraft-server-${name}" {
         enable = config.enable;
         record = {

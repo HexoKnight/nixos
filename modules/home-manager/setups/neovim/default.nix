@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.neovim;
@@ -47,9 +52,11 @@ in
     home.packages = [ config.neovim.main.finalPackage ];
 
     home.sessionVariables = {
-      EDITOR = lib.getExe (pkgs.writeShellScriptBin "remote-nvim-edit" ''
-        exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait "$@"
-      '');
+      EDITOR = lib.getExe (
+        pkgs.writeShellScriptBin "remote-nvim-edit" ''
+          exec ${lib.getExe pkgs.neovim-remote} -s --remote-wait "$@"
+        ''
+      );
     };
   };
 }

@@ -24,7 +24,7 @@ in
       enable = true;
     };
 
-    home.activation.shikane-create-config = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    home.activation.shikane-create-config = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       if [ ! -f ~/${config-file} ]; then
           run touch ~/${config-file}
       fi

@@ -1,10 +1,15 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   # https://github.com/nix-community/steam-fetcher
   steam-fetcher-flake = builtins.getFlake "github:nix-community/steam-fetcher/12f66eafb7862d91b3e30c14035f96a21941bd9c";
 
-  zomboid-server = pkgs.callPackage ./dedicated-server.nix {};
+  zomboid-server = pkgs.callPackage ./dedicated-server.nix { };
 
   zomboid-client = pkgs.writeShellApplication {
     name = "zomboid-client";
@@ -37,7 +42,10 @@ in
   config = {
     nixpkgs-overlays = [ steam-fetcher-flake.outputs.overlays.default ];
 
-    nixpkgs.allowUnfreePkgs = [ "project-zomboid-server" "steamworks-sdk-redist" ];
+    nixpkgs.allowUnfreePkgs = [
+      "project-zomboid-server"
+      "steamworks-sdk-redist"
+    ];
 
     persist.system = {
       directories = [
@@ -47,7 +55,10 @@ in
         }
       ];
     };
-    networking.firewall.allowedUDPPorts = [ 16261 16262 ];
+    networking.firewall.allowedUDPPorts = [
+      16261
+      16262
+    ];
 
     environment.systemPackages = [
       zomboid-server
@@ -60,7 +71,7 @@ in
       isSystemUser = true;
       group = group;
     };
-    users.groups.${group} = {};
+    users.groups.${group} = { };
 
     # based on: https://pzwiki.net/wiki/Dedicated_server#Systemd
     systemd = {
@@ -124,8 +135,8 @@ in
         '';
       };
       sockets.zomboid = {
-        bindsTo    = [ "zomboid.service" ];
-        before     = [ "zomboid.service" ];
+        bindsTo = [ "zomboid.service" ];
+        before = [ "zomboid.service" ];
         requiredBy = [ "zomboid.service" ];
 
         socketConfig = {
@@ -138,8 +149,8 @@ in
         };
       };
       mounts = lib.singleton {
-        bindsTo    = [ "zomboid.service" ];
-        before     = [ "zomboid.service" ];
+        bindsTo = [ "zomboid.service" ];
+        before = [ "zomboid.service" ];
         requiredBy = [ "zomboid.service" ];
 
         type = "overlay";

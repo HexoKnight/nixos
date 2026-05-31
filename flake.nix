@@ -67,66 +67,82 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs:
-  let
-    lib = nixpkgs.lib.extend (final: _prev: import ./lib final);
-    localOverlay = final: _prev: {
-      local =
-        let args = { inherit lib; pkgs = final; }; in
-        import ./packages args //
-        import ./scripts args;
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      ...
+    }@inputs:
+    let
+      lib = nixpkgs.lib.extend (final: _prev: import ./lib final);
+      localOverlay = final: _prev: {
+        local =
+          let
+            args = {
+              inherit lib;
+              pkgs = final;
+            };
+          in
+          import ./packages args // import ./scripts args;
+      };
+
+      mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix {
+        inherit inputs lib;
+      };
+      forAllSystems = lib.genAttrs lib.systems.flakeExposed;
+    in
+    {
+      nixosConfigurations =
+        mkNixosConfigurations
+          {
+            homeserver = {
+              extraModules = [
+                inputs.nix-minecraft.nixosModules.minecraft-servers
+                inputs.nix-minecraft-servers.nixosModules.servers
+              ];
+            };
+            main-machine = {
+              extraModules = [
+                inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
+              ];
+            };
+            weak-machine = { };
+            wsl = {
+              extraModules = [
+                inputs.nixos-wsl.nixosModules.wsl
+              ];
+            };
+          }
+          [
+            {
+              imports = [
+                inputs.home-manager.nixosModules.home-manager
+
+                inputs.sops-nix.nixosModules.sops
+                inputs.impermanence.nixosModules.impermanence
+                inputs.disko.nixosModules.disko
+              ];
+
+              home-manager.sharedModules = [
+                inputs.nix-index-database.homeModules.nix-index
+                inputs.plasma-manager.homeModules.plasma-manager
+              ];
+
+              nixpkgs-overlays = [
+                localOverlay
+              ];
+            }
+          ];
+
+      lib = import ./lib lib;
+
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        (pkgs.extend localOverlay).local
+      );
     };
-
-    mkNixosConfigurations = import ./nixosConfigurations/mkNixosConfigurations.nix { inherit inputs lib; };
-    forAllSystems = lib.genAttrs lib.systems.flakeExposed;
-  in
-  {
-    nixosConfigurations = mkNixosConfigurations {
-      homeserver = {
-        extraModules = [
-          inputs.nix-minecraft.nixosModules.minecraft-servers
-          inputs.nix-minecraft-servers.nixosModules.servers
-        ];
-      };
-      main-machine = {
-        extraModules = [
-          inputs.nixos-hardware.nixosModules.asus-zephyrus-ga502
-        ];
-      };
-      weak-machine = {};
-      wsl = {
-        extraModules = [
-          inputs.nixos-wsl.nixosModules.wsl
-        ];
-      };
-    } [
-      {
-        imports = [
-          inputs.home-manager.nixosModules.home-manager
-
-          inputs.sops-nix.nixosModules.sops
-          inputs.impermanence.nixosModules.impermanence
-          inputs.disko.nixosModules.disko
-        ];
-
-        home-manager.sharedModules = [
-          inputs.nix-index-database.homeModules.nix-index
-          inputs.plasma-manager.homeModules.plasma-manager
-        ];
-
-        nixpkgs-overlays = [
-          localOverlay
-        ];
-      }
-    ];
-
-    lib = import ./lib lib;
-
-    packages = forAllSystems (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-      (pkgs.extend localOverlay).local
-    );
-  };
 }

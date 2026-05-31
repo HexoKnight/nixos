@@ -1,7 +1,12 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
-  bruh-bot = pkgs.callPackage ./bruh-bot.nix {};
+  bruh-bot = pkgs.callPackage ./bruh-bot.nix { };
 
   dataDir = "/var/lib/Bruh-Bot";
   runDir = "/run/bruh-bot";
@@ -31,7 +36,7 @@ in
       isSystemUser = true;
       group = group;
     };
-    users.groups.${group} = {};
+    users.groups.${group} = { };
 
     systemd = {
       tmpfiles.settings.bruhbot = {
@@ -74,8 +79,8 @@ in
         };
       };
       mounts = lib.singleton {
-        bindsTo    = [ "bruhbot.service" ];
-        before     = [ "bruhbot.service" ];
+        bindsTo = [ "bruhbot.service" ];
+        before = [ "bruhbot.service" ];
         requiredBy = [ "bruhbot.service" ];
 
         type = "overlay";

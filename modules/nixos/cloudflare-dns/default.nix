@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.services.cloudflare-dns;
@@ -6,37 +11,47 @@ let
   inherit (lib) types;
 
   # https://developers.cloudflare.com/api/resources/dns/subresources/records/models/record/#(schema)
-  recordType = (pkgs.formats.json {}).type;
+  recordType = (pkgs.formats.json { }).type;
 
-  domainSubmodule = {name, ...}: {
-    options = {
-      enable = lib.mkEnableOption "updating DNS records for this domain" // { default = true; };
-      dnsRecords = lib.mkOption {
-        description = "DNS records to be updated.";
-        type = types.attrsOf (types.submodule dnsRecordSubmodule);
-        default = {};
+  domainSubmodule =
+    { name, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "updating DNS records for this domain" // {
+          default = true;
+        };
+        dnsRecords = lib.mkOption {
+          description = "DNS records to be updated.";
+          type = types.attrsOf (types.submodule dnsRecordSubmodule);
+          default = { };
+        };
       };
     };
-  };
 
-  dnsRecordSubmodule = {name, ...}: {
-    options = {
-      enable = lib.mkEnableOption "this DNS record (disabling/removing this later will delete this record)" // { default = true; };
-      updateOnly = lib.mkOption {
-        description = "Try to update this record instead of overwriting it.";
-        type = types.bool;
-        default = false;
-      };
-      record = lib.mkOption {
-        description = ''
-          JSON representation of the dns record.
-          see: https://developers.cloudflare.com/api/resources/dns/subresources/records/models/record/#(schema)
-        '';
-        type = recordType;
-        default = {};
+  dnsRecordSubmodule =
+    { name, ... }:
+    {
+      options = {
+        enable =
+          lib.mkEnableOption "this DNS record (disabling/removing this later will delete this record)"
+          // {
+            default = true;
+          };
+        updateOnly = lib.mkOption {
+          description = "Try to update this record instead of overwriting it.";
+          type = types.bool;
+          default = false;
+        };
+        record = lib.mkOption {
+          description = ''
+            JSON representation of the dns record.
+            see: https://developers.cloudflare.com/api/resources/dns/subresources/records/models/record/#(schema)
+          '';
+          type = recordType;
+          default = { };
+        };
       };
     };
-  };
 
   update-dns = pkgs.local.writeNushellApplication {
     name = "dns-update";
@@ -44,20 +59,29 @@ let
     text = builtins.readFile ./update-dns.nu;
   };
 
-  filterMapEnabled = attrs: lib.pipe attrs [
-    (lib.filterAttrs (_: v: v.enable))
-    (lib.mapAttrs (_: v: lib.removeAttrs v ["enable"]))
-  ];
+  filterMapEnabled =
+    attrs:
+    lib.pipe attrs [
+      (lib.filterAttrs (_: v: v.enable))
+      (lib.mapAttrs (_: v: lib.removeAttrs v [ "enable" ]))
+    ];
 
   finalConfig = {
-    domains = lib.mapAttrs (domain: v:
-      v // {
-        dnsRecords = lib.mapAttrs (_: v:
+    domains = lib.mapAttrs (
+      domain: v:
+      v
+      // {
+        dnsRecords = lib.mapAttrs (
+          _: v:
           # manually replace @ with apex domain
-          lib.mapAttrsRecursive (p: v:
-            if lib.last p == "comment" then v else
-            if ! lib.isString v then v else
-            lib.replaceStrings ["@"] [domain] v
+          lib.mapAttrsRecursive (
+            p: v:
+            if lib.last p == "comment" then
+              v
+            else if !lib.isString v then
+              v
+            else
+              lib.replaceStrings [ "@" ] [ domain ] v
           ) v
         ) (filterMapEnabled v.dnsRecords);
       }
@@ -70,7 +94,7 @@ in
     domains = lib.mkOption {
       description = "Domains to update.";
       type = types.attrsOf (types.submodule domainSubmodule);
-      default = {};
+      default = { };
     };
 
     apiTokenFile = lib.mkOption {
@@ -113,8 +137,10 @@ in
         ];
 
         ExecStart = lib.concatStringsSep " " [
-          (lib.getExe' pkgs.coreutils "env") "CLOUDFLARE_API_TOKEN_FILE=\${CREDENTIALS_DIRECTORY}/apiToken"
-          (lib.getExe update-dns) (builtins.toFile "dns-config.json" (builtins.toJSON finalConfig))
+          (lib.getExe' pkgs.coreutils "env")
+          "CLOUDFLARE_API_TOKEN_FILE=\${CREDENTIALS_DIRECTORY}/apiToken"
+          (lib.getExe update-dns)
+          (builtins.toFile "dns-config.json" (builtins.toJSON finalConfig))
         ];
       };
     }

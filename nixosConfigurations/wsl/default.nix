@@ -2,7 +2,8 @@
 
 let
   username = "nixos";
-in {
+in
+{
   imports = [
     ./hardware-configuration.nix
   ];

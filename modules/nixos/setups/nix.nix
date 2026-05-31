@@ -1,4 +1,9 @@
-{ lib, inputs, config, ... }:
+{
+  lib,
+  inputs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.nix;
@@ -24,21 +29,28 @@ in
   };
 
   config = lib.mkMerge [
-    (lib.mkIf cfg.flakes.enable (lib.mkMerge [
-      {
-        nix.settings.experimental-features = [ "nix-command" "flakes" ];
-        nix.channel.enable = false; # only flakes :)
-      }
-      (lib.mkIf cfg.flakes.inputs.provideInFlakeRegistry {
-        nix.registry = builtins.mapAttrs (_name: value: { flake = value; }) inputs;
-      })
-      (lib.mkIf cfg.flakes.inputs.provideInNixPath {
-        nix.nixPath = [ "/etc/nix/path" ];
-        nix.settings.nix-path = "/etc/nix/path";
+    (lib.mkIf cfg.flakes.enable (
+      lib.mkMerge [
+        {
+          nix.settings.experimental-features = [
+            "nix-command"
+            "flakes"
+          ];
+          nix.channel.enable = false; # only flakes :)
+        }
+        (lib.mkIf cfg.flakes.inputs.provideInFlakeRegistry {
+          nix.registry = builtins.mapAttrs (_name: value: { flake = value; }) inputs;
+        })
+        (lib.mkIf cfg.flakes.inputs.provideInNixPath {
+          nix.nixPath = [ "/etc/nix/path" ];
+          nix.settings.nix-path = "/etc/nix/path";
 
-        environment.etc = lib.mapAttrs' (name: value: lib.nameValuePair "nix/path/${name}" { source = value; }) inputs;
-      })
-    ]))
+          environment.etc = lib.mapAttrs' (
+            name: value: lib.nameValuePair "nix/path/${name}" { source = value; }
+          ) inputs;
+        })
+      ]
+    ))
     (lib.mkIf cfg.autoclean.enable {
       nix.optimise = {
         automatic = true;

@@ -16,13 +16,13 @@ in
      The name of the script to write.
 
      Type: String
-   */
+  */
   name,
   /*
      The shell script's text, not including a shebang.
 
      Type: String
-   */
+  */
   text,
   /*
      Whether to treat the script as if it were a nushell module rather than a nushell 'script'.
@@ -44,37 +44,37 @@ in
      eg. via `export-env`.
 
      Type: Boolean
-   */
+  */
   isModule ? false,
   /*
      Nushell modules to be `use ... *`ed in the script.
 
      Type: [String|Derivation]
-   */
+  */
   modules ? [ ],
   /*
      Inputs to add to the shell script's `$PATH` at runtime.
 
      Type: [String|Derivation]
-   */
+  */
   runtimeInputs ? [ ],
   /*
      Extra environment variables to set at runtime.
 
      Type: AttrSet
-   */
+  */
   runtimeEnv ? null,
   /*
      `stdenv.mkDerivation`'s `meta` argument.
 
      Type: AttrSet
-   */
+  */
   meta ? { },
   /*
      `stdenv.mkDerivation`'s `passthru` argument.
 
      Type: AttrSet
-   */
+  */
   passthru ? { },
   /*
      The `checkPhase` to run.
@@ -85,32 +85,37 @@ in
      The script path will be given as `$target` in the `checkPhase`.
 
      Type: String
-   */
+  */
   checkPhase ? null,
-  /* Extra arguments to pass to `stdenv.mkDerivation`.
+  /*
+    Extra arguments to pass to `stdenv.mkDerivation`.
 
-     :::{.caution}
-     Certain derivation attributes are used internally,
-     overriding those could cause problems.
-     :::
+    :::{.caution}
+    Certain derivation attributes are used internally,
+    overriding those could cause problems.
+    :::
 
-     Type: AttrSet
-   */
+    Type: AttrSet
+  */
   derivationArgs ? { },
 }:
 let
-  runtimeChanges = runtimeEnv != null || runtimeInputs != [];
+  runtimeChanges = runtimeEnv != null || runtimeInputs != [ ];
 
-  scriptText = lib.optionalString (runtimeEnv != null) ''
-    load-env ${builtins.toJSON runtimeEnv}
-  '' + lib.optionalString (runtimeInputs != []) ''
-    $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
-  '' + lib.concatMapStrings (module: ''
-    use '${if lib.isString module then module else module.modFile}' *
-  '') modules + ''
+  scriptText =
+    lib.optionalString (runtimeEnv != null) ''
+      load-env ${builtins.toJSON runtimeEnv}
+    ''
+    + lib.optionalString (runtimeInputs != [ ]) ''
+      $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
+    ''
+    + lib.concatMapStrings (module: ''
+      use '${if lib.isString module then module else module.modFile}' *
+    '') modules
+    + ''
 
-    ${text}
-  '';
+      ${text}
+    '';
 
   patchPhase = lib.optionalString (isModule && runtimeChanges) ''
     substituteInPlace $target --replace-fail \
@@ -129,20 +134,26 @@ let
     sed -i $target -Ee 's/^(\s*export\s)?(\s*def\s[^["]*"?)main(\s[^]]*\[)/export \2${name}\3/'
   '';
 
-  moduleText = lib.concatMapStrings (module: ''
-    use '${if lib.isString module then module else module.modFile}' *
-  '') modules
-  + text
-  + lib.optionalString runtimeChanges (''
+  moduleText =
+    lib.concatMapStrings (module: ''
+      use '${if lib.isString module then module else module.modFile}' *
+    '') modules
+    + text
+    + lib.optionalString runtimeChanges (
+      ''
 
-    def --env __load_runtime [] {
-    '' + lib.optionalString (runtimeEnv != null) ''
-      load-env ${builtins.toJSON runtimeEnv}
-    '' + lib.optionalString (runtimeInputs != []) ''
-      $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
-    '' + ''
-    }
-  '');
+        def --env __load_runtime [] {
+      ''
+      + lib.optionalString (runtimeEnv != null) ''
+        load-env ${builtins.toJSON runtimeEnv}
+      ''
+      + lib.optionalString (runtimeInputs != [ ]) ''
+        $env.PATH = ($env.PATH | prepend ${builtins.toJSON (getBinPaths runtimeInputs)})
+      ''
+      + ''
+        }
+      ''
+    );
 
   nuModName = name + "-mod";
   nuModPath = "/${nuModName}.nu";
@@ -195,21 +206,31 @@ writeTextFile {
   '';
 
   # hijack checkPhase to do some patching
-  checkPhase = patchPhase +
-    (if checkPhase == null then ''
-      runHook preCheck
-      ${
-        if isModule then ''
-          FORCE_COLOR=1 ${nuBin} --commands "use $target"
-        '' else ''
-          FORCE_COLOR=1 ${nuBin} --commands "nu-check --debug $target"
+  checkPhase =
+    patchPhase
+    + (
+      if checkPhase == null then
         ''
-      }
-      runHook postCheck
-    ''
-    else checkPhase);
+          runHook preCheck
+          ${
+            if isModule then
+              ''
+                FORCE_COLOR=1 ${nuBin} --commands "use $target"
+              ''
+            else
+              ''
+                FORCE_COLOR=1 ${nuBin} --commands "nu-check --debug $target"
+              ''
+          }
+          runHook postCheck
+        ''
+      else
+        checkPhase
+    );
 
-  passthru = passthru // lib.optionalAttrs isModule {
-    inherit nuModule;
-  };
+  passthru =
+    passthru
+    // lib.optionalAttrs isModule {
+      inherit nuModule;
+    };
 }

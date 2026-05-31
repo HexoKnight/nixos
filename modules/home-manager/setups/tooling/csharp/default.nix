@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.setups.tooling.csharp;
@@ -10,8 +15,12 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      (with pkgs.dotnetCorePackages;
-        combinePackages [sdk_8_0 sdk_9_0]
+      (
+        with pkgs.dotnetCorePackages;
+        combinePackages [
+          sdk_8_0
+          sdk_9_0
+        ]
       )
     ];
 
