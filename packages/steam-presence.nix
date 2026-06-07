@@ -7,7 +7,7 @@
 
   # python function body evaluating to
   # the path used for storing data
-  config_path_py ? /* python */ ''
+  config_path_py ? ''
     from pathlib import Path
     from os import mkdir, environ
 
@@ -54,15 +54,14 @@ let
 in
 buildPythonApplication rec {
   pname = "steam-presence";
-  # instead of 'YYYY-MM-DD' in order to conform to pep440
-  version = "2024.08.21";
+  version = "1.12.4";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "JustTemmie";
     repo = "steam-presence";
-    rev = "efec15f14db2fcb4a966cc0f2392ce77fe4805e7";
-    hash = "sha256-IPGy7wpX7Y8rKgtmq7BD3ckLQ8PUrx4uUDdzmr0ld/U=";
+    rev = "v${version}";
+    hash = "sha256-PUlNAktrpPygeJBYF0IQfqfz7g/sMayZA9/pUybh7Ig=";
   };
 
   build-system = [ python3Packages.setuptools ];
@@ -99,30 +98,35 @@ buildPythonApplication rec {
     };
   };
 
-  postPatch = ''
-    {
-      printf '%s\n' ${
-        lib.escapeShellArg /* python */ ''
-          def __get_data_dir():
-              ${lib.concatStringsSep "\n    " (lib.splitString "\n" config_path_py)}
+  postPatch =
+    let
+      mainPrefix = ''
+        def __get_data_dir():
+            ${lib.concatStringsSep "\n    " (lib.splitString "\n" config_path_py)}
 
-          __file__dir = __import__("pathlib").Path(__get_data_dir())
-          __file__dir.mkdir(parents=True, exist_ok=True)
-          __file__ = __file__dir / "does_not_exist"
-        ''
-      }
-      cat main.py
-    } >$TMPDIR/temp-main.py
-    mv $TMPDIR/temp-main.py main.py
+        __file__dir = __import__("pathlib").Path(__get_data_dir())
+        __file__dir.mkdir(parents=True, exist_ok=True)
+        __file__ = __file__dir / "does_not_exist"
+      '';
 
-    # the script will be 'run' when being imported
-    printf %s ${
-      lib.escapeShellArg /* python */ ''
+      # the script will be 'run' when being imported
+      runningAppsSuffix = ''
         def main():
             pass
-      ''
-    } >>runningApps.py
-  '';
+      '';
+    in
+    ''
+      {
+        printf '%s\n' ${lib.escapeShellArg mainPrefix}
+        cat main.py
+      } >$TMPDIR/temp-main.py
+      mv $TMPDIR/temp-main.py main.py
+
+      printf '\n%s' ${lib.escapeShellArg runningAppsSuffix} >>runningApps.py
+
+      substituteInPlace requirements.txt \
+        --replace-fail 'pypresence == 4.3.0' 'pypresence == 4.4.0'
+    '';
 
   preBuild = ''
     ln -s ${pyproject-toml} pyproject.toml

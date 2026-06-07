@@ -8,8 +8,6 @@
 let
   inherit (lib) mkOption mkEnableOption types;
   cfg = config.steam-presence;
-
-  fullConfigDir = "${config.home.homeDirectory}/${cfg.configDir}";
 in
 {
   options.steam-presence = {
@@ -27,23 +25,21 @@ in
     };
 
     configDir = mkOption {
-      description = "Path where config and data files will be stored (relative to $HOME).";
-      type = types.str;
-      # would use config.xdg.configHome but that causes infinite recursion when persisted
-      # something about fileSystems cannot depend on user stuff idk
-      default = ".config/steam-presence";
+      description = "Path where config and data files will be stored.";
+      type = types.path;
+      default = "${config.xdg.configHome}/steam-presence";
     };
   };
 
   config = lib.mkIf cfg.enable {
     steam-presence.finalPackage = cfg.package.override {
       config_path_py = /* python */ ''
-        return r"""${fullConfigDir}"""
+        return r"""${cfg.configDir}"""
       '';
     };
 
     persist-home = {
-      directories = [ cfg.configDir ];
+      directories = [ (lib.removePrefix "${config.home.homeDirectory}/" cfg.configDir) ];
     };
 
     # see upstream's `steam-presence.service` for explanation
@@ -66,7 +62,7 @@ in
         NoNewPrivileges = "true";
         ProtectSystem = "strict";
         # changed from upstream
-        ReadWritePaths = "-" + fullConfigDir;
+        ReadWritePaths = "-" + cfg.configDir;
       };
       Install = {
         WantedBy = [ "default.target" ];
