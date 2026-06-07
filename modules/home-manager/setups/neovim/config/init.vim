@@ -79,7 +79,11 @@ lua <<EOF
     virtual_text = function() return not virtual_lines end,
     virtual_lines = function() return virtual_lines end,
     jump = {
-      float = true,
+      on_jump = function()
+        vim.diagnostic.open_float({
+          scope = 'cursor',
+        })
+      end,
     },
   })
 
@@ -112,7 +116,7 @@ lua <<EOF
     callback = function(args)
       local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-      if client.supports_method('textDocument/documentHighlight') then
+      if client:supports_method('textDocument/documentHighlight') then
         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
           buffer = args.buf,
           callback = vim.lsp.buf.document_highlight,
@@ -123,7 +127,7 @@ lua <<EOF
         })
       end
 
-      if client.supports_method('textDocument/inlayHint') then
+      if client:supports_method('textDocument/inlayHint') then
         vim.lsp.inlay_hint.enable(true)
       end
 

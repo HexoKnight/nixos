@@ -29,7 +29,7 @@ in
       enable = true;
       defaultCommand = fdBin;
       defaultOptions = [
-        (lib.cli.toGNUCommandLineShell { } {
+        (lib.cli.toCommandLineShellGNU { } {
           bind = genFzfbinds {
             ctrl-y = "preview-up";
             ctrl-e = "preview-down";

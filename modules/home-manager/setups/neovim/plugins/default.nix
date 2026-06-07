@@ -64,6 +64,18 @@ in
     inherit pluginAttrsToList;
   };
 
+  nixpkgs.allowUnfreePkgs =
+    let
+      # until: https://github.com/NixOS/nixpkgs/pull/528883
+      # isVimPlugin = pkg: pkg.vimPlugin or false;
+      isVimPlugin = pkg: lib.hasPrefix "vimplugin-" pkg.name or "";
+    in
+    [
+      # many plugins do not specify a license so default to 'unfree' :/
+      # we'll just ignore this and assume the licensing is fine
+      (pkg: isVimPlugin pkg && pkg.meta.license == lib.licenses.unfree)
+    ];
+
   neovim.main.pluginsWithConfig =
     pluginAttrsToList vimPlugins (
       lib.concatMapAttrs (
@@ -296,13 +308,6 @@ in
     ++ (with vimPlugins; [
       {
         plugin = nvim-treesitter.withAllGrammars;
-        type = "lua";
-        config = /* lua */ ''
-          require('nvim-treesitter.configs').setup {
-            highlight = { enable = true },
-            additional_vim_regex_highlighting = false,
-          }
-        '';
       }
     ]);
 }

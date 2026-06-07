@@ -71,37 +71,49 @@ let
         let
           isCustomName = config.name != "nvim";
 
-          neovimConfig = pkgs.neovimUtils.makeNeovimConfig {
-            customRC = config.vimlConfig;
+          neovimPackage = pkgs.wrapNeovimUnstable config.package ({
+            extraName = "-wrapped-" + config.name;
+
+            neovimRcContent = config.vimlConfig;
+            luaRcContent = config.luaConfig;
+
             plugins = config.pluginPackages;
             inherit (config) extraPython3Packages;
-          };
-          neovimPackage = pkgs.wrapNeovimUnstable config.package (
-            neovimConfig
-            // {
-              extraName = "-wrapped-" + config.name;
-              luaRcContent = config.luaConfig;
-              wrapperArgs = lib.concatLists (
-                [
-                  neovimConfig.wrapperArgs
-                  [
+
+            wrapperArgs = lib.concatLists (
+              [
+                (
+                  let
+                    luaEnv = config.package.lua.withPackages (_: [ ]);
+                  in
+                  lib.optionals (luaEnv != null) [
                     "--prefix"
-                    "PATH"
-                    ":"
-                    (lib.makeBinPath config.extraPackages)
+                    "LUA_PATH"
+                    ";"
+                    (config.package.lua.pkgs.luaLib.genLuaPathAbsStr luaEnv)
+                    "--prefix"
+                    "LUA_CPATH"
+                    ";"
+                    (config.package.lua.pkgs.luaLib.genLuaCPathAbsStr luaEnv)
                   ]
+                )
+                [
+                  "--prefix"
+                  "PATH"
+                  ":"
+                  (lib.makeBinPath config.extraPackages)
                 ]
-                ++ lib.mapAttrsToList (name: value: [
-                  "--set"
-                  name
-                  value
-                ]) config.env
-                ++ [
-                  config.extraWrapperArgs
-                ]
-              );
-            }
-          );
+              ]
+              ++ lib.mapAttrsToList (name: value: [
+                "--set"
+                name
+                value
+              ]) config.env
+              ++ [
+                config.extraWrapperArgs
+              ]
+            );
+          });
 
           finalNeovimPackage = neovimPackage.overrideAttrs (
             final: prev: {

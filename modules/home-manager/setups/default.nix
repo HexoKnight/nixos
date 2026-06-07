@@ -268,7 +268,7 @@ in
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
-        matchBlocks = {
+        settings = {
           "*" = {
             addKeysToAgent = "yes";
 
@@ -603,14 +603,9 @@ in
       setups.librewolf.enable = true;
       setups.zathura.enable = true;
 
-      services.wlsunset = {
+      services.hyprsunset = {
         enable = true;
-        # they are in fact not allowed to be identical :/
-        temperature.day = 4501;
-        temperature.night = 4500;
-        # i do not care but they have to be set
-        latitude = "";
-        longitude = "";
+        settings.profile.temperature = 4500;
       };
 
       xdg.defaults = {
@@ -663,7 +658,7 @@ in
 
         # mostly copied from:
         # https://github.com/NixOS/nixpkgs/blob/0e6684e6c5755325f801bda1751a8a4038145d7d/pkgs/by-name/he/helvum/package.nix#L21-L35
-        (pkgs.helvum.overrideAttrs (
+        (pkgs.unstable.helvum.overrideAttrs (
           finalAttrs: prevAttrs: {
             version = "2025-07-01-volume-control";
 

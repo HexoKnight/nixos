@@ -55,28 +55,50 @@ in
     programs.eww = {
       enable = true;
       package = pkgs.eww;
-      configDir = pkgs.runCommandLocal "eww-config" { } ''
-        cp -rT ${./eww} $out
+      systemd.enable = true;
 
-        chmod ug+w $out/scripts/*
-        cp -fT ${
-          pkgs.replaceVars ./eww/scripts/monitorconnection {
-            inherit (pkgs) jc jq moreutils;
+      scssConfig = null;
+      yuckConfig = null;
+    };
+    xdg.configFile = {
+      "eww/eww.scss".source = ./eww/eww.scss;
+      "eww/eww.yuck".source = pkgs.replaceVars ./eww/eww.yuck {
+        monitorconnection = lib.getExe (
+          pkgs.writeShellApplication {
+            name = "monitorconnection";
+            text = lib.readFile ./eww/scripts/monitorconnection;
+            runtimeInputs = [
+              pkgs.jc
+              pkgs.jq
+              pkgs.moreutils
+            ];
           }
-        } $out/scripts/monitorconnection
-        cp -fT ${
-          pkgs.replaceVars ./eww/scripts/monitormusic {
-            inherit (pkgs) playerctl;
+        );
+        monitormusic = lib.getExe (
+          pkgs.writeShellApplication {
+            name = "monitormusic";
+            text = lib.readFile ./eww/scripts/monitormusic;
+            runtimeInputs = [
+              pkgs.playerctl
+            ];
           }
-        } $out/scripts/monitormusic
-        cp -fT ${
-          pkgs.replaceVars ./eww/scripts/monitorvolume {
-            inherit (pkgs) jq pulseaudio pamixer;
+        );
+        monitorvolume = lib.getExe (
+          pkgs.writeShellApplication {
+            name = "monitorvolume";
+            text = lib.readFile ./eww/scripts/monitorvolume;
+            excludeShellChecks = [
+              # shellcheck doesn't like the '..$0..'
+              "SC2016"
+            ];
+            runtimeInputs = [
+              pkgs.jq
+              pkgs.pulseaudio
+              pkgs.pamixer
+            ];
           }
-        } $out/scripts/monitorvolume
-
-        chmod +x $out/scripts/*
-      '';
+        );
+      };
     };
 
     gtk = {
@@ -113,11 +135,7 @@ in
       ];
       settings = {
         exec-once = [
-          (lib.concatStringsSep " && " [
-            "${lib.getExe config.programs.eww.package} daemon"
-            "${lib.getExe config.programs.eww.package} open bar0"
-            "${lib.getExe config.programs.eww.package} open bar1"
-          ])
+          "${lib.getExe config.programs.eww.package} open-many bar0 bar1"
           "vesktop"
           "steam"
         ];
@@ -127,8 +145,8 @@ in
         ];
 
         windowrule = [
-          "workspace name:__discord silent, initialClass:(vesktop)"
-          "workspace name:__steam silent, initialClass:(steam)"
+          "workspace name:__discord silent, match:initial_class (vesktop)"
+          "workspace name:__steam   silent, match:initial_class (steam)"
         ];
 
         env =

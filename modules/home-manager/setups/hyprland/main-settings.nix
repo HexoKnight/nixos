@@ -72,12 +72,11 @@
 
       layerrule = [
         # fix borders in screenshots (due to the selection getting caught in the screenshot)
-        "noanim, selection"
-        "noanim, hyprpicker"
+        "no_anim on, match:namespace selection"
+        "no_anim on, match:namespace hyprpicker"
       ];
 
       dwindle = {
-        pseudotile = true;
         preserve_split = true;
       };
 

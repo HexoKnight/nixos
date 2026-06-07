@@ -114,9 +114,9 @@ in
       systemd.services.automatic-timezoned-geoclue-agent.unitConfig.DefaultDependencies = false;
       systemd.services.automatic-timezoned-geoclue-agent.before = [ "shutdown.target" ];
 
-      systemd.sleep.extraConfig = ''
-        HibernateMode=shutdown
-      '';
+      systemd.sleep.settings.Sleep = {
+        HibernateMode = "shutdown";
+      };
 
       setups.internationalisation = true;
       setups.nix = {
@@ -146,7 +146,7 @@ in
       users.mutableUsers = lib.mkDefault false;
       boot.tmp.useTmpfs = lib.mkDefault true;
 
-      documentation.man.generateCaches = true;
+      documentation.man.cache.enable = true;
 
       programs.nix-ld = {
         enable = true;
@@ -252,8 +252,7 @@ in
           enable = true;
           wayland.enable = true;
           package = lib.mkDefault pkgs.qt6Packages.sddm;
-          # goddamn qt weirdness
-          extraPackages = theme.propagatedUserEnvPkgs or [ ];
+          extraPackages = [ theme ];
           theme = "${theme}/share/sddm/themes/where_is_my_sddm_theme";
         };
 

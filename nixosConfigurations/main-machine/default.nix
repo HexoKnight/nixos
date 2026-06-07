@@ -112,9 +112,9 @@ in
               pkgs.writeShellScript "switch-profile" ''
                 set -o errexit
 
-                ${asusctlBin} profile --next
+                ${asusctlBin} profile next
                 message=$(
-                  ${asusctlBin} profile --profile-get |
+                  ${asusctlBin} profile get |
                     sed '/Active profile/!d'
                 )
                 notify-send --urgency normal --expire-time 3000 "$message"
@@ -204,7 +204,6 @@ in
 
   services.asusd = {
     enable = true;
-    enableUserService = true;
     asusdConfig.text = ''
       (
         charge_control_end_threshold: 80,

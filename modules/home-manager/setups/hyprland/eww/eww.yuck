@@ -61,14 +61,14 @@
            :onchange onchange)))
 
 (deflisten music :initial ""
-  "scripts/monitormusic")
+  "@monitormusic@")
 
 ;TODO: make listener based on 'nmcli connection monitor'
 (defpoll connection :interval "10s"
-  "scripts/monitorconnection")
+  "@monitorconnection@")
 
 (deflisten volume :inital "?%"
-  "scripts/monitorvolume")
+  "@monitorvolume@")
 
 (defpoll time :interval "10s"
   "date '+%H:%M %b %d, %Y'")

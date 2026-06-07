@@ -12,7 +12,8 @@ let
       {
         # passing config is not idempotent so this could
         # cause some issues but it seems fine for now
-        inherit (final) system config;
+        inherit (final.stdenv.hostPlatform) system;
+        inherit (final) config;
       }
       // (config.unstable-overlay.extraArgs final prev)
     );

@@ -69,7 +69,7 @@ in
               ''
                 substituteInPlace src/dist/component/package.rs \
                   --replace-fail \
-                    '\"{}\" $@' \
+                    '\"{}\" \"$@\"' \
                     '
                       if [ -n \"${"$"}{{RUSTUP_EXE-}}\" ]; then
                         \"${"$"}{{RUSTUP_EXE%/*/*}}/nix-support/ld-wrapper.sh\" \"$@\"

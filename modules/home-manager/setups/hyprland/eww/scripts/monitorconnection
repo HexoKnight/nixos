@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-PATH=@jc@/bin:@jq@/bin:@moreutils@/bin:$PATH
-
 jc nmcli -f active,type,device connection |
 jq -r '
   .[] |

@@ -10,10 +10,8 @@ let
 
   genCommandLineArgs =
     args:
-    toString (
-      [
-        (lib.cli.toGNUCommandLineShell { } (builtins.removeAttrs args [ "--" ]))
-      ]
+    lib.escapeShellArgs (
+      (lib.cli.toCommandLineGNU { } (builtins.removeAttrs args [ "--" ]))
       ++ lib.optionals (args ? "--") [
         "--"
         (lib.escapeShellArgs (lib.toList args."--"))

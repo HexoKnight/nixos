@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-PATH=@playerctl@/bin:$PATH
-
 playerctl --player=playerctld,%any --follow metadata --format '{{ status }} {{ artist }} - {{ title }} [{{ duration(position) }}/{{ duration(mpris:length) }}]' |
     sed --unbuffered '
         # replace status with emoji

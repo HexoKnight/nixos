@@ -30,7 +30,7 @@ in
         thumbfast
 
         # press ?
-        mpv-cheatsheet
+        mpv-cheatsheet-ng
 
         (mpris.overrideAttrs (oldAttrs: {
           version = "unstable-2023-26-10";

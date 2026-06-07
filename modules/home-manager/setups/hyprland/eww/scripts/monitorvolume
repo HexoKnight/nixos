@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-PATH=@jq@/bin:@pulseaudio@/bin:@pamixer@/bin:$PATH
-
 function output_volume() {
   if [ "$(pamixer --get-mute)" = "true" ]; then
     echo 0
@@ -22,6 +20,6 @@ jq --unbuffered '
     empty
   end
 ' |
-while read; do
+while read -r; do
   output_volume
 done
