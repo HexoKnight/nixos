@@ -133,6 +133,8 @@ in
       plugins = [
         # inputs.hycov.packages.${pkgs.system}.hycov
       ];
+      # TODO: swap to lua
+      configType = "hyprlang";
       settings = {
         exec-once = [
           "${lib.getExe config.programs.eww.package} open-many bar0 bar1"
