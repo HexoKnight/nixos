@@ -5,6 +5,5 @@ let
 in
 {
   scripts = callLibs ./scripts.nix;
-  hyprbinds = callLibs ./hyprbinds.nix;
   dir = callLibs ./dir.nix;
 }

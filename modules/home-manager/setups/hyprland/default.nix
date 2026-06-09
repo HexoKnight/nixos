@@ -12,8 +12,8 @@ in
   imports = [
     ./audio.nix
     ./binds.nix
-    ./hyprbinds.nix
     ./main-settings.nix
+    ./options.nix
     ./polkit-agent.nix
     ./toggle-touchpad.nix
     ./workspaces.nix
@@ -130,33 +130,39 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      plugins = [
-        # inputs.hycov.packages.${pkgs.system}.hycov
-      ];
-      # TODO: swap to lua
-      configType = "hyprlang";
+      plugins = [ ];
+      events = {
+        "hyprland.start" = { }: [
+          (lib.mkLuaInline "hl.exec_cmd([[${lib.getExe config.programs.eww.package} open-many bar0 bar1]])")
+          (lib.mkLuaInline "hl.exec_cmd([[vesktop]])")
+          (lib.mkLuaInline "hl.exec_cmd([[steam]])")
+        ];
+
+        "config.reloaded" = { }: [
+          (lib.mkLuaInline "hl.exec_cmd([[${lib.getExe' config.services.shikane.package "shikanectl"} reload]])")
+        ];
+      };
       settings = {
-        exec-once = [
-          "${lib.getExe config.programs.eww.package} open-many bar0 bar1"
-          "vesktop"
-          "steam"
+        window_rule = [
+          {
+            match.initial_class = "vesktop";
+            workspace = "name:__discord silent";
+          }
+          {
+            match.initial_class = "steam";
+            workspace = "name:__steam silent";
+          }
         ];
 
-        exec = [
-          "${lib.getExe' config.services.shikane.package "shikanectl"} reload"
-        ];
-
-        windowrule = [
-          "workspace name:__discord silent, match:initial_class (vesktop)"
-          "workspace name:__steam   silent, match:initial_class (steam)"
-        ];
-
-        env =
-          (lib.attrsets.mapAttrsToList (
-            name: value: name + "," + builtins.toString value
-          ) config.home.sessionVariables)
-          ++ [
-          ];
+        # not sure if this is necessary
+        env = (
+          lib.attrsets.mapAttrsToList (name: value: {
+            _args = [
+              name
+              (builtins.toString value)
+            ];
+          }) config.home.sessionVariables
+        );
       };
     };
   };

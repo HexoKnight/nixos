@@ -1,8 +1,13 @@
-{ lib, pkgs, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 {
   wayland.windowManager.hyprland = {
-    settings =
+    binds =
       let
         pactlBin = lib.getExe' pkgs.pulseaudio "pactl";
         jqBin = lib.getExe pkgs.jq;
@@ -50,9 +55,8 @@
         '';
       in
       {
-        bind = [
-          "SUPER, A, exec, rofi -show selectAudio -modes \"selectAudio:${lib.getExe selectAudio}\" "
-        ];
+        "SUPER + A" =
+          config.lib.hypr.binds.mkExec "rofi -show selectAudio -modes 'selectAudio:${lib.getExe selectAudio}'";
       };
   };
 }

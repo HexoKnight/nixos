@@ -35,8 +35,6 @@ Lots of these could be switched out with relative ease, some... not so much :/
 
 ### Some nice modules
 
-- [hyprbinds](modules/home-manager/setups/hyprland/hyprbinds.nix) -
-    a nixy?? interface to declare hyprland binds (submap support is missing but to be added eventually hopefully)
 - [fzf](modules/home-manager/fzf.nix) -
     a few functions for generating complex fzf commands
 - [neovim plugin stuff](modules/home-manager/setups/neovim/plugins/default.nix) -

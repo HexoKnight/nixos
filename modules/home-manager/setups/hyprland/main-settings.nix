@@ -2,22 +2,27 @@
 
 {
   wayland.windowManager.hyprland = {
-    settings = {
-      monitor = [
-        ",preferred,auto,1"
-      ];
-
+    settings.monitor = [
+      {
+        output = "";
+        mode = "preferred";
+        position = "auto";
+        scale = 1;
+      }
+    ];
+    settings.config = {
       general = {
         gaps_in = 0;
         gaps_out = 0;
         border_size = 1;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
+        col.active_border.colors = [
+          "rgba(33ccffee)"
+          "rgba(00ff99ee)"
+        ];
+        col.active_border.angle = 45;
+        col.inactive_border = "rgba(595959aa)";
 
         layout = "dwindle";
-
-        # Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
-        allow_tearing = false;
       };
 
       input = {
@@ -27,10 +32,11 @@
         follow_mouse = 2;
         mouse_refocus = false;
 
+        sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
+
         touchpad = {
           natural_scroll = true;
         };
-        sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
       };
 
       cursor = {
@@ -57,24 +63,7 @@
 
       animations = {
         enabled = true;
-
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-
-        animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
-        ];
       };
-
-      layerrule = [
-        # fix borders in screenshots (due to the selection getting caught in the screenshot)
-        "no_anim on, match:namespace selection"
-        "no_anim on, match:namespace hyprpicker"
-      ];
 
       dwindle = {
         preserve_split = true;
@@ -86,6 +75,77 @@
         mouse_move_focuses_monitor = false;
       };
     };
+    settings.curve = [
+      {
+        _args = [
+          "myBezier"
+          {
+            type = "bezier";
+            points = [
+              [
+                0.05
+                0.9
+              ]
+              [
+                0.1
+                1.05
+              ]
+            ];
+          }
+        ];
+      }
+    ];
+    settings.animation = [
+      {
+        leaf = "windows";
+        enabled = true;
+        speed = 7;
+        bezier = "myBezier";
+      }
+      {
+        leaf = "windowsOut";
+        enabled = true;
+        speed = 7;
+        bezier = "default";
+        style = "popin 80%";
+      }
+      {
+        leaf = "border";
+        enabled = true;
+        speed = 1;
+        bezier = "default";
+      }
+      {
+        leaf = "borderangle";
+        enabled = true;
+        speed = 8;
+        bezier = "default";
+      }
+      {
+        leaf = "fade";
+        enabled = true;
+        speed = 7;
+        bezier = "default";
+      }
+      {
+        leaf = "workspaces";
+        enabled = true;
+        speed = 6;
+        bezier = "default";
+      }
+    ];
+
+    settings.layer_rule = [
+      # fix borders in screenshots (due to the selection getting caught in the screenshot)
+      {
+        match.namespace = "selection";
+        no_anim = true;
+      }
+      {
+        match.namespace = "hyprpicker";
+        no_anim = true;
+      }
+    ];
   };
 
   xdg.configFile."hypr/xdph.conf".text = lib.hm.generators.toHyprconf {

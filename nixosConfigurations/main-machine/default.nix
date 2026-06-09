@@ -51,7 +51,7 @@ in
   disko = (import ./disko.nix).disko;
 
   home-manager.users.${username} =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       setups.config.disable-touchpad = "elan1205:00-04f3:30e9-touchpad";
 
@@ -102,9 +102,9 @@ in
         pkgs.haguichi
       ];
 
-      hyprbinds = {
-        "SUPER SHIFT, P" =
-          lib.hyprbinds.mkExec
+      wayland.windowManager.hyprland.binds = {
+        "SUPER + SHIFT + P" =
+          config.lib.hypr.binds.mkExec
             (
               let
                 asusctlBin = lib.getExe' pkgs.asusctl "asusctl";
