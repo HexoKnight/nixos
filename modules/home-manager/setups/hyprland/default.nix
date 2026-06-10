@@ -12,6 +12,7 @@ in
   imports = [
     ./audio.nix
     ./binds.nix
+    ./kb-mouse.nix
     ./main-settings.nix
     ./options.nix
     ./polkit-agent.nix
