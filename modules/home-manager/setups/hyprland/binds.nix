@@ -16,16 +16,11 @@
             mkExec
             mkMouseBind
 
-            withFlag
             repeating
             ;
         in
         lib.mkMerge [
           {
-            "SUPER + grave" = [
-              (mkExec "hyprctl keyword input:follow_mouse 1")
-              (withFlag "release" mkExec "hyprctl keyword input:follow_mouse 2")
-            ];
             "SUPER + Q" = mkNoArgBind "window.close";
             "SUPER + T" = mkExec config.home.sessionVariables.TERMINAL;
             "SUPER + B" = mkExec "x-www-browser";
@@ -60,14 +55,7 @@
             "SUPER + SHIFT + S" = mkExec ''${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})"'';
 
             "SUPER + M" = mkBind "focus" { monitor = "+1"; };
-            "SUPER + SHIFT + M".rawLua =
-              { }:
-              lib.mkLuaInline ''
-                hl.dispatch(hl.dsp.workspace.move({
-                  workspace = hl.get_active_workspace().id,
-                  monitor = "+1",
-                }))
-              '';
+            "SUPER + SHIFT + M" = mkBind "workspace.move" { monitor = "+1"; };
 
             # Example special workspace (scratchpad)
             # "SUPER + S" = mkBind "workspace.toggle_special" "magic";
