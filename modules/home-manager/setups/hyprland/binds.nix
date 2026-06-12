@@ -24,6 +24,10 @@
         lib.mkMerge [
           {
             "SUPER + Q" = mkNoArgBind "window.close";
+            "SUPER + SHIFT + Q" = mkBind "window.signal" {
+              # SIGTERM
+              signal = 15;
+            };
             "SUPER + T" = mkExec config.home.sessionVariables.TERMINAL;
             "SUPER + B" = mkExec "x-www-browser";
             "SUPER + CTRL + ALT + delete" = mkNoArgBind "exit";
