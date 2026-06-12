@@ -20,6 +20,8 @@
             ;
 
           tofi = config.programs.tofi.package;
+
+          run = shellCmd: "${lib.getExe pkgs.uwsm} app -t service -- ${shellCmd}";
         in
         lib.mkMerge [
           {
@@ -28,14 +30,12 @@
               # SIGTERM
               signal = 15;
             };
-            "SUPER + T" = mkExec config.home.sessionVariables.TERMINAL;
-            "SUPER + B" = mkExec "x-www-browser";
+            "SUPER + T" = mkExec (run config.home.sessionVariables.TERMINAL);
+            "SUPER + B" = mkExec (run "x-www-browser");
             "SUPER + CTRL + ALT + delete" = mkNoArgBind "exit";
-            "SUPER + E" = mkExec "lf";
-            "SUPER + R" =
-              mkExec "cmd=$(${lib.getExe' tofi "tofi-run"}) && ${lib.getExe pkgs.uwsm} app -t service -- $cmd";
+            "SUPER + R" = mkExec "cmd=$(${lib.getExe' tofi "tofi-run"}) && ${run "$cmd"}";
             "SUPER + SHIFT + R" =
-              mkExec "cmd=$(${lib.getExe' tofi "tofi-drun"} --drun-print-desktop=true) && ${lib.getExe pkgs.uwsm} app -t service -- $cmd";
+              mkExec "cmd=$(${lib.getExe' tofi "tofi-drun"} --drun-print-desktop=true) && ${run "$cmd"}";
 
             "SUPER + P" = mkNoArgBind "window.pseudo";
             "SUPER + S" = mkBind "layout" "togglesplit";
