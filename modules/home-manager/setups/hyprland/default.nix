@@ -26,8 +26,6 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      pkgs.rofi
-
       pkgs.mako
       pkgs.libnotify
 
@@ -51,6 +49,48 @@ in
           background: alpha(@theme_bg_color, 0.8);
         }
       '';
+    };
+
+    programs.tofi = {
+      enable = true;
+      settings = {
+        font = "${pkgs.nerd-fonts.roboto-mono}/share/fonts/truetype/NerdFonts/RobotoMono/RobotoMonoNerdFontMono-Regular.ttf";
+
+        border-width = 0;
+        outline-width = 0;
+
+        width = "100%";
+        height = "100%";
+        padding-top = "16%";
+        padding-bottom = "16%";
+        padding-left = "16%";
+        # padding-right = "16%";
+
+        background-color = "#000A";
+      };
+      package = pkgs.tofi.overrideAttrs (
+        finalAttrs: prevAttrs: {
+          version = "unstable-2024-10-30";
+
+          # latest main adds functionality like:
+          # - exit code 1 on failure
+          # - `--print-index`
+          src = pkgs.fetchFromGitHub {
+            owner = "philj56";
+            repo = "tofi";
+            rev = "1eb6137572ab6c257ab6ab851d5d742167c18120";
+            hash = "sha256-OD56rwDrXgb5pg85sT5v+zl9A1/sfn77PBSG4gT76bE=";
+          };
+
+          patches = prevAttrs.patches or [ ] ++ [
+            # PR adds `--drun-print-desktop`
+            (pkgs.fetchpatch2 {
+              url = "https://patch-diff.githubusercontent.com/raw/philj56/tofi/pull/214.patch";
+              hash = "sha256-2PhEy8ASE0V3D5k5e1ewrvJnYB9QccsNiN7j87tzIZA=";
+            })
+          ];
+        }
+      );
     };
 
     programs.eww = {

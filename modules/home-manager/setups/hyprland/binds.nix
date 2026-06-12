@@ -18,6 +18,8 @@
 
             repeating
             ;
+
+          tofi = config.programs.tofi.package;
         in
         lib.mkMerge [
           {
@@ -26,8 +28,10 @@
             "SUPER + B" = mkExec "x-www-browser";
             "SUPER + CTRL + ALT + delete" = mkNoArgBind "exit";
             "SUPER + E" = mkExec "lf";
-            "SUPER + R" = mkExec "rofi -show run";
-            "SUPER + SHIFT + R" = mkExec "rofi -show drun";
+            "SUPER + R" =
+              mkExec "cmd=$(${lib.getExe' tofi "tofi-run"}) && ${lib.getExe pkgs.uwsm} app -t service -- $cmd";
+            "SUPER + SHIFT + R" =
+              mkExec "cmd=$(${lib.getExe' tofi "tofi-drun"} --drun-print-desktop=true) && ${lib.getExe pkgs.uwsm} app -t service -- $cmd";
 
             "SUPER + P" = mkNoArgBind "window.pseudo";
             "SUPER + S" = mkBind "layout" "togglesplit";
