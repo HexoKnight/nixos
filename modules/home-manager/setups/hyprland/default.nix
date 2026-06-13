@@ -202,16 +202,6 @@ in
             workspace = "name:__steam silent";
           }
         ];
-
-        # not sure if this is necessary
-        env = (
-          lib.attrsets.mapAttrsToList (name: value: {
-            _args = [
-              name
-              (builtins.toString value)
-            ];
-          }) config.home.sessionVariables
-        );
       };
     };
   };
