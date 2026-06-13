@@ -169,20 +169,28 @@ in
     # that occurs with some (ironically) qt apps
     home.sessionVariables.GSETTINGS_SCHEMA_DIR = "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}/glib-2.0/schemas";
 
+    # should be used when running any non-oneshot program through hyprland
+    lib.hypr.run = shellCmd: "${lib.getExe pkgs.uwsm} app -t service -- ${shellCmd}";
+
     wayland.windowManager.hyprland = {
       enable = true;
       plugins = [ ];
-      events = {
-        "hyprland.start" = { }: [
-          (lib.mkLuaInline "hl.exec_cmd([[${lib.getExe config.programs.eww.package} open-many bar0 bar1]])")
-          (lib.mkLuaInline "hl.exec_cmd([[vesktop]])")
-          (lib.mkLuaInline "hl.exec_cmd([[steam]])")
-        ];
+      events =
+        let
+          inherit (config.lib.hypr) run;
+          toLua = lib.generators.toLua { };
+        in
+        {
+          "hyprland.start" = { }: [
+            (lib.mkLuaInline "hl.exec_cmd(${toLua (run "${lib.getExe config.programs.eww.package} open-many bar0 bar1")})")
+            (lib.mkLuaInline "hl.exec_cmd(${toLua (run (lib.getExe config.programs.vesktop.package))})")
+            (lib.mkLuaInline "hl.exec_cmd(${toLua (run "steam")})")
+          ];
 
-        "config.reloaded" = { }: [
-          (lib.mkLuaInline "hl.exec_cmd([[${lib.getExe' config.services.shikane.package "shikanectl"} reload]])")
-        ];
-      };
+          "config.reloaded" = { }: [
+            (lib.mkLuaInline "hl.exec_cmd([[${lib.getExe' config.services.shikane.package "shikanectl"} reload]])")
+          ];
+        };
       settings = {
         window_rule = [
           {

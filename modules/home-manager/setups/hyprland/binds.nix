@@ -21,7 +21,7 @@
 
           tofi = config.programs.tofi.package;
 
-          run = shellCmd: "${lib.getExe pkgs.uwsm} app -t service -- ${shellCmd}";
+          inherit (config.lib.hypr) run;
         in
         lib.mkMerge [
           {
