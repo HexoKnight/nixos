@@ -2,40 +2,14 @@
   lib,
   formats,
   python3Packages,
-  fetchPypi,
   fetchFromGitHub,
   ffmpeg,
 }:
 
 let
-  inherit (python3Packages) buildPythonPackage buildPythonApplication;
   pyproject-format = formats.toml { };
-
-  googletrans = buildPythonPackage rec {
-    pname = "googletrans";
-    version = "4.0.2";
-    format = "pyproject";
-
-    src = fetchPypi {
-      inherit pname version;
-      hash = "sha256-2e8Sa12S+r7sC7ndzb7s1Dhl/ADhfx36B3F4N4J6F94=";
-    };
-
-    build-system = [ python3Packages.hatchling ];
-
-    dependencies = with python3Packages; [
-      httpx
-      httpx.optional-dependencies.http2
-    ];
-
-    meta = with lib; {
-      homepage = "https://py-googletrans.readthedocs.io";
-      description = "Python library to interact with Google Translate API";
-      license = licenses.mit;
-    };
-  };
 in
-buildPythonApplication rec {
+python3Packages.buildPythonApplication rec {
   pname = "bruh-bot";
   # instead of 'YYYY-MM-DD' to conform to pep440
   version = "2023.09.13";
@@ -50,13 +24,13 @@ buildPythonApplication rec {
 
   build-system = [ python3Packages.setuptools ];
 
-  dependencies = with python3Packages; [
-    discordpy # voice support by default
+  dependencies = [
+    python3Packages.discordpy # voice support by default
     # pynacl included as dependency of discordpy with voice support
-    googletrans
+    python3Packages.googletrans
     # ffmpeg included as dependency of youtube-dl
-    yt-dlp
-    parsedatetime
+    python3Packages.yt-dlp
+    python3Packages.parsedatetime
   ];
 
   makeWrapperArgs = [
@@ -115,10 +89,10 @@ buildPythonApplication rec {
     ln -s ${pyproject-toml} pyproject.toml
   '';
 
-  meta = with lib; {
+  meta = {
     description = "bruh bot (a discord bot)";
     homepage = "https://github.com/HexoKnight/Bruh-Bot";
     mainProgram = pname;
-    platforms = platforms.linux ++ platforms.darwin;
+    platforms = lib.platforms.linux ++ lib.platforms.darwin;
   };
 }
