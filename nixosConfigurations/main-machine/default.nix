@@ -59,6 +59,7 @@ in
       setups.tooling.csharp.enable = true;
       setups.tooling.java.enable = true;
       setups.tooling.jupyter.enable = true;
+      setups.tooling.nushell.enable = true;
       setups.tooling.rust.enable = true;
       setups.tooling.typescript.enable = true;
       setups.tooling.typst.enable = true;

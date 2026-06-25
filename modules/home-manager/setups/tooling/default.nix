@@ -5,6 +5,7 @@
     ./csharp
     ./java.nix
     ./jupyter
+    ./nushell.nix
     ./rust.nix
     ./typescript.nix
     ./typst.nix
