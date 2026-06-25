@@ -18,6 +18,7 @@ in
     ./project-zomboid
     ./bruh-bot
     ./minecraft
+    ./factorio
 
     ./cloudflare-dns.nix
     ./cloudflare-dyndns.nix
@@ -66,6 +67,17 @@ in
       config.lib.homeserver.environmentFileDir
       "/etc/ssh"
     ];
+  };
+
+  # one of a few workarounds for impermanence creating `/persist/var/lib/private` with 755 instead of 700
+  # see: https://github.com/nix-community/impermanence/issues/254
+  system.activationScripts."createPersistentStorageDirs".deps = [ "var-lib-private-permissions" ];
+  system.activationScripts."var-lib-private-permissions" = {
+    deps = [ "specialfs" ];
+    text = ''
+      mkdir -p ${config.persist.root}/system/var/lib/private
+      chmod 0700 ${config.persist.root}/system/var/lib/private
+    '';
   };
 
   services.openssh = {

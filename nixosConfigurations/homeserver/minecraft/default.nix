@@ -75,7 +75,7 @@ in
         };
         atm10sky = {
           enable = true;
-          autoStart = true;
+          autoStart = false;
           restart = "always";
           serverProperties = {
             server-port = 25569;
