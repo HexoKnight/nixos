@@ -38,6 +38,8 @@ in
     sops = false;
   };
 
+  disko = (import ./disko.nix).disko;
+
   home-manager.users.${username} = {
     setups.normal = true;
   };
