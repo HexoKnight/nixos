@@ -4,7 +4,7 @@ let
   profileDir = "/var/lib";
   qbittorrentDir = "${profileDir}/qBittorrent";
 
-  torrentsDir = "/var/lib/Torrents";
+  torrentsDir = "/external/storage/Torrents";
 
   inherit (config.services.qbittorrent) user group;
 in
@@ -13,12 +13,13 @@ in
     persist.system = {
       directories = [
         qbittorrentDir
-        {
-          directory = torrentsDir;
-          mode = "0755";
-          inherit user group;
-        }
       ];
+    };
+    systemd.tmpfiles.settings.qbittorrent = {
+      ${torrentsDir}."d" = {
+        mode = "0755";
+        inherit user group;
+      };
     };
 
     nginx.hosts.qbit = {
