@@ -12,17 +12,18 @@ in
   imports = [
     ./hardware-configuration.nix
 
+    ./bruh-bot
+    ./factorio
+    ./jellyfin.nix
+    ./minecraft
     ./nginx.nix
-    ./qbittorrent.nix
     ./nix-serve.nix
     ./project-zomboid
-    ./bruh-bot
-    ./minecraft
-    ./factorio
+    ./qbittorrent.nix
 
+    ./acme.nix
     ./cloudflare-dns.nix
     ./cloudflare-dyndns.nix
-    ./acme.nix
   ];
 
   lib.homeserver.environmentFileDir = "/root/envFiles";
