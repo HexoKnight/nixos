@@ -1,4 +1,8 @@
-{ config, ... }:
+{
+  lib,
+  config,
+  ...
+}:
 
 let
   profileDir = "/var/lib";
@@ -6,7 +10,7 @@ let
 
   torrentsDir = "/external/storage/Torrents";
 
-  inherit (config.services.qbittorrent) user group;
+  cfg = config.services.qbittorrent;
 in
 {
   config = {
@@ -18,21 +22,28 @@ in
     systemd.tmpfiles.settings.qbittorrent = {
       ${torrentsDir}."d" = {
         mode = "0755";
-        inherit user group;
+        inherit (cfg) user group;
       };
     };
 
     nginx.hosts.qbit = {
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8080";
+        proxyPass = "http://127.0.0.1:${lib.toString cfg.webuiPort}";
       };
     };
-    dnsRecords.qbittorrent.record = {
+    dnsRecords.qbit.record = {
       type = "CNAME";
       name = "qbit";
       content = "raw.@";
       proxied = true;
     };
+
+    networking.firewall.allowedTCPPorts = [
+      config.services.qbittorrent.torrentingPort
+    ];
+    networking.firewall.allowedUDPPorts = [
+      config.services.qbittorrent.torrentingPort
+    ];
 
     services.qbittorrent = {
       enable = true;
@@ -40,7 +51,7 @@ in
       inherit profileDir;
 
       webuiPort = 8080;
-      openFirewall = true;
+      torrentingPort = 49161;
 
       serverConfig = {
         LegalNotice.Accepted = true;
@@ -71,6 +82,8 @@ in
             UseAlternativeGlobalSpeedLimit = true;
           };
         };
+
+        Network.PortForwardingEnabled = false;
       };
     };
   };
