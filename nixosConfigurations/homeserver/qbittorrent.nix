@@ -38,6 +38,18 @@ in
       proxied = true;
     };
 
+    nginx.hosts.tracker = {
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${lib.toString cfg.serverConfig.Preferences.Advanced.trackerPort}";
+      };
+    };
+    dnsRecords.tracker.record = {
+      type = "CNAME";
+      name = "tracker";
+      content = "raw.@";
+      proxied = true;
+    };
+
     networking.firewall.allowedTCPPorts = [
       config.services.qbittorrent.torrentingPort
     ];
@@ -84,6 +96,9 @@ in
         };
 
         Network.PortForwardingEnabled = false;
+
+        BitTorrent.TrackerEnabled = true;
+        Preferences.Advanced.trackerPort = 7777;
       };
     };
   };
