@@ -79,17 +79,25 @@ in
           Session = {
             # auto torrent management
             DisableAutoTMMByDefault = false;
+            DisableAutoTMMTriggers = {
+              CategorySavePathChanged = false;
+              DefaultSavePathChanged = false;
+            };
 
             DefaultSavePath = torrentsDir;
             TorrentExportDirectory = "${torrentsDir}/prev-torrents";
+            # path to store incomplete torrents
+            TempPath = "${torrentsDir}/temp";
+            # but don't use it by default
+            TempPathEnabled = false;
 
             MaxActiveDownloads = 3;
             MaxActiveUploads = 17;
             MaxActiveTorrents = 20;
 
             # in KiB/s
-            AlternativeGlobalDLSpeedLimit = 1000;
-            AlternativeGlobalUPSpeedLimit = 1000;
+            AlternativeGlobalDLSpeedLimit = 40 * 1024;
+            AlternativeGlobalUPSpeedLimit = 40 * 1024;
             # use alt by default, to reduce network usage
             UseAlternativeGlobalSpeedLimit = true;
           };
