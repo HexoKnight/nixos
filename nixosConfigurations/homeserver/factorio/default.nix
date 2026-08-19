@@ -53,6 +53,8 @@ in
           openFirewall = true;
           requireUserVerification = false;
 
+          package = factorio-headless-2-1-14;
+
           admins = [ "HexoKnight" ];
 
           saveName = "server";
@@ -69,8 +71,6 @@ in
         other = commonOpts // {
           game-name = "HexoKnight's Other Server";
           port = 34198;
-
-          package = factorio-headless-2-1-14;
         };
       };
 
