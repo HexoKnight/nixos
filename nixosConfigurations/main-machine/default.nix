@@ -213,6 +213,8 @@ in
     '';
   };
 
+  boot.kernelModules = [ "ntsync" ];
+
   nixpkgs.allowUnfreePkgs = [
     "nvidia-x11"
     "nvidia-settings"
