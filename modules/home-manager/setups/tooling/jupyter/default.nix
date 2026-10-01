@@ -131,14 +131,12 @@ in
         }
       ];
 
-      extraPython3Packages =
-        ps: with ps; [
-          pynvim
-          jupyter-client
+      extraPython3Packages = ps: [
+        ps.jupyter-client
 
-          pyperclip
-          nbformat
-        ];
+        ps.pyperclip
+        ps.nbformat
+      ];
 
       extraPackages = [
         pkgs.python3Packages.jupytext

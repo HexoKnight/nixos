@@ -79,6 +79,7 @@ let
 
             plugins = config.pluginPackages;
             inherit (config) extraPython3Packages;
+            withPython3 = lib.length (config.extraPython3Packages pkgs.python3Packages) > 0;
 
             wrapperArgs = lib.concatLists (
               [
