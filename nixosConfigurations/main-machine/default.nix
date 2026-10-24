@@ -214,6 +214,12 @@ in
   };
 
   boot.kernelModules = [ "ntsync" ];
+  # https://wiki.archlinux.org/title/Gaming#Improve_clock_gettime_throughput
+  boot.kernelParams = lib.mkIf (!config.isSpecialisation) [
+    "clocksource=tsc"
+    "tsc=reliable"
+  ];
+  specialisation.no-tsc.configuration = { };
 
   nixpkgs.allowUnfreePkgs = [
     "nvidia-x11"
