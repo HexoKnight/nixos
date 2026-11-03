@@ -17,7 +17,7 @@ in
       directories = [
         {
           directory = cfg.dataDir;
-          mode = "700";
+          mode = "770";
           inherit (cfg) user group;
         }
       ];

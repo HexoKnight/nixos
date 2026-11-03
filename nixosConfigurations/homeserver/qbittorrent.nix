@@ -1,5 +1,6 @@
 {
   lib,
+  pkgs,
   config,
   ...
 }:
@@ -8,23 +9,49 @@ let
   profileDir = "/var/lib";
   qbittorrentDir = "${profileDir}/qBittorrent";
 
+  mediaDir = "/var/lib/Media";
+
   torrentsDir = "/external/storage/Torrents";
 
   cfg = config.services.qbittorrent;
+
+  buildLibrary = pkgs.writeShellApplication {
+    name = "buildLibrary";
+    text = lib.readFile ./buildLibrary.sh;
+    runtimeInputs = [
+      pkgs.fd
+    ];
+  };
+
+  torrentFinished = pkgs.writeShellScriptBin "torrentFinished" ''
+    ${lib.getExe buildLibrary} ${
+      lib.escapeShellArgs [
+        mediaDir
+        cfg.serverConfig.BitTorrent.Session.DefaultSavePath
+      ]
+    }
+  '';
 in
 {
   config = {
     persist.system = {
       directories = [
         qbittorrentDir
+        {
+          directory = mediaDir;
+          mode = "775";
+          inherit (cfg) user group;
+        }
       ];
     };
     systemd.tmpfiles.settings.qbittorrent = {
       ${torrentsDir}."d" = {
-        mode = "0755";
+        mode = "0775";
         inherit (cfg) user group;
       };
     };
+
+    users.users.${config.setups.config.username}.extraGroups = [ cfg.group ];
 
     nginx.hosts.qbit = {
       locations."/" = {
@@ -91,16 +118,23 @@ in
             # but don't use it by default
             TempPathEnabled = false;
 
+            # disable queuing by default
+            QueueingSystemEnabled = false;
             MaxActiveDownloads = 3;
             MaxActiveUploads = 17;
             MaxActiveTorrents = 20;
 
             # in KiB/s
-            AlternativeGlobalDLSpeedLimit = 40 * 1024;
+            AlternativeGlobalDLSpeedLimit = 80 * 1024;
             AlternativeGlobalUPSpeedLimit = 40 * 1024;
             # use alt by default, to reduce network usage
             UseAlternativeGlobalSpeedLimit = true;
           };
+        };
+
+        AutoRun = {
+          enabled = true;
+          program = lib.getExe torrentFinished;
         };
 
         Network.PortForwardingEnabled = false;
