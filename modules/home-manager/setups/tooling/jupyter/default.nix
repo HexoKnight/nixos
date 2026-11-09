@@ -101,7 +101,12 @@ in
     setups.tooling.jupyter.kernels = lib.mapAttrs (name: config: config.finalKernel) cfg.pythonKernels;
 
     neovim.main = {
-      env.JUPYTER_PATH = toString kernels;
+      extraWrapperArgs = [
+        "--prefix"
+        "JUPYTER_PATH"
+        ":"
+        (toString kernels)
+      ];
 
       pluginsWithConfig = [
         {
